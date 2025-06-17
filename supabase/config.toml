@@ -1,0 +1,11 @@
+
+project_id = "lktxfhtvxygsigealzif"
+
+[functions.scheduled-sync]
+verify_jwt = false
+
+[functions.send-reminders]
+verify_jwt = false
+
+[functions.setup-cron-job]
+verify_jwt = false

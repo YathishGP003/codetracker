@@ -63,16 +63,66 @@ const ManageStudents = () => {
   };
 
   const handleUpdateStudent = (updatedStudent: any) => {
-    updateStudentMutation.mutate({
-      id: updatedStudent.id,
-      name: updatedStudent.name,
-      email: updatedStudent.email,
-      phoneNumber: updatedStudent.phoneNumber,
-      codeforcesHandle: updatedStudent.codeforcesHandle,
-      isActive: updatedStudent.isActive,
-      emailEnabled: updatedStudent.emailEnabled,
-    });
-    setEditingStudent(null);
+    // Check if codeforcesHandle has changed
+    const originalStudent = students?.find((s) => s.id === updatedStudent.id);
+    const handleChanged =
+      originalStudent &&
+      originalStudent.codeforcesHandle !== updatedStudent.codeforcesHandle;
+
+    updateStudentMutation.mutate(
+      {
+        id: updatedStudent.id,
+        name: updatedStudent.name,
+        email: updatedStudent.email,
+        phoneNumber: updatedStudent.phoneNumber,
+        codeforcesHandle: updatedStudent.codeforcesHandle,
+        isActive: updatedStudent.isActive,
+        emailEnabled: updatedStudent.emailEnabled,
+      },
+      {
+        onSuccess: () => {
+          if (handleChanged) {
+            console.log(
+              `Codeforces handle updated for ${updatedStudent.name}. Triggering real-time sync...`
+            );
+            syncStudentMutation.mutate(
+              {
+                studentId: updatedStudent.id,
+                handle: updatedStudent.codeforcesHandle,
+              },
+              {
+                onSuccess: () => {
+                  toast({
+                    title: "Student & Codeforces Data Updated",
+                    description: `Student ${updatedStudent.name}'s information and Codeforces data have been updated.`,
+                  });
+                },
+                onError: (error) => {
+                  toast({
+                    title: "Student Updated, Codeforces Sync Failed",
+                    description: `Student ${updatedStudent.name}'s information updated, but Codeforces data sync failed: ${error.message}. It will be synced with the next cron.`,
+                    variant: "destructive",
+                  });
+                },
+              }
+            );
+          } else {
+            toast({
+              title: "Student Updated",
+              description: "Student information has been updated successfully.",
+            });
+          }
+          setEditingStudent(null);
+        },
+        onError: (error) => {
+          toast({
+            title: "Update Failed",
+            description: `Failed to update student: ${error.message}`,
+            variant: "destructive",
+          });
+        },
+      }
+    );
   };
 
   const handleDeleteStudent = (studentId: string) => {

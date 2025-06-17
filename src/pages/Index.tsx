@@ -1,4 +1,3 @@
-
 import TopNavbar from "@/components/TopNavbar";
 import StudentTable from "@/components/StudentTable";
 import DashboardStats from "@/components/DashboardStats";
@@ -15,17 +14,30 @@ import { useEffect } from "react";
 
 const Index = () => {
   const { user, loading: authLoading } = useAuth();
-  const { data: students = [], isLoading: studentsLoading, error: studentsError } = useStudents();
-  const { data: contests = [], isLoading: contestsLoading, error: contestsError } = useContests();
-  const { data: problems = [], isLoading: problemsLoading, error: problemsError } = useProblems();
+  const {
+    data: students = [],
+    isLoading: studentsLoading,
+    error: studentsError,
+  } = useStudents();
+  const {
+    data: contests = [],
+    isLoading: contestsLoading,
+    error: contestsError,
+  } = useContests();
+  const {
+    data: problems = [],
+    isLoading: problemsLoading,
+    error: problemsError,
+  } = useProblems();
   const { isDarkMode } = useDarkMode();
 
-  const isLoading = authLoading || studentsLoading || contestsLoading || problemsLoading;
+  const isLoading =
+    authLoading || studentsLoading || contestsLoading || problemsLoading;
   const hasErrors = studentsError || contestsError || problemsError;
 
   // Debug logging
   useEffect(() => {
-    console.log('Dashboard Debug Info:', {
+    console.log("Dashboard Debug Info:", {
       user: user?.email,
       authLoading,
       studentsLoading,
@@ -38,18 +50,35 @@ const Index = () => {
       errors: {
         studentsError,
         contestsError,
-        problemsError
-      }
+        problemsError,
+      },
     });
-  }, [user, authLoading, studentsLoading, contestsLoading, problemsLoading, students, contests, problems, hasErrors, studentsError, contestsError, problemsError]);
+  }, [
+    user,
+    authLoading,
+    studentsLoading,
+    contestsLoading,
+    problemsLoading,
+    students,
+    contests,
+    problems,
+    hasErrors,
+    studentsError,
+    contestsError,
+    problemsError,
+  ]);
 
   // Show auth loading state
   if (authLoading) {
     return (
-      <div className={`min-h-screen ${isDarkMode ? 'bg-slate-950' : 'bg-gray-50'}`}>
+      <div
+        className={`min-h-screen ${isDarkMode ? "bg-slate-950" : "bg-gray-50"}`}
+      >
         <TopNavbar />
         <div className="container mx-auto px-4 py-8 text-center">
-          <div className={`text-lg ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+          <div
+            className={`text-lg ${isDarkMode ? "text-white" : "text-gray-900"}`}
+          >
             Authenticating...
           </div>
         </div>
@@ -60,20 +89,34 @@ const Index = () => {
   // Show error state if there are critical errors
   if (hasErrors) {
     return (
-      <div className={`min-h-screen ${isDarkMode ? 'bg-slate-950' : 'bg-gray-50'}`}>
+      <div
+        className={`min-h-screen ${isDarkMode ? "bg-slate-950" : "bg-gray-50"}`}
+      >
         <TopNavbar />
         <div className="container mx-auto px-4 py-8">
-          <div className={`text-center space-y-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-            <h2 className="text-2xl font-bold text-red-500">Error Loading Dashboard</h2>
+          <div
+            className={`text-center space-y-4 ${
+              isDarkMode ? "text-white" : "text-gray-900"
+            }`}
+          >
+            <h2 className="text-2xl font-bold text-red-500">
+              Error Loading Dashboard
+            </h2>
             <div className="space-y-2">
               {studentsError && (
-                <p className="text-red-400">Students: {studentsError.message}</p>
+                <p className="text-red-400">
+                  Students: {studentsError.message}
+                </p>
               )}
               {contestsError && (
-                <p className="text-red-400">Contests: {contestsError.message}</p>
+                <p className="text-red-400">
+                  Contests: {contestsError.message}
+                </p>
               )}
               {problemsError && (
-                <p className="text-red-400">Problems: {problemsError.message}</p>
+                <p className="text-red-400">
+                  Problems: {problemsError.message}
+                </p>
               )}
             </div>
             <p className="text-sm text-gray-500">
@@ -88,7 +131,9 @@ const Index = () => {
   // Show loading skeleton
   if (isLoading) {
     return (
-      <div className={`min-h-screen ${isDarkMode ? 'bg-slate-950' : 'bg-gray-50'}`}>
+      <div
+        className={`min-h-screen ${isDarkMode ? "bg-slate-950" : "bg-gray-50"}`}
+      >
         <TopNavbar />
         <div className="container mx-auto px-4 py-8">
           <div className="mb-8">
@@ -101,7 +146,7 @@ const Index = () => {
             ))}
           </div>
           <div className="text-center">
-            <p className={`${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>
+            <p className={`${isDarkMode ? "text-slate-400" : "text-gray-600"}`}>
               Loading dashboard data...
             </p>
           </div>
@@ -111,22 +156,33 @@ const Index = () => {
   }
 
   // Find the current user's student record based on email
-  const currentUserStudent = students.find(s => s.email === user?.email);
+  const currentUserStudent = students.find((s) => s.email === user?.email);
 
   return (
-    <div className={`min-h-screen ${isDarkMode ? 'bg-slate-950' : 'bg-gray-50'}`}>
+    <div
+      className={`min-h-screen ${isDarkMode ? "bg-slate-950" : "bg-gray-50"}`}
+    >
       <TopNavbar />
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className={`text-3xl font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+          <h1
+            className={`text-3xl font-bold mb-2 ${
+              isDarkMode ? "text-white" : "text-gray-900"
+            }`}
+          >
             CodeTracker Dashboard
           </h1>
-          <p className={`${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>
-            Monitor and track Codeforces progress for all students with real-time synchronization
+          <p className={`${isDarkMode ? "text-slate-400" : "text-gray-600"}`}>
+            Monitor and track Codeforces progress for all students with
+            real-time synchronization
           </p>
         </div>
 
-        <DashboardStats students={students} contests={contests} problems={problems} />
+        <DashboardStats
+          students={students}
+          contests={contests}
+          problems={problems}
+        />
 
         {/* Enhanced Sync Management Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
@@ -137,8 +193,8 @@ const Index = () => {
         {/* Problem Tracker Section - Show current user's progress */}
         {currentUserStudent && (
           <div className="mb-8">
-            <ProblemTracker 
-              studentId={currentUserStudent.id} 
+            <ProblemTracker
+              studentId={currentUserStudent.id}
               title={`${currentUserStudent.name}'s Current Contest Progress`}
             />
           </div>
@@ -147,16 +203,14 @@ const Index = () => {
         <StudentTable students={students} />
 
         {/* Debug info - remove in production */}
-        {process.env.NODE_ENV === 'development' && (
-          <div className={`mt-8 p-4 rounded border ${isDarkMode ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-gray-100 border-gray-300 text-gray-700'}`}>
-            <h3 className="font-bold mb-2">Debug Info:</h3>
-            <p>User: {user?.email}</p>
-            <p>Students: {students.length}</p>
-            <p>Contests: {contests.length}</p>
-            <p>Problems: {problems.length}</p>
-            <p>Current User Student: {currentUserStudent ? currentUserStudent.name : 'Not found'}</p>
-          </div>
-        )}
+        {/* <div className={`mt-8 p-4 rounded border ${isDarkMode ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-gray-100 border-gray-300 text-gray-700'}`}>
+          <h3 className="font-bold mb-2">Debug Info:</h3>
+          <p>User: {user?.email}</p>
+          <p>Students: {students.length}</p>
+          <p>Contests: {contests.length}</p>
+          <p>Problems: {problems.length}</p>
+          <p>Current User Student: {currentUserStudent ? currentUserStudent.name : 'Not found'}</p>
+        </div> */}
       </div>
     </div>
   );

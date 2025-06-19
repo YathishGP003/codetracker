@@ -6,7 +6,7 @@ import CronScheduler from "@/components/CronScheduler";
 import RealTimeSyncManager from "@/components/RealTimeSyncManager";
 import { useStudents } from "@/hooks/useStudentData";
 import { useContests } from "@/hooks/useContestData";
-import { useProblems } from "@/hooks/useProblemData";
+import { useProblemData } from "../hooks/useProblemData";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useDarkMode } from "@/contexts/DarkModeContext";
 import { useAuth } from "@/contexts/AuthContext";
@@ -28,7 +28,7 @@ const Index = () => {
     data: problems = [],
     isLoading: problemsLoading,
     error: problemsError,
-  } = useProblems();
+  } = useProblemData();
   const { isDarkMode } = useDarkMode();
 
   const isLoading =

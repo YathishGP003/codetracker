@@ -28,16 +28,15 @@ const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
   const [imgError, setImgError] = useState(false);
   const { data: problems = [] } = useProblemData(student?.id);
 
-  // Language aggregation
-  const languageCounts = useMemo(() => {
-    const counts: Record<string, number> = {};
-    problems.forEach((p) => {
+  // Language aggregation (unique languages from last 500 problems)
+  const languageList = useMemo(() => {
+    const langs = new Set<string>();
+    problems.slice(0, 500).forEach((p) => {
       if (p.programming_language) {
-        counts[p.programming_language] =
-          (counts[p.programming_language] || 0) + 1;
+        langs.add(p.programming_language);
       }
     });
-    return Object.entries(counts).sort((a, b) => b[1] - a[1]);
+    return Array.from(langs);
   }, [problems]);
 
   // Tag to skill group mapping
@@ -247,53 +246,29 @@ const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
                     >
                       Languages
                     </h4>
-                    {languageCounts.length === 0 ? (
-                      <div
-                        className={
-                          isDarkMode ? "text-slate-400" : "text-gray-500"
-                        }
-                      >
-                        No data
+                    {languageList.length === 0 ? (
+                      <div className="flex flex-wrap gap-2">
+                        {["C++", "Python", "Java"].map((lang) => (
+                          <span
+                            key={lang}
+                            className="px-3 py-1 rounded-full bg-slate-700/30 text-slate-200 text-sm font-semibold dark:bg-slate-700 dark:text-slate-200"
+                            style={{ minWidth: 70 }}
+                          >
+                            {lang}
+                          </span>
+                        ))}
                       </div>
                     ) : (
-                      <div className="space-y-2">
-                        {languageCounts
-                          .slice(0, showMore["Languages"] ? undefined : 3)
-                          .map(([lang, count]) => (
-                            <div
-                              key={lang}
-                              className="flex items-center space-x-3"
-                            >
-                              <span
-                                className="px-3 py-1 rounded-full bg-slate-700/30 text-slate-200 text-sm font-semibold dark:bg-slate-700 dark:text-slate-200"
-                                style={{ minWidth: 70 }}
-                              >
-                                {lang}
-                              </span>
-                              <span
-                                className="font-bold text-lg"
-                                style={{ minWidth: 30 }}
-                              >
-                                {count}
-                              </span>
-                              <span className="text-gray-400 text-sm">
-                                problems solved
-                              </span>
-                            </div>
-                          ))}
-                        {languageCounts.length > 3 && (
-                          <button
-                            className="text-sm text-gray-400 hover:underline mt-1"
-                            onClick={() =>
-                              setShowMore((s) => ({
-                                ...s,
-                                Languages: !s.Languages,
-                              }))
-                            }
+                      <div className="flex flex-wrap gap-2">
+                        {languageList.map((lang) => (
+                          <span
+                            key={lang}
+                            className="px-3 py-1 rounded-full bg-slate-700/30 text-slate-200 text-sm font-semibold dark:bg-slate-700 dark:text-slate-200"
+                            style={{ minWidth: 70 }}
                           >
-                            {showMore["Languages"] ? "Show less" : "Show more"}
-                          </button>
-                        )}
+                            {lang}
+                          </span>
+                        ))}
                       </div>
                     )}
                   </div>

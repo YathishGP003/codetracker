@@ -1,35 +1,52 @@
-
-import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Plus } from 'lucide-react';
-import { useCreateStudent } from '@/hooks/useStudentData';
+import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Plus } from "lucide-react";
+import { useCreateStudent, useSyncStudentData } from "@/hooks/useStudentData";
 
 export const AddStudentDialog = () => {
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phoneNumber: '',
-    codeforcesHandle: ''
+    name: "",
+    email: "",
+    phoneNumber: "",
+    codeforcesHandle: "",
   });
 
   const createStudentMutation = useCreateStudent();
+  const syncStudentMutation = useSyncStudentData();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     createStudentMutation.mutate(formData, {
-      onSuccess: () => {
+      onSuccess: (data) => {
+        if (data && data.id && data.codeforces_handle) {
+          syncStudentMutation.mutate({
+            studentId: data.id,
+            codeforcesHandle: data.codeforces_handle,
+          });
+        }
         setOpen(false);
-        setFormData({ name: '', email: '', phoneNumber: '', codeforcesHandle: '' });
-      }
+        setFormData({
+          name: "",
+          email: "",
+          phoneNumber: "",
+          codeforcesHandle: "",
+        });
+      },
     });
   };
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   return (
@@ -50,7 +67,7 @@ export const AddStudentDialog = () => {
             <Input
               id="name"
               value={formData.name}
-              onChange={(e) => handleInputChange('name', e.target.value)}
+              onChange={(e) => handleInputChange("name", e.target.value)}
               required
             />
           </div>
@@ -60,7 +77,7 @@ export const AddStudentDialog = () => {
               id="email"
               type="email"
               value={formData.email}
-              onChange={(e) => handleInputChange('email', e.target.value)}
+              onChange={(e) => handleInputChange("email", e.target.value)}
               required
             />
           </div>
@@ -69,7 +86,7 @@ export const AddStudentDialog = () => {
             <Input
               id="phoneNumber"
               value={formData.phoneNumber}
-              onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
+              onChange={(e) => handleInputChange("phoneNumber", e.target.value)}
             />
           </div>
           <div className="space-y-2">
@@ -77,16 +94,22 @@ export const AddStudentDialog = () => {
             <Input
               id="codeforcesHandle"
               value={formData.codeforcesHandle}
-              onChange={(e) => handleInputChange('codeforcesHandle', e.target.value)}
+              onChange={(e) =>
+                handleInputChange("codeforcesHandle", e.target.value)
+              }
               required
             />
           </div>
           <div className="flex justify-end space-x-2">
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setOpen(false)}
+            >
               Cancel
             </Button>
             <Button type="submit" disabled={createStudentMutation.isPending}>
-              {createStudentMutation.isPending ? 'Adding...' : 'Add Student'}
+              {createStudentMutation.isPending ? "Adding..." : "Add Student"}
             </Button>
           </div>
         </form>

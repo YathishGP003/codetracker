@@ -19,7 +19,7 @@ import { AddStudentDialog } from "@/components/AddStudentDialog";
 import { SyncButton } from "@/components/SyncButton";
 import StudentProfileModal from "@/components/StudentProfileModal";
 import EditStudentDialog from "@/components/EditStudentDialog";
-import { useCreateStudent } from "@/hooks/useStudentData";
+import { useCreateStudent, useDeleteStudent } from "@/hooks/useStudentData";
 
 interface StudentTableProps {
   students: Student[];
@@ -37,6 +37,7 @@ const StudentTable: React.FC<StudentTableProps> = ({
   const { toast } = useToast();
   const { isDarkMode } = useDarkMode();
   const createStudent = useCreateStudent();
+  const deleteStudent = useDeleteStudent();
 
   // Use real data from props, fallback to empty array
   const [students, setStudents] = useState<Student[]>(propStudents || []);
@@ -158,11 +159,7 @@ const StudentTable: React.FC<StudentTableProps> = ({
   };
 
   const handleDeleteStudent = (studentId: string) => {
-    setStudents(students.filter((s) => s.id !== studentId));
-    toast({
-      title: "Student Deleted",
-      description: "Student has been removed from the system.",
-    });
+    deleteStudent.mutate(studentId);
   };
 
   const handleEditStudent = (student: Student) => {
@@ -364,7 +361,6 @@ const StudentTable: React.FC<StudentTableProps> = ({
               )}
             </div>
 
-            <SyncButton variant="all" />
             <AddStudentDialog />
           </div>
         </div>

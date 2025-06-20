@@ -14,6 +14,26 @@ import SubmissionHeatMap from "./SubmissionHeatMap";
 
 type FilterPeriod = "7" | "30" | "90";
 
+// Codeforces rating bands and colors
+const ratingBands = [
+  { min: 3000, max: 3500, color: "#aa0066", label: "Legendary Grandmaster" },
+  { min: 2600, max: 2999, color: "#ff0000", label: "Red" },
+  { min: 2400, max: 2599, color: "#ff8c00", label: "Orange" },
+  { min: 2100, max: 2399, color: "#aa00aa", label: "Violet" },
+  { min: 1900, max: 2099, color: "#0000ff", label: "Blue" },
+  { min: 1600, max: 1899, color: "#03a89e", label: "Cyan" },
+  { min: 1400, max: 1599, color: "#008000", label: "Green" },
+  { min: 1200, max: 1399, color: "#808080", label: "Gray" },
+  { min: 800, max: 1199, color: "#cccccc", label: "Light Gray" },
+];
+
+const getBarColor = (rating) => {
+  for (const band of ratingBands) {
+    if (rating >= band.min && rating <= band.max) return band.color;
+  }
+  return "#cccccc";
+};
+
 const ProblemStatistics = () => {
   const [filterPeriod, setFilterPeriod] = useState<FilterPeriod>("30");
   const { data: problems, isLoading, error } = useProblemData();
@@ -68,15 +88,15 @@ const ProblemStatistics = () => {
       (a, b) => parseInt(a) - parseInt(b)
     );
     const data = labels.map((label) => stats.ratingDistribution[label]);
-
+    const backgroundColor = labels.map((label) => getBarColor(parseInt(label)));
     return {
       labels,
       datasets: [
         {
           label: "Problems Solved",
           data,
-          backgroundColor: "rgba(37, 99, 235, 0.5)",
-          borderColor: "rgb(37, 99, 235)",
+          backgroundColor,
+          borderColor: backgroundColor,
           borderWidth: 1,
         },
       ],
@@ -172,8 +192,27 @@ const ProblemStatistics = () => {
                   },
                 },
               },
+              plugins: {
+                legend: { display: false },
+                tooltip: {
+                  callbacks: {
+                    label: function(context) {
+                      return `Solved: ${context.parsed.y}`;
+                    },
+                  },
+                },
+              },
             }}
           />
+        </div>
+        {/* Legend for rating bands */}
+        <div className="flex flex-wrap gap-2 mt-4">
+          {ratingBands.map((band) => (
+            <div key={band.label} className="flex items-center space-x-2">
+              <span className="inline-block w-4 h-4 rounded" style={{ background: band.color, border: '1px solid #888' }}></span>
+              <span className="text-xs" style={{ color: band.color }}>{band.min}-{band.max}</span>
+            </div>
+          ))}
         </div>
       </Card>
 

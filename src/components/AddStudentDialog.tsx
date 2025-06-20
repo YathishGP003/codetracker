@@ -52,10 +52,21 @@ export const AddStudentDialog = () => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
-          <Plus className="w-4 h-4 mr-2" />
-          Add Student
-        </Button>
+        <button
+          type="button"
+          className="px-6 py-3 rounded-2xl bg-gradient-to-r from-teal-500 to-blue-500 shadow-lg flex items-center space-x-2 text-white font-bold text-base transition-all duration-300 hover:scale-105 hover:from-teal-600 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-teal-400/50"
+        >
+          {formData.codeforcesHandle && (
+            <img
+              src={`https://userpic.codeforces.org/${formData.codeforcesHandle}/avatar`}
+              alt="CF Avatar"
+              className="w-7 h-7 rounded-full object-cover border border-white mr-2 bg-white"
+              onError={(e) => (e.currentTarget.style.display = "none")}
+            />
+          )}
+          <Plus className="w-5 h-5 mr-2" />
+          <span>Add Student</span>
+        </button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>

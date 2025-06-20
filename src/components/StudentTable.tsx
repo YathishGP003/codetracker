@@ -483,12 +483,28 @@ const StudentTable: React.FC<StudentTableProps> = ({
                   >
                     <td className="py-4 px-4">
                       <div className="flex items-center space-x-3">
+                        {student.codeforcesHandle ? (
+                          <img
+                            src={`https://userpic.codeforces.org/${student.codeforcesHandle}/avatar`}
+                            alt="CF Avatar"
+                            className="w-10 h-10 rounded-2xl object-cover border border-gray-300 dark:border-slate-700 bg-white"
+                            onError={(e) => {
+                              e.currentTarget.onerror = null;
+                              e.currentTarget.style.display = "none";
+                              e.currentTarget.nextElementSibling.style.display =
+                                "flex";
+                            }}
+                          />
+                        ) : null}
                         <div
                           className={`w-10 h-10 rounded-2xl flex items-center justify-center font-semibold text-white ${
                             student.isActive
                               ? "bg-gradient-to-br from-green-500 to-teal-500"
                               : "bg-gradient-to-br from-gray-500 to-slate-500"
                           }`}
+                          style={{
+                            display: student.codeforcesHandle ? "none" : "flex",
+                          }}
                         >
                           {student.name
                             .split(" ")

@@ -34,7 +34,7 @@ const Footer = ({ isDarkMode }: FooterProps) => {
           <div className={`text-center md:text-right ${
             isDarkMode ? 'text-slate-400' : 'text-gray-600'
           }`}>
-            <p>&copy; 2024 CodeTracker Pro. All rights reserved.</p>
+            <p>&copy; 2025 CodeTracker Pro. All rights reserved.</p>
             <p className="text-sm mt-1">Built for educators, by educators</p>
           </div>
         </div>

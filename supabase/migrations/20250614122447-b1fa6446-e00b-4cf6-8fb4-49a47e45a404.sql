@@ -1,4 +1,3 @@
-
 -- Create a profiles table to store additional user information
 CREATE TABLE public.profiles (
   id UUID NOT NULL REFERENCES auth.users ON DELETE CASCADE,
@@ -54,3 +53,6 @@ CREATE TRIGGER on_auth_user_created
 CREATE TRIGGER update_profiles_updated_at
   BEFORE UPDATE ON public.profiles
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+-- Add a new column 'programming_language' (type: text, nullable) to the 'problems' table
+ALTER TABLE problems ADD COLUMN programming_language text;

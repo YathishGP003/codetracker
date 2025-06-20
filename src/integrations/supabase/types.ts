@@ -4,378 +4,381 @@ export type Json =
   | boolean
   | null
   | { [key: string]: Json | undefined }
-  | Json[]
+  | Json[];
 
 export type Database = {
   public: {
     Tables: {
       app_settings: {
         Row: {
-          id: string
-          setting_key: string
-          setting_value: Json
-          updated_at: string | null
-        }
+          id: string;
+          setting_key: string;
+          setting_value: Json;
+          updated_at: string | null;
+        };
         Insert: {
-          id?: string
-          setting_key: string
-          setting_value: Json
-          updated_at?: string | null
-        }
+          id?: string;
+          setting_key: string;
+          setting_value: Json;
+          updated_at?: string | null;
+        };
         Update: {
-          id?: string
-          setting_key?: string
-          setting_value?: Json
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
+          id?: string;
+          setting_key?: string;
+          setting_value?: Json;
+          updated_at?: string | null;
+        };
+        Relationships: [];
+      };
       contests: {
         Row: {
-          contest_date: string
-          contest_id: number
-          contest_name: string
-          created_at: string | null
-          id: string
-          problems_solved: number | null
-          rank: number | null
-          rating: number | null
-          rating_change: number | null
-          student_id: string | null
-          total_problems: number | null
-        }
+          contest_date: string;
+          contest_id: number;
+          contest_name: string;
+          created_at: string | null;
+          id: string;
+          problems_solved: number | null;
+          rank: number | null;
+          rating: number | null;
+          rating_change: number | null;
+          student_id: string | null;
+          total_problems: number | null;
+        };
         Insert: {
-          contest_date: string
-          contest_id: number
-          contest_name: string
-          created_at?: string | null
-          id?: string
-          problems_solved?: number | null
-          rank?: number | null
-          rating?: number | null
-          rating_change?: number | null
-          student_id?: string | null
-          total_problems?: number | null
-        }
+          contest_date: string;
+          contest_id: number;
+          contest_name: string;
+          created_at?: string | null;
+          id?: string;
+          problems_solved?: number | null;
+          rank?: number | null;
+          rating?: number | null;
+          rating_change?: number | null;
+          student_id?: string | null;
+          total_problems?: number | null;
+        };
         Update: {
-          contest_date?: string
-          contest_id?: number
-          contest_name?: string
-          created_at?: string | null
-          id?: string
-          problems_solved?: number | null
-          rank?: number | null
-          rating?: number | null
-          rating_change?: number | null
-          student_id?: string | null
-          total_problems?: number | null
-        }
+          contest_date?: string;
+          contest_id?: number;
+          contest_name?: string;
+          created_at?: string | null;
+          id?: string;
+          problems_solved?: number | null;
+          rank?: number | null;
+          rating?: number | null;
+          rating_change?: number | null;
+          student_id?: string | null;
+          total_problems?: number | null;
+        };
         Relationships: [
           {
-            foreignKeyName: "contests_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "students"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
+            foreignKeyName: "contests_student_id_fkey";
+            columns: ["student_id"];
+            isOneToOne: false;
+            referencedRelation: "students";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
       problems: {
         Row: {
-          contest_id: number | null
-          created_at: string | null
-          id: string
-          problem_id: string
-          problem_index: string | null
-          problem_name: string
-          rating: number | null
-          solved_at: string
-          student_id: string | null
-          tags: string[] | null
-          verdict: string | null
-        }
+          contest_id: number | null;
+          created_at: string | null;
+          id: string;
+          problem_id: string;
+          problem_index: string | null;
+          problem_name: string;
+          rating: number | null;
+          solved_at: string;
+          student_id: string | null;
+          tags: string[] | null;
+          verdict: string | null;
+          programming_language: string | null;
+        };
         Insert: {
-          contest_id?: number | null
-          created_at?: string | null
-          id?: string
-          problem_id: string
-          problem_index?: string | null
-          problem_name: string
-          rating?: number | null
-          solved_at: string
-          student_id?: string | null
-          tags?: string[] | null
-          verdict?: string | null
-        }
+          contest_id?: number | null;
+          created_at?: string | null;
+          id?: string;
+          problem_id: string;
+          problem_index?: string | null;
+          problem_name: string;
+          rating?: number | null;
+          solved_at: string;
+          student_id?: string | null;
+          tags?: string[] | null;
+          verdict?: string | null;
+          programming_language?: string | null;
+        };
         Update: {
-          contest_id?: number | null
-          created_at?: string | null
-          id?: string
-          problem_id?: string
-          problem_index?: string | null
-          problem_name?: string
-          rating?: number | null
-          solved_at?: string
-          student_id?: string | null
-          tags?: string[] | null
-          verdict?: string | null
-        }
+          contest_id?: number | null;
+          created_at?: string | null;
+          id?: string;
+          problem_id?: string;
+          problem_index?: string | null;
+          problem_name?: string;
+          rating?: number | null;
+          solved_at?: string;
+          student_id?: string | null;
+          tags?: string[] | null;
+          verdict?: string | null;
+          programming_language?: string | null;
+        };
         Relationships: [
           {
-            foreignKeyName: "problems_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "students"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
+            foreignKeyName: "problems_student_id_fkey";
+            columns: ["student_id"];
+            isOneToOne: false;
+            referencedRelation: "students";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
       profiles: {
         Row: {
-          created_at: string
-          email: string | null
-          full_name: string | null
-          id: string
-          updated_at: string
-        }
+          created_at: string;
+          email: string | null;
+          full_name: string | null;
+          id: string;
+          updated_at: string;
+        };
         Insert: {
-          created_at?: string
-          email?: string | null
-          full_name?: string | null
-          id: string
-          updated_at?: string
-        }
+          created_at?: string;
+          email?: string | null;
+          full_name?: string | null;
+          id: string;
+          updated_at?: string;
+        };
         Update: {
-          created_at?: string
-          email?: string | null
-          full_name?: string | null
-          id?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
+          created_at?: string;
+          email?: string | null;
+          full_name?: string | null;
+          id?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       students: {
         Row: {
-          codeforces_handle: string
-          created_at: string | null
-          current_rating: number | null
-          email: string
-          email_enabled: boolean | null
-          id: string
-          is_active: boolean | null
-          last_submission_date: string | null
-          last_updated: string | null
-          max_rating: number | null
-          name: string
-          phone_number: string | null
-          reminder_count: number | null
-          updated_at: string | null
-        }
+          codeforces_handle: string;
+          created_at: string | null;
+          current_rating: number | null;
+          email: string;
+          email_enabled: boolean | null;
+          id: string;
+          is_active: boolean | null;
+          last_submission_date: string | null;
+          last_updated: string | null;
+          max_rating: number | null;
+          name: string;
+          phone_number: string | null;
+          reminder_count: number | null;
+          updated_at: string | null;
+        };
         Insert: {
-          codeforces_handle: string
-          created_at?: string | null
-          current_rating?: number | null
-          email: string
-          email_enabled?: boolean | null
-          id?: string
-          is_active?: boolean | null
-          last_submission_date?: string | null
-          last_updated?: string | null
-          max_rating?: number | null
-          name: string
-          phone_number?: string | null
-          reminder_count?: number | null
-          updated_at?: string | null
-        }
+          codeforces_handle: string;
+          created_at?: string | null;
+          current_rating?: number | null;
+          email: string;
+          email_enabled?: boolean | null;
+          id?: string;
+          is_active?: boolean | null;
+          last_submission_date?: string | null;
+          last_updated?: string | null;
+          max_rating?: number | null;
+          name: string;
+          phone_number?: string | null;
+          reminder_count?: number | null;
+          updated_at?: string | null;
+        };
         Update: {
-          codeforces_handle?: string
-          created_at?: string | null
-          current_rating?: number | null
-          email?: string
-          email_enabled?: boolean | null
-          id?: string
-          is_active?: boolean | null
-          last_submission_date?: string | null
-          last_updated?: string | null
-          max_rating?: number | null
-          name?: string
-          phone_number?: string | null
-          reminder_count?: number | null
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
+          codeforces_handle?: string;
+          created_at?: string | null;
+          current_rating?: number | null;
+          email?: string;
+          email_enabled?: boolean | null;
+          id?: string;
+          is_active?: boolean | null;
+          last_submission_date?: string | null;
+          last_updated?: string | null;
+          max_rating?: number | null;
+          name?: string;
+          phone_number?: string | null;
+          reminder_count?: number | null;
+          updated_at?: string | null;
+        };
+        Relationships: [];
+      };
       sync_logs: {
         Row: {
-          contests_fetched: number | null
-          created_at: string | null
-          id: string
-          message: string | null
-          problems_fetched: number | null
-          status: string
-          student_id: string | null
-          sync_type: string
-        }
+          contests_fetched: number | null;
+          created_at: string | null;
+          id: string;
+          message: string | null;
+          problems_fetched: number | null;
+          status: string;
+          student_id: string | null;
+          sync_type: string;
+        };
         Insert: {
-          contests_fetched?: number | null
-          created_at?: string | null
-          id?: string
-          message?: string | null
-          problems_fetched?: number | null
-          status: string
-          student_id?: string | null
-          sync_type: string
-        }
+          contests_fetched?: number | null;
+          created_at?: string | null;
+          id?: string;
+          message?: string | null;
+          problems_fetched?: number | null;
+          status: string;
+          student_id?: string | null;
+          sync_type: string;
+        };
         Update: {
-          contests_fetched?: number | null
-          created_at?: string | null
-          id?: string
-          message?: string | null
-          problems_fetched?: number | null
-          status?: string
-          student_id?: string | null
-          sync_type?: string
-        }
+          contests_fetched?: number | null;
+          created_at?: string | null;
+          id?: string;
+          message?: string | null;
+          problems_fetched?: number | null;
+          status?: string;
+          student_id?: string | null;
+          sync_type?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "sync_logs_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "students"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-    }
+            foreignKeyName: "sync_logs_student_id_fkey";
+            columns: ["student_id"];
+            isOneToOne: false;
+            referencedRelation: "students";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+    };
     Views: {
-      [_ in never]: never
-    }
+      [_ in never]: never;
+    };
     Functions: {
       get_inactive_students: {
-        Args: { days_threshold?: number }
+        Args: { days_threshold?: number };
         Returns: {
-          student_id: string
-          name: string
-          email: string
-          codeforces_handle: string
-          last_submission_date: string
-          days_since_last_submission: number
-        }[]
-      }
-    }
+          student_id: string;
+          name: string;
+          email: string;
+          codeforces_handle: string;
+          last_submission_date: string;
+          days_since_last_submission: number;
+        }[];
+      };
+    };
     Enums: {
-      student_status: "active" | "inactive"
-    }
+      student_status: "active" | "inactive";
+    };
     CompositeTypes: {
-      [_ in never]: never
-    }
-  }
-}
+      [_ in never]: never;
+    };
+  };
+};
 
-type DefaultSchema = Database[Extract<keyof Database, "public">]
+type DefaultSchema = Database[Extract<keyof Database, "public">];
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof Database },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof Database;
   }
     ? keyof (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    : never = never
 > = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
   ? (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
       Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
-      Row: infer R
+      Row: infer R;
     }
     ? R
     : never
   : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])
-    ? (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
-        Row: infer R
-      }
-      ? R
-      : never
+      DefaultSchema["Views"])
+  ? (DefaultSchema["Tables"] &
+      DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+      Row: infer R;
+    }
+    ? R
     : never
+  : never;
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof Database },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof Database;
   }
     ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never = never
 > = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
   ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Insert: infer I
+      Insert: infer I;
     }
     ? I
     : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Insert: infer I
-      }
-      ? I
-      : never
+  ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+      Insert: infer I;
+    }
+    ? I
     : never
+  : never;
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof Database },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof Database;
   }
     ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never = never
 > = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
   ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Update: infer U
+      Update: infer U;
     }
     ? U
     : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Update: infer U
-      }
-      ? U
-      : never
+  ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+      Update: infer U;
+    }
+    ? U
     : never
+  : never;
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof Database },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof Database;
   }
     ? keyof Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+    : never = never
 > = DefaultSchemaEnumNameOrOptions extends { schema: keyof Database }
   ? Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
-    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
-    : never
+  ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+  : never;
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof Database },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof Database;
   }
     ? keyof Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
+    : never = never
 > = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
   ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
-    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
-    : never
+  ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+  : never;
 
 export const Constants = {
   public: {
@@ -383,4 +386,4 @@ export const Constants = {
       student_status: ["active", "inactive"],
     },
   },
-} as const
+} as const;

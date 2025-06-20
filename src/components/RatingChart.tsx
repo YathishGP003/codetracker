@@ -12,13 +12,14 @@ import {
 } from "recharts";
 import { useContests } from "@/hooks/useContestData";
 import { useDarkMode } from "@/contexts/DarkModeContext";
+import { format } from "date-fns";
 
 interface RatingChartProps {
   studentId: string;
   handle?: string;
 }
 
-// Codeforces rating bands and colors
+// Codeforces rating bands and colors (solid, not transparent)
 const ratingBands = [
   { min: 3000, max: 3500, color: "#aa0066" }, // Legendary Grandmaster
   { min: 2600, max: 2999, color: "#ff0000" }, // Red
@@ -38,35 +39,48 @@ const getBandColor = (rating: number) => {
   return "#cccccc";
 };
 
+const getBandsInRange = (min: number, max: number) => {
+  // Always include a margin of 100 above and below
+  const lower = Math.max(800, Math.floor((min - 100) / 100) * 100);
+  const upper = Math.min(3500, Math.ceil((max + 100) / 100) * 100);
+  return ratingBands.filter((band) => band.max >= lower && band.min <= upper);
+};
+
 const RatingChart: React.FC<RatingChartProps> = ({ studentId, handle }) => {
   const { data: contests = [] } = useContests(studentId);
   const { isDarkMode } = useDarkMode();
 
+  // Use real contest data, X-axis is date (MMM yyyy)
   const ratingData = contests
     .slice()
     .reverse()
-    .map((contest, index) => ({
-      contest: `#${contests.length - index}`,
+    .map((contest) => ({
+      contest: format(new Date(contest.date), "MMM yyyy"),
       rating: contest.rating,
       date: contest.date,
       name: contest.name,
     }));
 
-  // Y-axis ticks for Codeforces
-  const yTicks = [
-    800, 1200, 1400, 1600, 1900, 2100, 2300, 2400, 2600, 3000, 3500,
-  ];
+  // Find min/max rating for dynamic bands
+  const ratings = ratingData.map((d) => d.rating);
+  const minRating = Math.min(...ratings, 800);
+  const maxRating = Math.max(...ratings, 1200);
+  const bands = getBandsInRange(minRating, maxRating);
+  const yTicks = bands
+    .flatMap((band) => [band.min, band.max])
+    .filter((v, i, arr) => arr.indexOf(v) === i)
+    .sort((a, b) => a - b);
 
-  // Custom background bands
+  // Custom background bands (solid)
   const renderBands = () =>
-    ratingBands.map((band, i) => (
+    bands.map((band, i) => (
       <ReferenceArea
         key={i}
         y1={band.min}
         y2={band.max + 1}
         stroke={band.color}
         fill={band.color}
-        fillOpacity={0.18}
+        fillOpacity={1}
         ifOverflow="extendDomain"
       />
     ));
@@ -117,15 +131,26 @@ const RatingChart: React.FC<RatingChartProps> = ({ studentId, handle }) => {
     );
   }
 
-  // Legend with handle
-  const renderLegend = () => (
-    <div className="flex items-center space-x-2 mt-2">
-      <span className="inline-block w-4 h-4 rounded bg-yellow-400 border border-yellow-600" />
-      <span className="font-semibold text-sm px-2 py-1 rounded bg-yellow-100 border border-yellow-400 text-yellow-800">
-        {handle || "Codeforces Handle"}
-      </span>
-    </div>
-  );
+  // Legend with handle and profile image as a clickable badge
+  const renderLegend = () =>
+    handle ? (
+      <a
+        href={`https://codeforces.com/profile/${handle}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex items-center space-x-2 mt-2 px-3 py-1 rounded-full border border-yellow-400 bg-yellow-100 hover:bg-yellow-200 transition-colors shadow-sm"
+        style={{ textDecoration: "none" }}
+      >
+        <img
+          src={`https://userpic.codeforces.org/${handle}/avatar`}
+          alt={handle}
+          className="w-6 h-6 rounded-full border border-yellow-400 bg-white"
+          style={{ objectFit: "cover" }}
+          onError={(e) => (e.currentTarget.style.display = "none")}
+        />
+        <span className="font-semibold text-yellow-800">{handle}</span>
+      </a>
+    ) : null;
 
   return (
     <div
@@ -161,7 +186,7 @@ const RatingChart: React.FC<RatingChartProps> = ({ studentId, handle }) => {
               minTickGap={0}
             />
             <YAxis
-              domain={[800, 3500]}
+              domain={[bands[0].min, bands[bands.length - 1].max]}
               ticks={yTicks}
               stroke={isDarkMode ? "#94a3b8" : "#64748b"}
               fontSize={12}

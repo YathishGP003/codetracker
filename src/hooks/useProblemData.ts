@@ -13,6 +13,7 @@ interface Problem {
   solved_at: Date;
   verdict: string;
   created_at: Date;
+  programming_language?: string | null;
 }
 
 interface ProblemError {

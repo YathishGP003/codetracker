@@ -1,128 +1,83 @@
-# Student Progress Management System
+# CodeTrackerPro
 
-A comprehensive system for tracking and managing student progress on Codeforces, featuring real-time data synchronization, progress visualization, and automated engagement features.
+CodeTrackerPro is a comprehensive web application designed to help programming mentors and students track their progress on competitive programming platforms like Codeforces. It provides detailed analytics, visualizations, and management tools to monitor performance, identify areas for improvement, and stay motivated.
 
-## Features
+## ✨ Features
 
-### Student Table View
+- **Student Dashboard**: A centralized view of all students with key metrics like current rating, last activity, and status.
+- **Secure Authentication**: User sign-up and sign-in functionality powered by Supabase Auth.
+- **Student Management**: Easily add, edit, and manage students in the dashboard.
+- **Detailed Student Profiles**: A modal view for each student, featuring:
+  - **Codeforces-Style Rating Graph**: A beautiful, interactive rating chart that visualizes contest performance over time, complete with accurate rating bands.
+  - **Filterable Contest History**: View a student's contest history in a responsive, card-based layout. Filter contests by the last 30, 90, or 365 days.
+  - **Problem Statistics**: In-depth analysis of solved problems, including a submission heatmap, solved counts by rating, and tag-based skill analysis.
+- **Dark Mode**: A sleek, eye-friendly dark theme for comfortable viewing.
+- **Responsive Design**: A fully responsive interface built with Tailwind CSS and shadcn/ui that works seamlessly on all devices.
 
-- Complete student listing with key information:
-  - Name
-  - Email
-  - Phone Number
-  - Codeforces Handle
-  - Current Rating
-  - Max Rating
-- CRUD operations for student management
-- CSV export functionality
-- Quick access to detailed student profiles
+## 🛠️ Tech Stack
 
-### Student Profile View
+- **Frontend**: React, Vite, TypeScript
+- **Styling**: Tailwind CSS, shadcn/ui
+- **Charts**: Recharts
+- **Backend & Database**: Supabase (Auth, Postgres, Edge Functions)
+- **Linting/Formatting**: ESLint, Prettier
 
-#### Contest History
+## 🚀 Getting Started
 
-- Filterable contest data (30/90/365 days)
-- Interactive rating graph
-- Detailed contest performance metrics:
-  - Rating changes
-  - Contest ranks
-  - Unsolved problems tracking
-
-#### Problem Solving Analytics
-
-- Time-based filtering (7/30/90 days)
-- Key metrics:
-  - Most difficult problem solved
-  - Total problems solved
-  - Average rating
-  - Daily problem-solving rate
-- Visual analytics:
-  - Rating bucket distribution chart
-  - Submission heat map
-
-### Codeforces Data Sync
-
-- Automated daily data synchronization
-- Configurable sync schedule
-- Real-time updates on handle changes
-- Last update timestamp display
-
-### Inactivity Detection
-
-- 7-day inactivity monitoring
-- Automated email reminders
-- Reminder history tracking
-- Per-student reminder toggle
-
-### UI/UX Features
-
-- Responsive design for mobile and tablet
-- Light/dark mode support
-- Intuitive navigation
-- Clean, modern interface
-
-## Technical Stack
-
-- Frontend:
-
-  - React
-  - TypeScript
-  - Tailwind CSS
-  - shadcn-ui
-  - Chart.js/D3.js for visualizations
-
-- Backend:
-
-  - Node.js
-  - Express
-  - MongoDB/PostgreSQL
-  - Redis for caching
-
-- DevOps:
-  - Docker
-  - GitHub Actions
-  - Automated testing
-
-## Getting Started
+Follow these instructions to set up and run the project locally.
 
 ### Prerequisites
 
-- Node.js (v16 or higher)
-- npm or yarn
-- MongoDB/PostgreSQL
-- Redis (optional, for caching)
+- Node.js (v18 or higher)
+- npm or bun
+- A Supabase account
 
-### Installation
+### Installation & Setup
 
-```bash
-# Clone the repository
-git clone <repository-url>
+1.  **Clone the repository:**
 
-# Navigate to project directory
-cd student-progress-management
+    ```bash
+    git clone https://github.com/your-username/codetrackerpro.git
+    cd codetrackerpro
+    ```
 
-# Install dependencies
-npm install
+2.  **Install dependencies:**
 
-# Set up environment variables
-cp .env.example .env
+    ```bash
+    npm install
+    # or
+    bun install
+    ```
 
-# Start development server
-npm run dev
-```
+3.  **Set up environment variables:**
 
-### Environment Variables
+    - Create a new project on [Supabase](https://supabase.com/).
+    - Inside your project, navigate to **Project Settings** > **API**.
+    - Create a file named `.env` in the root of your project by copying the example file:
+      ```bash
+      cp .env.example .env
+      ```
+    - Find your **Project URL** and **anon public key** in your Supabase project's API settings.
+    - Update the `.env` file with your credentials:
+      ```
+      VITE_SUPABASE_URL=YOUR_SUPABASE_URL
+      VITE_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
+      ```
 
-Create a `.env` file with the following variables:
+4.  **Run the development server:**
+    ```bash
+    npm run dev
+    ```
 
-```
-DATABASE_URL=your_database_url
-REDIS_URL=your_redis_url
-SMTP_HOST=your_smtp_host
-SMTP_PORT=your_smtp_port
-SMTP_USER=your_smtp_user
-SMTP_PASS=your_smtp_password
-```
+The application should now be running at `http://localhost:5173`.
+
+## Supabase Backend
+
+This project relies on Supabase for its backend services. You will need to set up the following:
+
+- **Database Tables**: The application expects certain tables for students, contests, and problems. You can find the required schemas in the `supabase/migrations` directory.
+- **Authentication**: The email-based magic link authentication should work out-of-the-box, but you may need to configure the Site URL in your Supabase project settings for production deployment.
+- **Edge Functions**: The `supabase/functions` directory contains serverless functions for tasks like scheduled data syncs.
 
 ## Contributing
 

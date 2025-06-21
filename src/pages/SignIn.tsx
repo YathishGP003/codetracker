@@ -1,16 +1,15 @@
-
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Eye, EyeOff, Code } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useToast } from '@/hooks/use-toast';
-import { useAuth } from '@/contexts/AuthContext';
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Eye, EyeOff, Code } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 const SignIn = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -19,12 +18,12 @@ const SignIn = () => {
   const { signIn, user } = useAuth();
 
   // Get the page they were trying to visit, or default to dashboard
-  const from = location.state?.from?.pathname || '/dashboard';
+  const from = location.state?.from?.pathname || "/dashboard";
 
   // Redirect if already logged in
   useEffect(() => {
     if (user) {
-      console.log('User already logged in, redirecting to:', from);
+      console.log("User already logged in, redirecting to:", from);
       navigate(from, { replace: true });
     }
   }, [user, navigate, from]);
@@ -56,21 +55,24 @@ const SignIn = () => {
       return;
     }
 
-    console.log('Submitting sign in form with email:', email);
+    console.log("Submitting sign in form with email:", email);
     const { error } = await signIn(email, password);
 
     if (error) {
-      console.error('Sign in failed:', error);
-      
+      console.error("Sign in failed:", error);
+
       let errorMessage = "Failed to sign in. Please try again.";
-      
+
       // Handle specific error cases
-      if (error.message?.includes('Invalid login credentials')) {
-        errorMessage = "Invalid email or password. Please check your credentials and try again.";
-      } else if (error.message?.includes('Email not confirmed')) {
-        errorMessage = "Please check your email and click the confirmation link before signing in.";
-      } else if (error.message?.includes('Too many requests')) {
-        errorMessage = "Too many sign in attempts. Please wait a moment and try again.";
+      if (error.message?.includes("Invalid login credentials")) {
+        errorMessage =
+          "Invalid email or password. Please check your credentials and try again.";
+      } else if (error.message?.includes("Email not confirmed")) {
+        errorMessage =
+          "Please check your email and click the confirmation link before signing in.";
+      } else if (error.message?.includes("Too many requests")) {
+        errorMessage =
+          "Too many sign in attempts. Please wait a moment and try again.";
       } else if (error.message) {
         errorMessage = error.message;
       }
@@ -82,7 +84,7 @@ const SignIn = () => {
       });
       setIsLoading(false);
     } else {
-      console.log('Sign in successful, redirecting...');
+      console.log("Sign in successful, redirecting...");
       toast({
         title: "Success",
         description: "Welcome back to CodeTracker Pro!",
@@ -96,7 +98,10 @@ const SignIn = () => {
       <div className="w-full max-w-md">
         <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800/50 rounded-3xl p-8">
           {/* Logo */}
-          <Link to="/" className="flex items-center justify-center space-x-3 mb-8">
+          <Link
+            to="/"
+            className="flex items-center justify-center space-x-3 mb-8"
+          >
             <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-teal-500 to-blue-600 flex items-center justify-center">
               <Code className="w-7 h-7 text-white" />
             </div>
@@ -112,7 +117,9 @@ const SignIn = () => {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <Label htmlFor="email" className="text-slate-300">Email</Label>
+              <Label htmlFor="email" className="text-slate-300">
+                Email
+              </Label>
               <Input
                 id="email"
                 type="email"
@@ -126,11 +133,13 @@ const SignIn = () => {
             </div>
 
             <div>
-              <Label htmlFor="password" className="text-slate-300">Password</Label>
+              <Label htmlFor="password" className="text-slate-300">
+                Password
+              </Label>
               <div className="relative mt-1">
                 <Input
                   id="password"
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="bg-slate-800/50 border-slate-700/50 text-white placeholder-slate-400 pr-10"
@@ -147,6 +156,14 @@ const SignIn = () => {
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
+              <div className="text-right mt-2">
+                <Link
+                  to="/forgot-password"
+                  className="text-sm text-teal-400 hover:text-teal-300"
+                >
+                  Forgot Password?
+                </Link>
+              </div>
             </div>
 
             <Button
@@ -154,14 +171,17 @@ const SignIn = () => {
               disabled={isLoading}
               className="w-full bg-gradient-to-r from-teal-500 to-blue-600 hover:from-teal-600 hover:to-blue-700 text-white font-semibold py-3 rounded-2xl transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isLoading ? 'Signing In...' : 'Sign In'}
+              {isLoading ? "Signing In..." : "Sign In"}
             </Button>
           </form>
 
           <div className="mt-6 text-center">
             <p className="text-slate-400">
-              Don't have an account?{' '}
-              <Link to="/signup" className="text-teal-400 hover:text-teal-300 font-medium">
+              Don't have an account?{" "}
+              <Link
+                to="/signup"
+                className="text-teal-400 hover:text-teal-300 font-medium"
+              >
                 Sign up
               </Link>
             </p>

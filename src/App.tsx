@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -14,6 +13,8 @@ import SignUp from "./pages/SignUp";
 import ScheduleDemo from "./pages/ScheduleDemo";
 import ManageStudents from "./pages/ManageStudents";
 import NotFound from "./pages/NotFound";
+import ForgotPassword from "@/pages/ForgotPassword";
+import UpdatePassword from "@/pages/UpdatePassword";
 
 const queryClient = new QueryClient();
 
@@ -29,22 +30,24 @@ const App = () => (
               <Route path="/" element={<Landing />} />
               <Route path="/signin" element={<SignIn />} />
               <Route path="/signup" element={<SignUp />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/update-password" element={<UpdatePassword />} />
               <Route path="/schedule-demo" element={<ScheduleDemo />} />
-              <Route 
-                path="/dashboard" 
+              <Route
+                path="/dashboard"
                 element={
                   <ProtectedRoute>
                     <Index />
                   </ProtectedRoute>
-                } 
+                }
               />
-              <Route 
-                path="/manage" 
+              <Route
+                path="/manage"
                 element={
                   <ProtectedRoute>
                     <ManageStudents />
                   </ProtectedRoute>
-                } 
+                }
               />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />

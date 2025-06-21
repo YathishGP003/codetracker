@@ -111,7 +111,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         email: email.trim(),
         password,
         options: {
-          emailRedirectTo: "https://codetracker-v1.vercel.app/",
+          emailRedirectTo: import.meta.env.VITE_SITE_URL,
           data: {
             full_name: fullName,
           },

@@ -25,8 +25,10 @@ const ForgotPassword = () => {
       return;
     }
 
+    const redirectTo = `${import.meta.env.VITE_SITE_URL}/update-password`;
+
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: "https://codetracker-v1.vercel.app/update-password",
+      redirectTo,
     });
 
     if (error) {

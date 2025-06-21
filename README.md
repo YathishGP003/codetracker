@@ -62,6 +62,7 @@ Follow these instructions to set up and run the project locally.
       ```
       VITE_SUPABASE_URL=YOUR_SUPABASE_URL
       VITE_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
+      VITE_SITE_URL=http://localhost:5173
       ```
 
 4.  **Run the development server:**

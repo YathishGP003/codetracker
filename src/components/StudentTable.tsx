@@ -11,6 +11,7 @@ import {
   ExternalLink,
   Download,
   Edit,
+  History,
 } from "lucide-react";
 import { Student } from "../types/Student";
 import { useToast } from "@/hooks/use-toast";
@@ -20,6 +21,7 @@ import { SyncButton } from "@/components/SyncButton";
 import StudentProfileModal from "@/components/StudentProfileModal";
 import EditStudentDialog from "@/components/EditStudentDialog";
 import { useCreateStudent, useDeleteStudent } from "@/hooks/useStudentData";
+import ContestHistoryModal from "@/components/ContestHistoryModal";
 
 interface StudentTableProps {
   students: Student[];
@@ -34,6 +36,10 @@ const StudentTable: React.FC<StudentTableProps> = ({
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
+  const [isContestHistoryModalOpen, setIsContestHistoryModalOpen] =
+    useState(false);
+  const [selectedStudentForHistory, setSelectedStudentForHistory] =
+    useState<Student | null>(null);
   const { toast } = useToast();
   const { isDarkMode } = useDarkMode();
   const createStudent = useCreateStudent();
@@ -205,6 +211,11 @@ const StudentTable: React.FC<StudentTableProps> = ({
     if (!student || !student.id) return;
     setSelectedStudent(student);
     setIsProfileModalOpen(true);
+  };
+
+  const handleViewContestHistory = (student: Student) => {
+    setSelectedStudentForHistory(student);
+    setIsContestHistoryModalOpen(true);
   };
 
   const downloadCSV = () => {
@@ -458,6 +469,7 @@ const StudentTable: React.FC<StudentTableProps> = ({
                     "Current Rating",
                     "Max Rating",
                     "Status",
+                    "Contest",
                     "Actions",
                   ].map((header) => (
                     <th
@@ -602,6 +614,19 @@ const StudentTable: React.FC<StudentTableProps> = ({
                       </div>
                     </td>
                     <td className="py-4 px-4">
+                      <button
+                        onClick={() => handleViewContestHistory(student)}
+                        className={`p-2 rounded-xl transition-all duration-300 hover:scale-110 ${
+                          isDarkMode
+                            ? "bg-purple-900/50 text-purple-400 hover:bg-purple-800/50"
+                            : "bg-purple-100 text-purple-600 hover:bg-purple-200"
+                        }`}
+                        title="View Contest History"
+                      >
+                        <History size={16} />
+                      </button>
+                    </td>
+                    <td className="py-4 px-4">
                       <div className="flex items-center space-x-2">
                         <button
                           onClick={() => handleViewStudent(student)}
@@ -672,6 +697,15 @@ const StudentTable: React.FC<StudentTableProps> = ({
         onClose={() => {
           setIsProfileModalOpen(false);
           setSelectedStudent(null);
+        }}
+      />
+
+      <ContestHistoryModal
+        student={selectedStudentForHistory}
+        isOpen={isContestHistoryModalOpen}
+        onClose={() => {
+          setIsContestHistoryModalOpen(false);
+          setSelectedStudentForHistory(null);
         }}
       />
 

@@ -1,116 +1,110 @@
+import React from "react";
+import { Calendar, TrendingUp, TrendingDown, BarChart2 } from "lucide-react";
+import { useDarkMode } from "@/contexts/DarkModeContext";
 
-import React from 'react';
-import { Calendar, TrendingUp, TrendingDown, Award } from 'lucide-react';
-import { Contest } from '../types/Student';
+interface Contest {
+  contestName: string;
+  ratingUpdateTimeSeconds: number;
+  rank: number;
+  oldRating: number;
+  newRating: number;
+  problemsSolved: number; // You will need to add this data
+}
 
 interface ContestCardProps {
   contest: Contest;
-  isDarkMode: boolean;
 }
 
-const ContestCard: React.FC<ContestCardProps> = ({ contest, isDarkMode }) => {
-  const getRatingColor = (rating: number) => {
-    if (rating >= 1600) return 'text-purple-400';
-    if (rating >= 1400) return 'text-blue-400';
-    if (rating >= 1200) return 'text-green-400';
-    return 'text-gray-400';
+const ContestCard: React.FC<ContestCardProps> = ({ contest }) => {
+  const { isDarkMode } = useDarkMode();
+  const ratingChange = contest.newRating - contest.oldRating;
+
+  const getRatingChangeColor = () => {
+    if (ratingChange > 0) return "text-green-400";
+    if (ratingChange < 0) return "text-red-400";
+    return isDarkMode ? "text-slate-400" : "text-gray-500";
   };
 
-  const formatToIST = (dateString: string) => {
-    try {
-      const date = new Date(dateString);
-      return date.toLocaleString('en-IN', {
-        timeZone: 'Asia/Kolkata',
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true
-      });
-    } catch (error) {
-      console.error('Date formatting error:', error);
-      return dateString;
-    }
-  };
+  const RatingChangeIcon =
+    ratingChange > 0 ? TrendingUp : ratingChange < 0 ? TrendingDown : BarChart2;
 
   return (
     <div
-      className={`p-6 rounded-2xl border transition-all duration-300 hover:scale-105 ${
-        isDarkMode 
-          ? 'bg-slate-800/30 border-slate-700/50 hover:border-slate-600/50' 
-          : 'bg-gray-50/50 border-gray-200/50 hover:border-gray-300/50'
+      className={`rounded-xl p-4 transition-all duration-200 ${
+        isDarkMode
+          ? "bg-slate-800/50 border border-slate-700/50 hover:bg-slate-800"
+          : "bg-white/80 border border-gray-200/80 hover:bg-white"
       }`}
     >
-      <div className="flex flex-col space-y-4">
-        {/* Contest Title */}
-        <div className="flex-1">
-          <h4 className={`text-lg font-semibold mb-3 ${
-            isDarkMode ? 'text-white' : 'text-gray-900'
-          }`}>
-            {contest.name}
-          </h4>
-          
-          {/* Date and Rank Info */}
-          <div className="flex flex-wrap items-center gap-4 text-sm mb-4">
-            <div className="flex items-center space-x-1">
-              <Calendar className={`w-4 h-4 ${
-                isDarkMode ? 'text-slate-400' : 'text-gray-600'
-              }`} />
-              <span className={isDarkMode ? 'text-slate-400' : 'text-gray-600'}>
-                {formatToIST(contest.date)}
-              </span>
-            </div>
-            <div className="flex items-center space-x-1">
-              <Award className={`w-4 h-4 ${
-                isDarkMode ? 'text-slate-400' : 'text-gray-600'
-              }`} />
-              <span className={isDarkMode ? 'text-slate-400' : 'text-gray-600'}>
-                Rank: {contest.rank}
-              </span>
-            </div>
+      <h3
+        className={`font-bold text-lg mb-2 ${
+          isDarkMode ? "text-white" : "text-gray-900"
+        }`}
+      >
+        {contest.contestName}
+      </h3>
+      <div
+        className={`flex items-center space-x-4 text-sm mb-4 ${
+          isDarkMode ? "text-slate-400" : "text-gray-600"
+        }`}
+      >
+        <div className="flex items-center space-x-1">
+          <Calendar size={14} />
+          <span>
+            {new Date(contest.ratingUpdateTimeSeconds * 1000).toLocaleString()}
+          </span>
+        </div>
+        <div className="flex items-center space-x-1">
+          <span>Rank: {contest.rank}</span>
+        </div>
+      </div>
+      <div className="grid grid-cols-3 gap-4 text-center">
+        <div>
+          <p
+            className={`text-xs font-semibold uppercase tracking-wider ${
+              isDarkMode ? "text-slate-500" : "text-gray-500"
+            }`}
+          >
+            Rating
+          </p>
+          <p
+            className={`text-2xl font-bold ${
+              isDarkMode ? "text-purple-400" : "text-purple-600"
+            }`}
+          >
+            {contest.newRating}
+          </p>
+        </div>
+        <div>
+          <p
+            className={`text-xs font-semibold uppercase tracking-wider ${
+              isDarkMode ? "text-slate-500" : "text-gray-500"
+            }`}
+          >
+            Change
+          </p>
+          <div
+            className={`flex items-center justify-center space-x-1 text-2xl font-bold ${getRatingChangeColor()}`}
+          >
+            <RatingChangeIcon size={20} />
+            <span>{ratingChange}</span>
           </div>
         </div>
-
-        {/* Stats Row - All contained within the card */}
-        <div className="grid grid-cols-3 gap-4">
-          <div className="text-center">
-            <div className={`text-sm font-medium mb-1 ${
-              isDarkMode ? 'text-slate-400' : 'text-gray-600'
-            }`}>
-              Rating
-            </div>
-            <div className={`text-lg font-bold ${getRatingColor(contest.rating)}`}>
-              {contest.rating}
-            </div>
-          </div>
-
-          <div className="text-center">
-            <div className={`text-sm font-medium mb-1 ${
-              isDarkMode ? 'text-slate-400' : 'text-gray-600'
-            }`}>
-              Change
-            </div>
-            <div className={`text-lg font-bold flex items-center justify-center space-x-1 ${
-              contest.ratingChange > 0 ? 'text-green-400' : 'text-red-400'
-            }`}>
-              {contest.ratingChange > 0 ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
-              <span>{contest.ratingChange > 0 ? '+' : ''}{contest.ratingChange}</span>
-            </div>
-          </div>
-
-          <div className="text-center">
-            <div className={`text-sm font-medium mb-1 ${
-              isDarkMode ? 'text-slate-400' : 'text-gray-600'
-            }`}>
-              Problems
-            </div>
-            <div className={`text-lg font-bold ${
-              isDarkMode ? 'text-white' : 'text-gray-900'
-            }`}>
-              {contest.problemsSolved}/{contest.totalProblems}
-            </div>
-          </div>
+        <div>
+          <p
+            className={`text-xs font-semibold uppercase tracking-wider ${
+              isDarkMode ? "text-slate-500" : "text-gray-500"
+            }`}
+          >
+            Problems
+          </p>
+          <p
+            className={`text-2xl font-bold ${
+              isDarkMode ? "text-slate-300" : "text-gray-800"
+            }`}
+          >
+            {contest.problemsSolved}/?
+          </p>
         </div>
       </div>
     </div>

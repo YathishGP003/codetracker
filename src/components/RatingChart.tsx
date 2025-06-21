@@ -10,202 +10,165 @@ import {
   ReferenceArea,
   Legend,
 } from "recharts";
-import { useContests } from "@/hooks/useContestData";
+import { useContestHistory } from "@/hooks/useContestHistory";
 import { useDarkMode } from "@/contexts/DarkModeContext";
 import { format } from "date-fns";
 
 interface RatingChartProps {
-  studentId: string;
-  handle?: string;
+  handle: string;
 }
 
-// Codeforces rating bands and colors (solid, not transparent)
 const ratingBands = [
-  { min: 3000, max: 3500, color: "#aa0066" }, // Legendary Grandmaster
-  { min: 2600, max: 2999, color: "#ff0000" }, // Red
-  { min: 2400, max: 2599, color: "#ff8c00" }, // Orange
-  { min: 2100, max: 2399, color: "#aa00aa" }, // Violet
-  { min: 1900, max: 2099, color: "#0000ff" }, // Blue
-  { min: 1600, max: 1899, color: "#03a89e" }, // Cyan
-  { min: 1400, max: 1599, color: "#008000" }, // Green
-  { min: 1200, max: 1399, color: "#808080" }, // Gray
-  { min: 800, max: 1199, color: "#cccccc" }, // Light Gray
+  { rank: "Newbie", min: 0, max: 1199, color: "rgb(204, 204, 204)" },
+  { rank: "Pupil", min: 1200, max: 1399, color: "rgb(119, 255, 119)" },
+  { rank: "Specialist", min: 1400, max: 1599, color: "rgb(119, 221, 221)" },
+  { rank: "Expert", min: 1600, max: 1899, color: "rgb(170, 170, 255)" },
+  {
+    rank: "Candidate Master",
+    min: 1900,
+    max: 2099,
+    color: "rgb(255, 119, 255)",
+  },
+  { rank: "Master", min: 2100, max: 2399, color: "rgb(255, 140, 0)" },
+  { rank: "Grandmaster", min: 2400, max: 2999, color: "rgb(255, 0, 0)" },
+  {
+    rank: "Legendary Grandmaster",
+    min: 3000,
+    max: 4000,
+    color: "rgb(170, 0, 0)",
+  },
 ];
 
-const getBandColor = (rating: number) => {
-  for (const band of ratingBands) {
-    if (rating >= band.min && rating <= band.max) return band.color;
-  }
-  return "#cccccc";
-};
-
-const getBandsInRange = (min: number, max: number) => {
-  // Always include a margin of 100 above and below
-  const lower = Math.max(800, Math.floor((min - 100) / 100) * 100);
-  const upper = Math.min(3500, Math.ceil((max + 100) / 100) * 100);
-  return ratingBands.filter((band) => band.max >= lower && band.min <= upper);
-};
-
-const RatingChart: React.FC<RatingChartProps> = ({ studentId, handle }) => {
-  const { data: contests = [] } = useContests(studentId);
+const RatingChart: React.FC<RatingChartProps> = ({ handle }) => {
+  const { data: contestHistory, isLoading } = useContestHistory(handle);
   const { isDarkMode } = useDarkMode();
 
-  // Use real contest data, X-axis is date (MMM yyyy)
-  const ratingData = contests
-    .slice()
-    .reverse()
-    .map((contest) => ({
-      contest: format(new Date(contest.date), "MMM yyyy"),
-      rating: contest.rating,
-      date: contest.date,
-      name: contest.name,
-    }));
+  const chartData = (contestHistory || [])
+    .map((d) => ({
+      ...d,
+      date: new Date(d.ratingUpdateTimeSeconds * 1000),
+    }))
+    .sort((a, b) => a.date.getTime() - b.date.getTime());
 
-  // Find min/max rating for dynamic bands
-  const ratings = ratingData.map((d) => d.rating);
-  const minRating = Math.min(...ratings, 800);
-  const maxRating = Math.max(...ratings, 1200);
-  const bands = getBandsInRange(minRating, maxRating);
-  const yTicks = bands
-    .flatMap((band) => [band.min, band.max])
-    .filter((v, i, arr) => arr.indexOf(v) === i)
-    .sort((a, b) => a - b);
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-80">
+        Loading chart...
+      </div>
+    );
+  }
 
-  // Custom background bands (solid)
-  const renderBands = () =>
-    bands.map((band, i) => (
-      <ReferenceArea
-        key={i}
-        y1={band.min}
-        y2={band.max + 1}
-        stroke={band.color}
-        fill={band.color}
-        fillOpacity={1}
-        ifOverflow="extendDomain"
-      />
-    ));
+  if (!chartData || chartData.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-80">
+        No contest data available to display chart.
+      </div>
+    );
+  }
 
-  // Custom tooltip
+  const ratings = chartData.map((d) => d.newRating);
+  const minRating = Math.floor(Math.min(...ratings) / 200) * 200 - 200;
+  const maxRating = Math.ceil(Math.max(...ratings) / 200) * 200 + 200;
+
+  const yAxisTicks = [0, 1200, 1400, 1600, 1900, 2100, 2300, 2400, 2600, 3000];
+
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
+      const ratingChange = data.newRating - data.oldRating;
       return (
         <div
-          className={`p-3 rounded-lg border shadow-lg ${
+          className={`p-2 rounded border text-sm ${
             isDarkMode
-              ? "bg-slate-800 border-slate-700 text-white"
-              : "bg-white border-gray-200 text-gray-900"
+              ? "bg-gray-800 border-gray-700 text-white"
+              : "bg-white border-gray-300"
           }`}
         >
-          <div className="font-semibold">{data.name}</div>
-          <div className="text-xs mb-1">{data.date}</div>
-          <div className="font-bold text-yellow-500">Rating: {data.rating}</div>
+          <p className="font-bold">{data.contestName}</p>
+          <p>
+            {`Rank: ${data.rank}, Rating: ${data.newRating} (${
+              ratingChange >= 0 ? "+" : ""
+            }${ratingChange})`}
+          </p>
+          <p className="text-xs text-gray-500">
+            {format(data.date, "MMM d, yyyy")}
+          </p>
         </div>
       );
     }
     return null;
   };
 
-  if (contests.length === 0) {
-    return (
-      <div
-        className={`rounded-3xl p-8 ${
-          isDarkMode
-            ? "bg-slate-900/50 backdrop-blur-xl border border-slate-800/50"
-            : "bg-white/80 backdrop-blur-xl border border-gray-200/50"
-        }`}
-      >
-        <h3
-          className={`text-xl font-bold mb-6 ${
-            isDarkMode ? "text-white" : "text-gray-900"
-          }`}
-        >
-          Rating Progress
-        </h3>
-        <div className="flex items-center justify-center h-40">
-          <p className={isDarkMode ? "text-slate-400" : "text-gray-600"}>
-            No contest data available
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  // Legend with handle and profile image as a clickable badge
-  const renderLegend = () =>
-    handle ? (
-      <a
-        href={`https://codeforces.com/profile/${handle}`}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-flex items-center space-x-2 mt-2 px-3 py-1 rounded-full border border-yellow-400 bg-yellow-100 hover:bg-yellow-200 transition-colors shadow-sm"
-        style={{ textDecoration: "none" }}
-      >
-        <img
-          src={`https://userpic.codeforces.org/${handle}/avatar`}
-          alt={handle}
-          className="w-6 h-6 rounded-full border border-yellow-400 bg-white"
-          style={{ objectFit: "cover" }}
-          onError={(e) => (e.currentTarget.style.display = "none")}
-        />
-        <span className="font-semibold text-yellow-800">{handle}</span>
-      </a>
-    ) : null;
-
   return (
-    <div
-      className={`rounded-3xl p-8 ${
-        isDarkMode
-          ? "bg-slate-900/50 backdrop-blur-xl border border-slate-800/50"
-          : "bg-white/80 backdrop-blur-xl border border-gray-200/50"
-      }`}
-    >
-      <h3
-        className={`text-xl font-bold mb-2 ${
-          isDarkMode ? "text-white" : "text-gray-900"
-        }`}
+    <ResponsiveContainer width="100%" height={400}>
+      <LineChart
+        data={chartData}
+        margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
       >
-        Contest Rating
-      </h3>
-      <div className="h-80 relative">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart
-            data={ratingData}
-            margin={{ left: 0, right: 0, top: 10, bottom: 10 }}
-          >
-            {renderBands()}
-            <CartesianGrid
-              strokeDasharray="3 3"
-              stroke={isDarkMode ? "#334155" : "#e2e8f0"}
-            />
-            <XAxis
-              dataKey="contest"
-              stroke={isDarkMode ? "#94a3b8" : "#64748b"}
-              fontSize={12}
-              tick={{ fontWeight: 600 }}
-              minTickGap={0}
-            />
-            <YAxis
-              domain={[bands[0].min, bands[bands.length - 1].max]}
-              ticks={yTicks}
-              stroke={isDarkMode ? "#94a3b8" : "#64748b"}
-              fontSize={12}
-              tick={{ fontWeight: 600 }}
-            />
-            <Tooltip content={<CustomTooltip />} />
-            <Line
-              type="monotone"
-              dataKey="rating"
-              stroke="#FFD700"
-              strokeWidth={3}
-              dot={{ fill: "#FFD700", stroke: "#FFD700", r: 5 }}
-              activeDot={{ r: 8, fill: "#FFD700", stroke: "#FFD700" }}
-            />
-          </LineChart>
-        </ResponsiveContainer>
-        {renderLegend()}
-      </div>
-    </div>
+        <CartesianGrid
+          strokeDasharray="0"
+          stroke={
+            isDarkMode ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)"
+          }
+        />
+        {ratingBands.map((band) => (
+          <ReferenceArea
+            key={band.rank}
+            y1={band.min}
+            y2={band.max}
+            ifOverflow="extendDomain"
+            fill={band.color}
+            stroke={band.color}
+            fillOpacity={1}
+            strokeOpacity={1}
+          />
+        ))}
+        <XAxis
+          dataKey="date"
+          tickFormatter={(time) => format(time, "MMM yyyy")}
+          stroke={isDarkMode ? "white" : "black"}
+          minTickGap={60}
+        />
+        <YAxis
+          domain={[0, "dataMax + 200"]}
+          stroke={isDarkMode ? "white" : "black"}
+          allowDataOverflow
+          ticks={yAxisTicks}
+        />
+        <Tooltip content={<CustomTooltip />} />
+        <Legend
+          verticalAlign="top"
+          align="right"
+          wrapperStyle={{ top: -10, right: 20 }}
+          payload={[
+            {
+              value: handle,
+              type: "line",
+              color: "#ffc833",
+            },
+          ]}
+        />
+        <Line
+          type="monotone"
+          dataKey="newRating"
+          stroke="#ffc833"
+          strokeWidth={1.5}
+          dot={{
+            stroke: "#ffc833",
+            strokeWidth: 1,
+            r: 3,
+            fill: "white",
+          }}
+          activeDot={{
+            stroke: "white",
+            strokeWidth: 1,
+            r: 5,
+            fill: "#ffc833",
+          }}
+          name={handle}
+        />
+      </LineChart>
+    </ResponsiveContainer>
   );
 };
 

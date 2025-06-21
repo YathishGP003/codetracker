@@ -44,7 +44,7 @@ const StudentTable: React.FC<StudentTableProps> = ({
   const { isDarkMode } = useDarkMode();
   const createStudent = useCreateStudent();
   const deleteStudent = useDeleteStudent();
-
+  
   // Use real data from props, fallback to empty array
   const [students, setStudents] = useState<Student[]>(propStudents || []);
 
@@ -112,7 +112,7 @@ const StudentTable: React.FC<StudentTableProps> = ({
   const getFilteredStudents = () => {
     let filtered = students.filter(
       (student) =>
-        student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         student.codeforcesHandle
           .toLowerCase()
           .includes(searchTerm.toLowerCase())
@@ -186,7 +186,7 @@ const StudentTable: React.FC<StudentTableProps> = ({
   const handleToggleEmail = (studentId: string) => {
     setStudents(
       students.map((s) =>
-        s.id === studentId ? { ...s, emailEnabled: !s.emailEnabled } : s
+      s.id === studentId ? { ...s, emailEnabled: !s.emailEnabled } : s
       )
     );
     toast({
@@ -198,7 +198,7 @@ const StudentTable: React.FC<StudentTableProps> = ({
   const handleSendReminder = (studentId: string) => {
     setStudents(
       students.map((s) =>
-        s.id === studentId ? { ...s, reminderCount: s.reminderCount + 1 } : s
+      s.id === studentId ? { ...s, reminderCount: s.reminderCount + 1 } : s
       )
     );
     toast({
@@ -233,12 +233,12 @@ const StudentTable: React.FC<StudentTableProps> = ({
       headers.join(","),
       ...filteredStudents.map((student) =>
         [
-          `"${student.name}"`,
-          `"${student.email}"`,
-          `"${student.phoneNumber}"`,
-          `"${student.codeforcesHandle}"`,
-          student.currentRating,
-          student.maxRating,
+        `"${student.name}"`,
+        `"${student.email}"`,
+        `"${student.phoneNumber}"`,
+        `"${student.codeforcesHandle}"`,
+        student.currentRating,
+        student.maxRating,
           student.isActive ? "Active" : "Inactive",
           `"${student.lastUpdated}"`,
         ].join(",")
@@ -257,7 +257,7 @@ const StudentTable: React.FC<StudentTableProps> = ({
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-
+    
     toast({
       title: "CSV Downloaded",
       description: `Downloaded data for ${filteredStudents.length} students.`,
@@ -276,7 +276,7 @@ const StudentTable: React.FC<StudentTableProps> = ({
     <>
       <div
         className={`rounded-3xl p-8 transition-all duration-500 ${
-          isDarkMode
+        isDarkMode 
             ? "bg-slate-900/50 backdrop-blur-xl border border-slate-800/50"
             : "bg-white/80 backdrop-blur-xl border border-gray-200/50"
         }`}
@@ -295,13 +295,13 @@ const StudentTable: React.FC<StudentTableProps> = ({
               Monitor and track student progress across Codeforces platform
             </p>
           </div>
-
+          
           <div className="flex items-center space-x-3 flex-wrap">
             {students.length === 0 && (
               <button
                 onClick={addTopCodeforcesUsers}
                 className={`px-4 py-3 rounded-2xl flex items-center space-x-2 transition-all duration-300 hover:scale-105 ${
-                  isDarkMode
+                  isDarkMode 
                     ? "bg-blue-900/50 hover:bg-blue-800/50 text-blue-400"
                     : "bg-blue-100 hover:bg-blue-200 text-blue-700"
                 }`}
@@ -315,7 +315,7 @@ const StudentTable: React.FC<StudentTableProps> = ({
             <button
               onClick={downloadCSV}
               className={`px-4 py-3 rounded-2xl flex items-center space-x-2 transition-all duration-300 hover:scale-105 ${
-                isDarkMode
+                isDarkMode 
                   ? "bg-green-900/50 hover:bg-green-800/50 text-green-400"
                   : "bg-green-100 hover:bg-green-200 text-green-700"
               }`}
@@ -326,10 +326,10 @@ const StudentTable: React.FC<StudentTableProps> = ({
             </button>
 
             <div className="relative">
-              <button
+              <button 
                 onClick={() => setShowFilterDropdown(!showFilterDropdown)}
                 className={`px-4 py-3 rounded-2xl flex items-center space-x-2 transition-all duration-300 hover:scale-105 ${
-                  isDarkMode
+                  isDarkMode 
                     ? "bg-slate-800/50 hover:bg-slate-700/50 text-slate-300"
                     : "bg-gray-100 hover:bg-gray-200 text-gray-700"
                 }`}
@@ -337,11 +337,11 @@ const StudentTable: React.FC<StudentTableProps> = ({
                 <Filter size={18} />
                 <span>Filter</span>
               </button>
-
+              
               {showFilterDropdown && (
                 <div
                   className={`absolute right-0 mt-2 w-48 rounded-2xl shadow-lg border z-50 ${
-                    isDarkMode
+                  isDarkMode 
                       ? "bg-slate-900/95 border-slate-700/50 backdrop-blur-xl"
                       : "bg-white/95 border-gray-200/50 backdrop-blur-xl"
                   }`}
@@ -371,7 +371,7 @@ const StudentTable: React.FC<StudentTableProps> = ({
                 </div>
               )}
             </div>
-
+            
             <AddStudentDialog />
           </div>
         </div>
@@ -389,7 +389,7 @@ const StudentTable: React.FC<StudentTableProps> = ({
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className={`w-full pl-12 pr-4 py-4 rounded-2xl border transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-teal-500/50 ${
-              isDarkMode
+              isDarkMode 
                 ? "bg-slate-800/50 border-slate-700/50 text-white placeholder-slate-400"
                 : "bg-white/50 border-gray-300/50 text-gray-900 placeholder-gray-500"
             }`}
@@ -488,7 +488,7 @@ const StudentTable: React.FC<StudentTableProps> = ({
                   <tr
                     key={student.id}
                     className={`border-b transition-all duration-300 hover:bg-opacity-50 ${
-                      isDarkMode
+                      isDarkMode 
                         ? "border-slate-700/30 hover:bg-slate-800/30"
                         : "border-gray-200/30 hover:bg-gray-100/30"
                     }`}
@@ -510,7 +510,7 @@ const StudentTable: React.FC<StudentTableProps> = ({
                         ) : null}
                         <div
                           className={`w-10 h-10 rounded-2xl flex items-center justify-center font-semibold text-white ${
-                            student.isActive
+                          student.isActive 
                               ? "bg-gradient-to-br from-green-500 to-teal-500"
                               : "bg-gradient-to-br from-gray-500 to-slate-500"
                           }`}
@@ -587,7 +587,7 @@ const StudentTable: React.FC<StudentTableProps> = ({
                       <div className="flex flex-col space-y-2">
                         <span
                           className={`px-3 py-1 rounded-full text-xs font-medium w-fit ${
-                            student.isActive
+                          student.isActive
                               ? "bg-green-500/20 text-green-400"
                               : "bg-red-500/20 text-red-400"
                           }`}
@@ -603,7 +603,7 @@ const StudentTable: React.FC<StudentTableProps> = ({
                         <div className="flex items-center space-x-1 text-xs">
                           <span
                             className={`px-2 py-1 rounded text-xs ${
-                              student.emailEnabled
+                            student.emailEnabled
                                 ? "bg-green-500/20 text-green-400"
                                 : "bg-red-500/20 text-red-400"
                             }`}
@@ -651,7 +651,7 @@ const StudentTable: React.FC<StudentTableProps> = ({
                         >
                           <Edit size={16} />
                         </button>
-                        <button
+                        <button 
                           onClick={() => handleSendReminder(student.id)}
                           className={`p-2 rounded-xl transition-all duration-300 hover:scale-110 ${
                             isDarkMode
@@ -684,8 +684,8 @@ const StudentTable: React.FC<StudentTableProps> = ({
 
         {/* Overlay to close filter dropdown when clicking outside */}
         {showFilterDropdown && (
-          <div
-            className="fixed inset-0 z-40"
+          <div 
+            className="fixed inset-0 z-40" 
             onClick={() => setShowFilterDropdown(false)}
           />
         )}

@@ -344,26 +344,17 @@ const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
             </div>
 
             {/* Rating Chart and Contest History */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-              <div className="lg:col-span-2 space-y-6">
-                {/* Rating Chart */}
-                <div className="rounded-2xl p-6 bg-slate-800/50">
-                  <h3 className="text-xl font-bold mb-4 text-white">
-                    Rating Progression
-                  </h3>
-                  <div className="h-64">
-                    <RatingChart handle={student.codeforcesHandle} />
-                  </div>
-                </div>
-
-                {/* Contest History */}
-                <div className="rounded-2xl p-6 bg-slate-800/50">
-                  <h3 className="text-xl font-bold mb-4 text-white">
-                    Contest History
-                  </h3>
-                  {student && <ContestHistory student={student} />}
-                </div>
+            <div className="grid grid-cols-1 gap-6 mt-6">
+              {/* Rating Chart */}
+              <div className="rounded-2xl p-6 bg-slate-800/50">
+                <h3 className="text-xl font-bold mb-4 text-white">
+                  Rating Progression
+                </h3>
+                <RatingChart handle={student.codeforcesHandle} />
               </div>
+
+              {/* Contest History */}
+              <ContestHistory student={student} />
             </div>
           </>
         ) : (

@@ -1,56 +1,126 @@
-
-import React, { useState } from 'react';
-import { useContests } from '@/hooks/useContestData';
-import { useDarkMode } from '@/contexts/DarkModeContext';
-import ContestHistoryFilter from './ContestHistoryFilter';
-import ContestList from './ContestList';
+import React from "react";
+import { useContestHistory } from "@/hooks/useContestHistory";
+import { Student } from "@/types/Student";
+import { useDarkMode } from "@/contexts/DarkModeContext";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 interface ContestHistoryProps {
-  studentId: string;
+  student: Student;
 }
 
-const ContestHistory: React.FC<ContestHistoryProps> = ({ studentId }) => {
-  const [timeFilter, setTimeFilter] = useState<30 | 90 | 365>(30);
-  const { data: contests = [] } = useContests(studentId);
+const ContestHistory: React.FC<ContestHistoryProps> = ({ student }) => {
   const { isDarkMode } = useDarkMode();
+  const {
+    data: contestHistory,
+    isLoading,
+    isError,
+    error,
+  } = useContestHistory(student.codeforcesHandle);
 
-  // Filter contests based on time filter
-  const filteredContests = contests.filter(contest => {
-    const contestDate = new Date(contest.date);
-    const cutoffDate = new Date();
-    cutoffDate.setDate(cutoffDate.getDate() - timeFilter);
-    return contestDate >= cutoffDate;
-  });
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-40">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-500"></div>
+        <p
+          className={`ml-3 ${isDarkMode ? "text-slate-300" : "text-gray-600"}`}
+        >
+          Loading contest history...
+        </p>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div
+        className={`text-center p-4 rounded-lg ${
+          isDarkMode ? "bg-red-900/50" : "bg-red-100"
+        }`}
+      >
+        <p className="text-red-500">
+          Error loading contest history:{" "}
+          {error instanceof Error && error.message}
+        </p>
+      </div>
+    );
+  }
+
+  if (!contestHistory || contestHistory.length === 0) {
+    return (
+      <div
+        className={`text-center p-4 rounded-lg ${
+          isDarkMode ? "bg-slate-800/50" : "bg-gray-100"
+        }`}
+      >
+        <p className={isDarkMode ? "text-slate-400" : "text-gray-500"}>
+          No contest history found for this user.
+        </p>
+      </div>
+    );
+  }
+
+  const getRatingChangeColor = (change: number) => {
+    if (change > 0) return "text-green-500";
+    if (change < 0) return "text-red-500";
+    return isDarkMode ? "text-slate-400" : "text-gray-500";
+  };
+
+  // Reverse the array to show most recent first
+  const reversedHistory = [...contestHistory].reverse();
 
   return (
-    <div className={`rounded-3xl p-8 ${
-      isDarkMode 
-        ? 'bg-slate-900/50 backdrop-blur-xl border border-slate-800/50' 
-        : 'bg-white/80 backdrop-blur-xl border border-gray-200/50'
-    }`}>
-      <h3 className={`text-xl font-bold mb-6 ${
-        isDarkMode ? 'text-white' : 'text-gray-900'
-      }`}>
-        Contest History
-      </h3>
-      
-      <div className="space-y-6">
-        <ContestHistoryFilter
-          timeFilter={timeFilter}
-          onFilterChange={setTimeFilter}
-          isDarkMode={isDarkMode}
-        />
-        
-        {filteredContests.length > 0 ? (
-          <ContestList contests={filteredContests} isDarkMode={isDarkMode} />
-        ) : (
-          <div className="flex items-center justify-center h-40">
-            <p className={isDarkMode ? 'text-slate-400' : 'text-gray-600'}>
-              No contest data available for the selected period
-            </p>
-          </div>
-        )}
-      </div>
+    <div className="overflow-x-auto">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>#</TableHead>
+            <TableHead>Contest</TableHead>
+            <TableHead>Start Time</TableHead>
+            <TableHead>Rank</TableHead>
+            <TableHead>Rating Change</TableHead>
+            <TableHead>New Rating</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {reversedHistory.map((contest, index) => (
+            <TableRow key={contest.contestId}>
+              <TableCell>{reversedHistory.length - index}</TableCell>
+              <TableCell>
+                <a
+                  href={`https://codeforces.com/contest/${contest.contestId}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:underline text-blue-500"
+                >
+                  {contest.contestName}
+                </a>
+              </TableCell>
+              <TableCell>
+                {new Date(
+                  contest.ratingUpdateTimeSeconds * 1000
+                ).toLocaleString()}
+              </TableCell>
+              <TableCell>{contest.rank}</TableCell>
+              <TableCell
+                className={getRatingChangeColor(
+                  contest.newRating - contest.oldRating
+                )}
+              >
+                {contest.newRating - contest.oldRating > 0 ? "+" : ""}
+                {contest.newRating - contest.oldRating}
+              </TableCell>
+              <TableCell>{contest.newRating}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </div>
   );
 };

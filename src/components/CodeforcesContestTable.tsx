@@ -49,54 +49,46 @@ const CodeforcesContestTable: React.FC<CodeforcesContestTableProps> = ({
           </tr>
         </thead>
         <tbody>
-          {data
-            .slice()
-            .reverse()
-            .map((contest, idx) => {
-              const ratingChange = contest.newRating - contest.oldRating;
-              return (
-                <tr
-                  key={contest.contestId}
-                  className={
-                    isDarkMode ? "hover:bg-slate-800/70" : "hover:bg-gray-50"
-                  }
-                >
-                  <td className="px-4 py-2">{idx + 1}</td>
-                  <td className="px-4 py-2">
-                    <a
-                      href={`https://codeforces.com/contest/${contest.contestId}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-400 hover:underline"
-                    >
-                      {contest.contestName}
-                    </a>
-                  </td>
-                  <td className="px-4 py-2">
-                    {new Date(
-                      contest.ratingUpdateTimeSeconds * 1000
-                    ).toLocaleString()}
-                  </td>
-                  <td className="px-4 py-2">{contest.rank}</td>
-                  <td className="px-4 py-2">{contest.oldRating}</td>
-                  <td className="px-4 py-2 font-bold">{contest.newRating}</td>
-                  <td
-                    className={`px-4 py-2 font-semibold ${
-                      ratingChange > 0
-                        ? "text-green-400"
-                        : ratingChange < 0
-                        ? "text-red-400"
-                        : isDarkMode
-                        ? "text-slate-400"
-                        : "text-gray-500"
-                    }`}
+          {data.slice().reverse().map((contest, idx) => {
+            const ratingChange = contest.newRating - contest.oldRating;
+            return (
+              <tr key={contest.contestId} className={isDarkMode ? "hover:bg-slate-800/70" : "hover:bg-gray-50"}>
+                <td className="px-4 py-2">{data.length - idx}</td>
+                <td className="px-4 py-2">
+                  <a
+                    href={`https://codeforces.com/contest/${contest.contestId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-400 hover:underline"
                   >
-                    {ratingChange > 0 ? "+" : ""}
-                    {ratingChange}
-                  </td>
-                </tr>
-              );
-            })}
+                    {contest.contestName}
+                  </a>
+                </td>
+                <td className="px-4 py-2">
+                  {new Date(
+                    contest.ratingUpdateTimeSeconds * 1000
+                  ).toLocaleString()}
+                </td>
+                <td className="px-4 py-2">{contest.rank}</td>
+                <td className="px-4 py-2">{contest.oldRating}</td>
+                <td className="px-4 py-2 font-bold">{contest.newRating}</td>
+                <td
+                  className={`px-4 py-2 font-semibold ${
+                    ratingChange > 0
+                      ? "text-green-400"
+                      : ratingChange < 0
+                      ? "text-red-400"
+                      : isDarkMode
+                      ? "text-slate-400"
+                      : "text-gray-500"
+                  }`}
+                >
+                  {ratingChange > 0 ? "+" : ""}
+                  {ratingChange}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/dialog";
 import { Student } from "@/types/Student";
 import { useDarkMode } from "@/contexts/DarkModeContext";
-import ContestHistory from "@/components/ContestHistory";
+import CodeforcesContestTable from "./CodeforcesContestTable";
 
 interface ContestHistoryModalProps {
   student: Student | null;
@@ -43,7 +43,7 @@ const ContestHistoryModal: React.FC<ContestHistoryModalProps> = ({
               </DialogTitle>
             </DialogHeader>
             <div className="mt-4">
-              <ContestHistory student={student} />
+              <CodeforcesContestTable handle={student.codeforcesHandle} />
             </div>
           </>
         )}
@@ -53,4 +53,3 @@ const ContestHistoryModal: React.FC<ContestHistoryModalProps> = ({
 };
 
 export default ContestHistoryModal;
- 

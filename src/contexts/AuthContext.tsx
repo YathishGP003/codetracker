@@ -34,19 +34,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     console.log("AuthProvider: Setting up auth state listener...");
-
+    
     // Set up auth state listener
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("AuthProvider: Auth state changed:", event, {
-        user: session?.user?.email,
-        hasSession: !!session,
+          user: session?.user?.email,
+          hasSession: !!session,
         expiresAt: session?.expires_at,
-      });
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
+        });
+        setSession(session);
+        setUser(session?.user ?? null);
+        setLoading(false);
     });
 
     // Check for existing session
@@ -90,12 +90,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         email: email.trim(),
         password,
       });
-
+      
       if (error) {
         console.error("AuthProvider: Sign in error:", error);
         return { error };
       }
-
+      
       console.log("AuthProvider: Sign in successful:", data.user?.email);
       return { error: null };
     } catch (error) {
@@ -117,12 +117,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           },
         },
       });
-
+      
       if (error) {
         console.error("AuthProvider: Sign up error:", error);
         return { error };
       }
-
+      
       console.log("AuthProvider: Sign up successful:", data.user?.email);
       return { error: null };
     } catch (error) {

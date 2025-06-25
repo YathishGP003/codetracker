@@ -36,8 +36,8 @@ const getUniqueTags = (problems: Problem[]) => {
   return Array.from(tagSet).sort();
 };
 
-const ProblemTracker: React.FC<ProblemTrackerProps> = ({
-  studentId,
+const ProblemTracker: React.FC<ProblemTrackerProps> = ({ 
+  studentId, 
   contestId,
   title = "Solved Problems",
 }) => {
@@ -208,10 +208,10 @@ const ProblemTracker: React.FC<ProblemTrackerProps> = ({
   }
 
   if (error) {
-    return (
+  return (
       <div
         className={`rounded-3xl p-6 transition-all duration-500 ${
-          isDarkMode
+      isDarkMode 
             ? "bg-slate-900/50 backdrop-blur-xl border border-slate-800/50"
             : "bg-white/80 backdrop-blur-xl border border-gray-200/50"
         }`}
@@ -265,10 +265,10 @@ const ProblemTracker: React.FC<ProblemTrackerProps> = ({
             <span className="text-blue-700 dark:text-blue-400 font-bold text-base tracking-wide">
               Filter Problems
             </span>
-          </div>
+              </div>
           <div className="flex flex-wrap gap-4 items-end">
             {/* Page size */}
-            <div>
+              <div>
               <label className="block text-xs font-semibold mb-1">
                 Problems per page
               </label>
@@ -287,7 +287,7 @@ const ProblemTracker: React.FC<ProblemTrackerProps> = ({
                   </option>
                 ))}
               </select>
-            </div>
+                </div>
             {/* Jump to page */}
             <div>
               <label className="block text-xs font-semibold mb-1">
@@ -314,7 +314,7 @@ const ProblemTracker: React.FC<ProblemTrackerProps> = ({
               <label className="block text-xs font-semibold mb-1">
                 Filter by tag
               </label>
-              <button
+                <button
                 type="button"
                 className={`flex items-center justify-between rounded border px-2 py-1 text-sm min-w-[120px] w-full focus:ring-2 focus:ring-blue-400 ${
                   isDarkMode
@@ -367,8 +367,8 @@ const ProblemTracker: React.FC<ProblemTrackerProps> = ({
                     }}
                   >
                     Clear all
-                  </div>
-                </div>
+            </div>
+          </div>
               )}
             </div>
             {/* Rating filter */}

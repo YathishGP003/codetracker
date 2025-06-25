@@ -1,10 +1,27 @@
 import React, { useState } from "react";
-import { Moon, Sun, Settings, User, LogOut, UserCircle } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import {
+  Moon,
+  Sun,
+  Settings,
+  User,
+  LogOut,
+  UserCircle,
+  Calendar,
+  Menu,
+} from "lucide-react";
+import { Link, useNavigate, NavLink } from "react-router-dom";
 import { useDarkMode } from "@/contexts/DarkModeContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { AddStudentDialog } from "@/components/AddStudentDialog";
+import { cn } from "@/lib/utils";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetClose,
+} from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
 
 const TopNavbar = () => {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -31,10 +48,6 @@ const TopNavbar = () => {
     }
   };
 
-  const handleManageClick = () => {
-    navigate("/manage");
-  };
-
   return (
     <nav
       className={`sticky top-0 z-50 backdrop-blur-xl border-b transition-all duration-300 ${
@@ -45,10 +58,7 @@ const TopNavbar = () => {
     >
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
-          <Link
-            to={user ? "/dashboard" : "/"}
-            className="flex items-center space-x-4"
-          >
+          <Link to="/" className="flex items-center space-x-4">
             <img
               src="/logo.png"
               alt="CodeTracker Pro Logo"
@@ -83,21 +93,62 @@ const TopNavbar = () => {
             </button>
 
             {user && (
-              <>
-                <button
-                  onClick={handleManageClick}
-                  className={`px-4 py-3 rounded-2xl flex items-center space-x-2 transition-all duration-300 hover:scale-105 ${
-                    isDarkMode
-                      ? "bg-slate-800/50 hover:bg-slate-700/50 text-slate-300"
-                      : "bg-gray-100 hover:bg-gray-200 text-gray-700"
-                  }`}
+              <div className="hidden md:flex items-center space-x-2">
+                <NavLink
+                  to="/dashboard"
+                  className={({ isActive }) =>
+                    cn(
+                      "px-4 py-3 rounded-2xl flex items-center space-x-2 transition-all duration-300 hover:scale-105",
+                      isActive
+                        ? isDarkMode
+                          ? "bg-slate-800/50 hover:bg-slate-700/50 text-slate-300"
+                          : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                        : isDarkMode
+                        ? "text-slate-300"
+                        : "text-gray-700"
+                    )
+                  }
+                >
+                  <span className="font-medium">Dashboard</span>
+                </NavLink>
+                <NavLink
+                  to="/manage"
+                  className={({ isActive }) =>
+                    cn(
+                      "px-4 py-3 rounded-2xl flex items-center space-x-2 transition-all duration-300 hover:scale-105",
+                      isActive
+                        ? isDarkMode
+                          ? "bg-slate-800/50 hover:bg-slate-700/50 text-slate-300"
+                          : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                        : isDarkMode
+                        ? "text-slate-300"
+                        : "text-gray-700"
+                    )
+                  }
                 >
                   <Settings size={18} />
                   <span className="font-medium">Manage</span>
-                </button>
-
+                </NavLink>
+                <NavLink
+                  to="/calendar"
+                  className={({ isActive }) =>
+                    cn(
+                      "px-4 py-3 rounded-2xl flex items-center space-x-2 transition-all duration-300 hover:scale-105",
+                      isActive
+                        ? isDarkMode
+                          ? "bg-slate-800/50 hover:bg-slate-700/50 text-slate-300"
+                          : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                        : isDarkMode
+                        ? "text-slate-300"
+                        : "text-gray-700"
+                    )
+                  }
+                >
+                  <Calendar size={18} />
+                  <span className="font-medium">Calendar</span>
+                </NavLink>
                 <AddStudentDialog />
-              </>
+              </div>
             )}
 
             {/* User Menu */}
@@ -184,6 +235,38 @@ const TopNavbar = () => {
                 </div>
               )}
             </div>
+
+            {/* Mobile Menu */}
+            {user && (
+              <div className="md:hidden">
+                <Sheet>
+                  <SheetTrigger asChild>
+                    <Button variant="ghost" size="icon">
+                      <Menu size={24} />
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="right">
+                    <nav className="flex flex-col space-y-4 mt-8">
+                      <SheetClose asChild>
+                        <NavLink to="/dashboard" className="text-lg">
+                          Dashboard
+                        </NavLink>
+                      </SheetClose>
+                      <SheetClose asChild>
+                        <NavLink to="/manage" className="text-lg">
+                          Manage
+                        </NavLink>
+                      </SheetClose>
+                      <SheetClose asChild>
+                        <NavLink to="/calendar" className="text-lg">
+                          Calendar
+                        </NavLink>
+                      </SheetClose>
+                    </nav>
+                  </SheetContent>
+                </Sheet>
+              </div>
+            )}
           </div>
         </div>
       </div>

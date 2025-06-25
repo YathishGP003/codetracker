@@ -96,3 +96,4 @@ const CodeforcesContestTable: React.FC<CodeforcesContestTableProps> = ({
 };
 
 export default CodeforcesContestTable;
+ 

@@ -36,7 +36,7 @@ Follow these instructions to set up and run the project locally.
 
 1.  **Clone the repository:**
 
-    ```bash
+```bash
     git clone https://github.com/your-username/codetrackerpro.git
     cd codetrackerpro
     ```
@@ -44,7 +44,7 @@ Follow these instructions to set up and run the project locally.
 2.  **Install dependencies:**
 
     ```bash
-    npm install
+npm install
     # or
     bun install
     ```
@@ -55,7 +55,7 @@ Follow these instructions to set up and run the project locally.
     - Inside your project, navigate to **Project Settings** > **API**.
     - Create a file named `.env` in the root of your project by copying the example file:
       ```bash
-      cp .env.example .env
+cp .env.example .env
       ```
     - Find your **Project URL** and **anon public key** in your Supabase project's API settings.
     - Update the `.env` file with your credentials:
@@ -67,8 +67,8 @@ Follow these instructions to set up and run the project locally.
 
 4.  **Run the development server:**
     ```bash
-    npm run dev
-    ```
+npm run dev
+```
 
 The application should now be running at `http://localhost:5173`.
 

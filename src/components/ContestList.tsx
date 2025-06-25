@@ -29,9 +29,9 @@ const ContestList: React.FC<ContestListProps> = ({ contests }) => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {contests.map((contest) => (
+        {contests.map((contest) => (
         <ContestCard key={contest.contestId} contest={contest} />
-      ))}
+        ))}
     </div>
   );
 };

@@ -53,12 +53,12 @@ const ContestHistoryFilter: React.FC<ContestHistoryFilterProps> = ({
         >
           Last 90 days
         </button>
-        <button
+          <button
           onClick={() => onPeriodChange(365)}
           className={getButtonClass(365)}
-        >
+          >
           Last 365 days
-        </button>
+          </button>
       </div>
     </div>
   );

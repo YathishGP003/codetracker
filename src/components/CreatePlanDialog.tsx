@@ -43,6 +43,7 @@ interface CreatePlanDialogProps {
   pastContests: PastContest[];
   isLoading: boolean;
   error: boolean;
+  selectedDate?: Date | null;
 }
 
 export const CreatePlanDialog = ({
@@ -52,11 +53,18 @@ export const CreatePlanDialog = ({
   pastContests,
   isLoading,
   error,
+  selectedDate,
 }: CreatePlanDialogProps) => {
   const [planName, setPlanName] = React.useState("");
   const [startDate, setStartDate] = React.useState<Date | undefined>();
   const [endDate, setEndDate] = React.useState<Date | undefined>();
   const [selectedModules, setSelectedModules] = React.useState<string[]>([]);
+
+  React.useEffect(() => {
+    if (selectedDate) {
+      setStartDate(selectedDate);
+    }
+  }, [selectedDate]);
 
   const handleSubmit = () => {
     if (!planName || !startDate || !endDate || selectedModules.length === 0) {

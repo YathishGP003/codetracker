@@ -100,6 +100,7 @@ const CalendarPage = () => {
   const [animateEvents, setAnimateEvents] = useState(false);
   const [accentIdx, setAccentIdx] = useState(0);
   const [starred, setStarred] = useState<string[]>([]);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const calendarRef = useRef<any>(null);
 
   const baseEvents = useMemo(() => {
@@ -190,6 +191,11 @@ const CalendarPage = () => {
       setSelectedContest(extendedProps.contest);
       setIsDetailModalOpen(true);
     }
+  };
+
+  const handleDateClick = (arg: any) => {
+    setSelectedDate(arg.date);
+    setIsPlanDialogOpen(true);
   };
 
   const handleResetFilters = () => {
@@ -338,6 +344,7 @@ const CalendarPage = () => {
               }}
               events={searchedEvents}
               eventClick={handleEventClick}
+              dateClick={handleDateClick}
               displayEventTime={false}
               eventContent={(arg) => {
                 const bg = arg.event.backgroundColor || "#888";
@@ -453,6 +460,7 @@ const CalendarPage = () => {
         pastContests={pastContests || []}
         isLoading={isLoadingPast}
         error={errorPast !== null}
+        selectedDate={selectedDate}
       />
       <ContestDetailModal
         isOpen={isDetailModalOpen}

@@ -147,6 +147,23 @@ const TopNavbar = () => {
                   <Calendar size={18} />
                   <span className="font-medium">Calendar</span>
                 </NavLink>
+                <NavLink
+                  to="/cp-sheet"
+                  className={({ isActive }) =>
+                    cn(
+                      "px-4 py-3 rounded-2xl flex items-center space-x-2 transition-all duration-300 hover:scale-105",
+                      isActive
+                        ? isDarkMode
+                          ? "bg-slate-800/50 hover:bg-slate-700/50 text-slate-300"
+                          : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                        : isDarkMode
+                        ? "text-slate-300"
+                        : "text-gray-700"
+                    )
+                  }
+                >
+                  <span className="font-medium">CP Sheet</span>
+                </NavLink>
                 <AddStudentDialog />
               </div>
             )}

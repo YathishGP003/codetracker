@@ -16,6 +16,7 @@ import NotFound from "./pages/NotFound";
 import ForgotPassword from "@/pages/ForgotPassword";
 import UpdatePassword from "@/pages/UpdatePassword";
 import CalendarPage from "./pages/CalendarPage";
+import CPSheet from "./pages/CPSheet";
 
 const queryClient = new QueryClient();
 
@@ -55,6 +56,14 @@ const App = () => (
                 element={
                   <ProtectedRoute>
                     <CalendarPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/cp-sheet"
+                element={
+                  <ProtectedRoute>
+                    <CPSheet />
                   </ProtectedRoute>
                 }
               />

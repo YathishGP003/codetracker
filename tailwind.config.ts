@@ -20,6 +20,7 @@ export default {
     extend: {
       fontFamily: {
         sans: ["DM Mono", "sans-serif"],
+        heading: ["Solway", "serif"],
       },
       colors: {
         border: "hsl(var(--border))",

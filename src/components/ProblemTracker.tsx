@@ -26,6 +26,7 @@ interface ProblemTrackerProps {
   studentId: string;
   contestId?: number;
   title?: string;
+  groupByRating?: boolean;
 }
 
 const PAGE_SIZE_OPTIONS = [10, 20, 50];
@@ -36,10 +37,11 @@ const getUniqueTags = (problems: Problem[]) => {
   return Array.from(tagSet).sort();
 };
 
-const ProblemTracker: React.FC<ProblemTrackerProps> = ({ 
-  studentId, 
+const ProblemTracker: React.FC<ProblemTrackerProps> = ({
+  studentId,
   contestId,
   title = "Solved Problems",
+  groupByRating = false,
 }) => {
   const { isDarkMode } = useDarkMode();
   const { data: dbProblems = [], isLoading, error } = useProblemData(studentId);
@@ -137,6 +139,23 @@ const ProblemTracker: React.FC<ProblemTrackerProps> = ({
     setPage(0);
   }, [pageSize, selectedTags, minRating, maxRating, sortBy, sortDir]);
 
+  // Group problems by rating ranges for CP Sheet
+  const problemsByRating = useMemo(() => {
+    if (!groupByRating) return null;
+
+    const ratingRanges = [];
+    for (let rating = 800; rating <= 1900; rating += 100) {
+      ratingRanges.push(rating);
+    }
+
+    const grouped = ratingRanges.map((rating) => ({
+      rating,
+      problems: filteredProblems.filter((p) => p.rating === rating),
+    }));
+
+    return grouped;
+  }, [filteredProblems, groupByRating]);
+
   // Table header with sorting
   const renderHeader = (
     label: string,
@@ -191,6 +210,103 @@ const ProblemTracker: React.FC<ProblemTrackerProps> = ({
       ? selectedTags[0]
       : `${selectedTags[0]} +${selectedTags.length - 1}`;
 
+  // Render rating-based groups
+  const renderRatingGroups = () => {
+    if (!problemsByRating) return null;
+
+    return problemsByRating.map(({ rating, problems }) => {
+      if (problems.length === 0) return null;
+
+      return (
+        <div key={rating} className="mb-8">
+          <div
+            className={`rounded-3xl p-6 transition-all duration-500 ${
+              isDarkMode
+                ? "bg-slate-900/50 backdrop-blur-xl border border-slate-800/50"
+                : "bg-white/80 backdrop-blur-xl border border-gray-200/50"
+            }`}
+            style={{
+              fontFamily: "Verdana, Geneva, Tahoma, sans-serif",
+              fontSize: "15px",
+            }}
+          >
+            <h3
+              className={`text-xl font-bold mb-4 ${
+                isDarkMode ? "text-white" : "text-gray-900"
+              }`}
+            >
+              Rating {rating} Problems ({problems.length})
+            </h3>
+            <div className="overflow-x-auto">
+              <table
+                className="min-w-full border border-gray-300 dark:border-slate-700 text-sm"
+                style={{ borderCollapse: "collapse" }}
+              >
+                <thead>
+                  <tr className={isDarkMode ? "bg-slate-800" : "bg-gray-100"}>
+                    <th className="px-4 py-2 text-left border">#</th>
+                    {renderHeader("Name", "name")}
+                    <th className="px-4 py-2 text-left border">Tags</th>
+                    {renderHeader("Rating", "rating")}
+                    {renderHeader("Solved At", "solvedAt")}
+                    <th className="px-4 py-2 text-left border">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {problems.map((problem, idx) => (
+                    <tr
+                      key={problem.id}
+                      className={
+                        isDarkMode
+                          ? idx % 2 === 0
+                            ? "bg-slate-900/40 hover:bg-slate-800/60"
+                            : "bg-slate-800/40 hover:bg-slate-700/60"
+                          : idx % 2 === 0
+                          ? "bg-white hover:bg-gray-100"
+                          : "bg-gray-50 hover:bg-gray-200"
+                      }
+                      style={{ borderBottom: "1px solid #e5e7eb" }}
+                    >
+                      <td className="px-4 py-2 font-mono border">{idx + 1}</td>
+                      <td className="px-4 py-2 border">
+                        <a
+                          href={`https://codeforces.com/contest/${problem.contestId}/problem/${problem.index}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-500 hover:underline"
+                        >
+                          {problem.name}
+                        </a>
+                      </td>
+                      <td className="px-4 py-2 border">
+                        {problem.tags && problem.tags.length > 0
+                          ? problem.tags.join(", ")
+                          : "-"}
+                      </td>
+                      <td className="px-4 py-2 border">
+                        {problem.rating || "-"}
+                      </td>
+                      <td className="px-4 py-2 border">
+                        {problem.solvedAt
+                          ? new Date(problem.solvedAt).toLocaleDateString()
+                          : "-"}
+                      </td>
+                      <td className="px-4 py-2 border">
+                        <span className="inline-flex items-center text-green-600">
+                          <Check size={16} className="mr-1" /> Solved
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      );
+    });
+  };
+
   if (isLoading) {
     return (
       <div
@@ -208,10 +324,10 @@ const ProblemTracker: React.FC<ProblemTrackerProps> = ({
   }
 
   if (error) {
-  return (
+    return (
       <div
         className={`rounded-3xl p-6 transition-all duration-500 ${
-      isDarkMode 
+          isDarkMode
             ? "bg-slate-900/50 backdrop-blur-xl border border-slate-800/50"
             : "bg-white/80 backdrop-blur-xl border border-gray-200/50"
         }`}
@@ -265,10 +381,10 @@ const ProblemTracker: React.FC<ProblemTrackerProps> = ({
             <span className="text-blue-700 dark:text-blue-400 font-bold text-base tracking-wide">
               Filter Problems
             </span>
-              </div>
+          </div>
           <div className="flex flex-wrap gap-4 items-end">
             {/* Page size */}
-              <div>
+            <div>
               <label className="block text-xs font-semibold mb-1">
                 Problems per page
               </label>
@@ -287,7 +403,7 @@ const ProblemTracker: React.FC<ProblemTrackerProps> = ({
                   </option>
                 ))}
               </select>
-                </div>
+            </div>
             {/* Jump to page */}
             <div>
               <label className="block text-xs font-semibold mb-1">
@@ -314,7 +430,7 @@ const ProblemTracker: React.FC<ProblemTrackerProps> = ({
               <label className="block text-xs font-semibold mb-1">
                 Filter by tag
               </label>
-                <button
+              <button
                 type="button"
                 className={`flex items-center justify-between rounded border px-2 py-1 text-sm min-w-[120px] w-full focus:ring-2 focus:ring-blue-400 ${
                   isDarkMode
@@ -367,8 +483,8 @@ const ProblemTracker: React.FC<ProblemTrackerProps> = ({
                     }}
                   >
                     Clear all
-            </div>
-          </div>
+                  </div>
+                </div>
               )}
             </div>
             {/* Rating filter */}
@@ -417,124 +533,131 @@ const ProblemTracker: React.FC<ProblemTrackerProps> = ({
           </div>
         </div>
       </div>
-      {/* Table */}
-      <div
-        className={`rounded-3xl p-6 mb-4 transition-all duration-500 ${
-          isDarkMode
-            ? "bg-slate-900/50 backdrop-blur-xl border border-slate-800/50"
-            : "bg-white/80 backdrop-blur-xl border border-gray-200/50"
-        }`}
-        style={{
-          fontFamily: "Verdana, Geneva, Tahoma, sans-serif",
-          fontSize: "15px",
-        }}
-      >
-        <h3
-          className={`text-xl font-bold mb-4 ${
-            isDarkMode ? "text-white" : "text-gray-900"
+
+      {/* Render based on grouping preference */}
+      {groupByRating ? (
+        renderRatingGroups()
+      ) : (
+        <div
+          className={`rounded-3xl p-6 mb-4 transition-all duration-500 ${
+            isDarkMode
+              ? "bg-slate-900/50 backdrop-blur-xl border border-slate-800/50"
+              : "bg-white/80 backdrop-blur-xl border border-gray-200/50"
           }`}
+          style={{
+            fontFamily: "Verdana, Geneva, Tahoma, sans-serif",
+            fontSize: "15px",
+          }}
         >
-          {title}
-        </h3>
-        <div className="overflow-x-auto">
-          <table
-            className="min-w-full border border-gray-300 dark:border-slate-700 text-sm"
-            style={{ borderCollapse: "collapse" }}
+          <h3
+            className={`text-xl font-bold mb-4 ${
+              isDarkMode ? "text-white" : "text-gray-900"
+            }`}
           >
-            <thead>
-              <tr className={isDarkMode ? "bg-slate-800" : "bg-gray-100"}>
-                <th className="px-4 py-2 text-left border">#</th>
-                {renderHeader("Name", "name")}
-                <th className="px-4 py-2 text-left border">Tags</th>
-                {renderHeader("Rating", "rating")}
-                {renderHeader("Solved At", "solvedAt")}
-                <th className="px-4 py-2 text-left border">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {paginatedProblems.map((problem, idx) => (
-                <tr
-                  key={problem.id}
-                  className={
-                    isDarkMode
-                      ? idx % 2 === 0
-                        ? "bg-slate-900/40 hover:bg-slate-800/60"
-                        : "bg-slate-800/40 hover:bg-slate-700/60"
-                      : idx % 2 === 0
-                      ? "bg-white hover:bg-gray-100"
-                      : "bg-gray-50 hover:bg-gray-200"
-                  }
-                  style={{ borderBottom: "1px solid #e5e7eb" }}
-                >
-                  <td className="px-4 py-2 font-mono border">
-                    {page * pageSize + idx + 1}
-                  </td>
-                  <td className="px-4 py-2 border">
-                    <a
-                      href={`https://codeforces.com/contest/${problem.contestId}/problem/${problem.index}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-500 hover:underline"
-                    >
-                      {problem.name}
-                    </a>
-                  </td>
-                  <td className="px-4 py-2 border">
-                    {problem.tags && problem.tags.length > 0
-                      ? problem.tags.join(", ")
-                      : "-"}
-                  </td>
-                  <td className="px-4 py-2 border">{problem.rating || "-"}</td>
-                  <td className="px-4 py-2 border">
-                    {problem.solvedAt
-                      ? new Date(problem.solvedAt).toLocaleDateString()
-                      : "-"}
-                  </td>
-                  <td className="px-4 py-2 border">
-                    <span className="inline-flex items-center text-green-600">
-                      <Check size={16} className="mr-1" /> Solved
-                    </span>
-                  </td>
+            {title}
+          </h3>
+          <div className="overflow-x-auto">
+            <table
+              className="min-w-full border border-gray-300 dark:border-slate-700 text-sm"
+              style={{ borderCollapse: "collapse" }}
+            >
+              <thead>
+                <tr className={isDarkMode ? "bg-slate-800" : "bg-gray-100"}>
+                  <th className="px-4 py-2 text-left border">#</th>
+                  {renderHeader("Name", "name")}
+                  <th className="px-4 py-2 text-left border">Tags</th>
+                  {renderHeader("Rating", "rating")}
+                  {renderHeader("Solved At", "solvedAt")}
+                  <th className="px-4 py-2 text-left border">Status</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        {/* Pagination Controls */}
-        {totalPages > 1 && (
-          <div className="flex justify-center items-center mt-4 space-x-2">
-            <button
-              onClick={() => setPage((p) => Math.max(0, p - 1))}
-              disabled={page === 0}
-              className={`px-3 py-1 rounded-lg font-medium transition-all duration-200 ${
-                page === 0
-                  ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                  : isDarkMode
-                  ? "bg-slate-800 text-white hover:bg-slate-700"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              Previous
-            </button>
-            <span className={isDarkMode ? "text-slate-300" : "text-gray-700"}>
-              Page {page + 1} of {totalPages}
-            </span>
-            <button
-              onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
-              disabled={page === totalPages - 1}
-              className={`px-3 py-1 rounded-lg font-medium transition-all duration-200 ${
-                page === totalPages - 1
-                  ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                  : isDarkMode
-                  ? "bg-slate-800 text-white hover:bg-slate-700"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              Next
-            </button>
+              </thead>
+              <tbody>
+                {paginatedProblems.map((problem, idx) => (
+                  <tr
+                    key={problem.id}
+                    className={
+                      isDarkMode
+                        ? idx % 2 === 0
+                          ? "bg-slate-900/40 hover:bg-slate-800/60"
+                          : "bg-slate-800/40 hover:bg-slate-700/60"
+                        : idx % 2 === 0
+                        ? "bg-white hover:bg-gray-100"
+                        : "bg-gray-50 hover:bg-gray-200"
+                    }
+                    style={{ borderBottom: "1px solid #e5e7eb" }}
+                  >
+                    <td className="px-4 py-2 font-mono border">
+                      {page * pageSize + idx + 1}
+                    </td>
+                    <td className="px-4 py-2 border">
+                      <a
+                        href={`https://codeforces.com/contest/${problem.contestId}/problem/${problem.index}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-500 hover:underline"
+                      >
+                        {problem.name}
+                      </a>
+                    </td>
+                    <td className="px-4 py-2 border">
+                      {problem.tags && problem.tags.length > 0
+                        ? problem.tags.join(", ")
+                        : "-"}
+                    </td>
+                    <td className="px-4 py-2 border">
+                      {problem.rating || "-"}
+                    </td>
+                    <td className="px-4 py-2 border">
+                      {problem.solvedAt
+                        ? new Date(problem.solvedAt).toLocaleDateString()
+                        : "-"}
+                    </td>
+                    <td className="px-4 py-2 border">
+                      <span className="inline-flex items-center text-green-600">
+                        <Check size={16} className="mr-1" /> Solved
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-        )}
-      </div>
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="flex justify-center items-center mt-4 space-x-2">
+              <button
+                onClick={() => setPage((p) => Math.max(0, p - 1))}
+                disabled={page === 0}
+                className={`px-3 py-1 rounded-lg font-medium transition-all duration-200 ${
+                  page === 0
+                    ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                    : isDarkMode
+                    ? "bg-slate-800 text-white hover:bg-slate-700"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
+              >
+                Previous
+              </button>
+              <span className={isDarkMode ? "text-slate-300" : "text-gray-700"}>
+                Page {page + 1} of {totalPages}
+              </span>
+              <button
+                onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+                disabled={page === totalPages - 1}
+                className={`px-3 py-1 rounded-lg font-medium transition-all duration-200 ${
+                  page === totalPages - 1
+                    ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                    : isDarkMode
+                    ? "bg-slate-800 text-white hover:bg-slate-700"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
+              >
+                Next
+              </button>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

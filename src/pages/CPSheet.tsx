@@ -93,7 +93,11 @@ const CPSheet: React.FC = () => {
             totalProblems={totalProblems}
             leaderboardRank={leaderboardRank}
           />
-          <ProblemTracker studentId={student.id} title="CP Sheet Problems" />
+          <ProblemTracker
+            studentId={student.id}
+            title="CP Sheet Problems"
+            groupByRating={true}
+          />
           {/* Progress Cards */}
           {/* <ProgressCards progress={progress} stats={stats} leaderboard={leaderboard} /> */}
         </div>

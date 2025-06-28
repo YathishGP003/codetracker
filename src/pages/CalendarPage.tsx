@@ -185,7 +185,6 @@ const CalendarPage = () => {
     const apiContestEvents = contests
       ? contests.map((contest) => {
           const platform = contest.site.toLowerCase().replace(/ /g, "");
-          const siteColor = siteColors[platform] || siteColors.other;
           const startDate = new Date(contest.startTime);
           let endDate = new Date(contest.endTime);
           if (process.env.NODE_ENV !== "production") {
@@ -211,9 +210,6 @@ const CalendarPage = () => {
             end: endDate,
             allDay: false,
             display: "block",
-            backgroundColor: siteColor,
-            borderColor: siteColor,
-            textColor: "#fff",
             extendedProps: {
               contest: contest,
               platform: platform,
@@ -337,65 +333,120 @@ const CalendarPage = () => {
 
   return (
     <>
-      <div className="container mx-auto p-4 md:p-6 lg:p-8 max-w-2xl bg-transparent border-none shadow-none">
-        <h1 className="text-2xl md:text-3xl font-extrabold text-center mb-4">
-          Calendar View
-        </h1>
-        <div className="bg-white/70 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 rounded-2xl p-2 md:p-4 shadow-xl backdrop-blur-xl transition-all duration-300 mb-6">
-          <div className="grid md:grid-cols-2 gap-4 mb-2">
-            <div>
-              <h3 className="text-xs font-semibold mb-2 text-muted-foreground">
-                Contest Platforms
+      <div className="container mx-auto p-0 md:p-0 lg:p-0 max-w-6xl bg-white border border-slate-200 rounded-2xl shadow-2xl">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between px-8 pt-8 pb-2 gap-2">
+          <h1 className="text-3xl font-black text-slate-900 font-serif tracking-tight">
+            Contest Calendar
+          </h1>
+          <div className="flex items-center gap-3">
+            {/* Month/Year Navigation */}
+            <button
+              className="rounded-full bg-slate-100 text-slate-700 w-9 h-9 flex items-center justify-center text-xl hover:bg-slate-200 border border-slate-300 transition"
+              onClick={() => calendarRef.current?.getApi().prev()}
+            >
+              <ChevronLeft size={20} />
+            </button>
+            <button
+              className="rounded-full bg-slate-100 text-slate-700 w-9 h-9 flex items-center justify-center text-xl hover:bg-slate-200 border border-slate-300 transition"
+              onClick={() => calendarRef.current?.getApi().next()}
+            >
+              <ChevronRight size={20} />
+            </button>
+            {/* Reset Button */}
+            <button
+              className="rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-2 ml-2 transition text-base shadow-md"
+              onClick={handleResetFilters}
+            >
+              <span className="font-semibold">Reset</span>
+            </button>
+          </div>
+        </div>
+        {/* Filters */}
+        <div className="bg-white border border-slate-200 rounded-2xl px-8 pt-4 pb-2 shadow-none mb-4">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-2">
+            <div className="flex flex-col gap-2">
+              <h3 className="text-xs font-bold text-slate-500 mb-1">
+                Contest Platforms + Divisions
               </h3>
-              <div className="flex flex-wrap gap-1">
-                {platformOptions.map((opt) => (
-                  <Badge
-                    key={opt.value}
-                    variant={
-                      selectedPlatforms.includes(opt.value)
-                        ? "default"
-                        : "secondary"
-                    }
-                    className="cursor-pointer px-2 py-0.5 text-xs"
-                    onClick={() => togglePlatform(opt.value)}
-                  >
-                    {opt.label}
-                  </Badge>
-                ))}
+              <div className="flex flex-wrap gap-2">
+                {platformOptions.map((opt) =>
+                  selectedPlatforms.includes(opt.value) ? (
+                    <span
+                      key={opt.value}
+                      className="flex items-center bg-blue-50 border border-blue-300 text-blue-700 rounded-full px-3 py-1 text-xs font-semibold cursor-pointer gap-1"
+                    >
+                      {opt.label}
+                      <button
+                        className="ml-1 text-blue-400 hover:text-blue-700 focus:outline-none"
+                        onClick={() => togglePlatform(opt.value)}
+                        aria-label={`Remove ${opt.label}`}
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ) : null
+                )}
+                {platformOptions
+                  .filter((opt) => !selectedPlatforms.includes(opt.value))
+                  .map((opt) => (
+                    <span
+                      key={opt.value}
+                      className="flex items-center bg-slate-100 border border-slate-200 text-slate-500 rounded-full px-3 py-1 text-xs font-semibold cursor-pointer gap-1 opacity-60"
+                      onClick={() => togglePlatform(opt.value)}
+                    >
+                      {opt.label}
+                    </span>
+                  ))}
               </div>
             </div>
-            <div>
-              <h3 className="text-xs font-semibold mb-2 text-muted-foreground">
+            <div className="flex flex-col gap-2">
+              <h3 className="text-xs font-bold text-slate-500 mb-1">
                 Event Types
               </h3>
-              <div className="flex flex-wrap gap-1">
-                {eventTypeOptions.map((opt) => (
-                  <Badge
-                    key={opt.value}
-                    variant={
-                      selectedEventTypes.includes(opt.value)
-                        ? "default"
-                        : "secondary"
-                    }
-                    className="cursor-pointer px-2 py-0.5 text-xs"
-                    onClick={() => toggleEventType(opt.value)}
-                  >
-                    {opt.label}
-                  </Badge>
-                ))}
+              <div className="flex flex-wrap gap-2">
+                {eventTypeOptions.map((opt) =>
+                  selectedEventTypes.includes(opt.value) ? (
+                    <span
+                      key={opt.value}
+                      className="flex items-center bg-blue-50 border border-blue-300 text-blue-700 rounded-full px-3 py-1 text-xs font-semibold cursor-pointer gap-1"
+                    >
+                      {opt.label}
+                      <button
+                        className="ml-1 text-blue-400 hover:text-blue-700 focus:outline-none"
+                        onClick={() => toggleEventType(opt.value)}
+                        aria-label={`Remove ${opt.label}`}
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ) : null
+                )}
+                {eventTypeOptions
+                  .filter((opt) => !selectedEventTypes.includes(opt.value))
+                  .map((opt) => (
+                    <span
+                      key={opt.value}
+                      className="flex items-center bg-slate-100 border border-slate-200 text-slate-500 rounded-full px-3 py-1 text-xs font-semibold cursor-pointer gap-1 opacity-60"
+                      onClick={() => toggleEventType(opt.value)}
+                    >
+                      {opt.label}
+                    </span>
+                  ))}
               </div>
             </div>
+            <div className="w-full md:w-auto mt-2 md:mt-0 flex items-center gap-2">
+              <input
+                type="text"
+                placeholder="Search events..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full md:w-64 px-4 py-2 rounded-xl border border-slate-200 bg-slate-50 shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all text-base"
+              />
+            </div>
           </div>
-          <div className="mb-4 flex flex-col md:flex-row md:items-center gap-3">
-            <input
-              type="text"
-              placeholder="🔍 Search events..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full md:w-96 px-4 py-2 rounded-xl border border-muted bg-background/70 shadow-inner focus:outline-none focus:ring-2 focus:ring-teal-400 transition-all text-base"
-            />
-          </div>
-          <div className="rounded-xl overflow-hidden min-h-[320px]">
+          {/* Calendar and legend */}
+          <div className="rounded-xl overflow-hidden min-h-[320px] bg-white">
             {isLoading && (
               <div className="space-y-2">
                 <Skeleton className="h-8 w-full" />
@@ -426,24 +477,13 @@ const CalendarPage = () => {
                 plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
                 initialView="dayGridMonth"
                 headerToolbar={{
-                  left: "customPrev,customNext",
+                  left: "",
                   center: "title",
-                  right: "month",
-                }}
-                customButtons={{
-                  customPrev: {
-                    text: "<",
-                    click: () => calendarRef.current?.getApi().prev(),
-                  },
-                  customNext: {
-                    text: ">",
-                    click: () => calendarRef.current?.getApi().next(),
-                  },
+                  right: "",
                 }}
                 height="auto"
                 contentHeight={600}
                 dayMaxEventRows={5}
-                eventMinHeight={10}
                 eventClick={handleEventClick}
                 dateClick={handleDateClick}
                 displayEventTime={false}
@@ -461,19 +501,28 @@ const CalendarPage = () => {
                     new Date(contest.endTime) < new Date();
                   const platform = arg.event.extendedProps?.platform;
                   const barColor = platformDotColors[platform] || "#888";
+                  const eventType =
+                    arg.event.extendedProps?.eventType || "default";
+                  // Color by event type (reference image colors)
+                  const eventTypeColors = {
+                    Ongoing: "#22c55e", // vibrant green
+                    Upcoming: "#2563eb", // vibrant blue
+                    "Internal Contest": "#f59e42", // vibrant orange
+                    "Global Contest": "#a259ff", // vibrant purple
+                    default: "#e0e7ef", // light gray
+                  };
+                  const bgColor = eventTypeColors[eventType] || barColor;
                   return (
                     <div
-                      className={`w-full min-w-0 block flex items-center gap-3 px-4 py-2 rounded-xl shadow-sm cursor-pointer font-bold text-base transition-all duration-150 ${
-                        isPast ? "opacity-60 bg-slate-700" : ""
-                      } hover:scale-[1.03] hover:shadow-lg`}
+                      className="w-full min-w-0 flex items-center gap-2 px-4 py-2 rounded-xl cursor-pointer font-semibold text-base transition-all duration-150 bg-white hover:scale-[1.03]"
                       style={{
-                        background: !isPast ? barColor : undefined,
-                        color: !isPast ? "#fff" : "#cbd5e1",
-                        borderLeft: `6px solid ${barColor}`,
-                        minHeight: 44,
-                        fontSize: "1.08rem",
-                        letterSpacing: "0.01em",
+                        color: "#222",
+                        border: "none !important",
+                        boxShadow: "none !important",
                         overflow: "hidden",
+                        width: "100%",
+                        minWidth: 0,
+                        maxWidth: "100%",
                       }}
                     >
                       <span className="flex items-center flex-shrink-0 mr-2">
@@ -483,7 +532,7 @@ const CalendarPage = () => {
                         {text}
                       </span>
                       {isPast && (
-                        <span className="ml-2 px-2 py-0.5 rounded bg-slate-800 text-xs font-bold text-slate-200 border border-slate-600">
+                        <span className="ml-2 px-2 py-0.5 rounded bg-[#e5e7eb] text-xs font-bold text-[#6b7280] border border-[#d1d5db]">
                           Completed
                         </span>
                       )}
@@ -491,24 +540,41 @@ const CalendarPage = () => {
                   );
                 }}
                 dayHeaderClassNames={() =>
-                  "text-sky-300 font-semibold text-base bg-transparent"
+                  "text-slate-500 font-bold text-base bg-white"
                 }
-                dayCellClassNames={() =>
-                  "bg-slate-900 border-slate-800 text-slate-100"
-                }
+                dayCellClassNames={(arg) => {
+                  if (arg.isToday) {
+                    return "bg-blue-100/40 border border-slate-200 text-slate-900";
+                  }
+                  return "bg-white border border-slate-200 text-slate-900";
+                }}
                 dayMaxEvents={3}
                 themeSystem={undefined}
               />
             )}
           </div>
-          <div className="flex justify-between text-xs text-muted-foreground mt-1 px-2">
-            <span>Less</span>
-            <span>More</span>
-          </div>
-          <div className="flex justify-center gap-2 mt-1">
-            <span className="w-2.5 h-2.5 rounded bg-red-400 inline-block" />
-            <span className="w-2.5 h-2.5 rounded bg-green-400 inline-block" />
-            <span className="text-xs">Contest Indicator</span>
+          {/* Legend */}
+          <div className="flex flex-wrap items-center justify-center gap-4 mt-4">
+            <span className="flex items-center gap-1">
+              <span className="w-3 h-3 rounded-full bg-[#a259ff] inline-block" />{" "}
+              Global Contest
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="w-3 h-3 rounded-full bg-[#22c55e] inline-block" />{" "}
+              Ongoing
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="w-3 h-3 rounded-full bg-[#2563eb] inline-block" />{" "}
+              Upcoming
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="w-3 h-3 rounded-full bg-[#f59e42] inline-block" />{" "}
+              Internal Contest
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="w-3 h-3 rounded-full bg-[#e0e7ef] border border-slate-400 inline-block" />{" "}
+              Course Content
+            </span>
           </div>
         </div>
         <ContestDetailModal
@@ -517,127 +583,6 @@ const CalendarPage = () => {
           contest={selectedContest}
         />
       </div>
-      <style>{`
-        .fc .fc-toolbar.fc-header-toolbar {
-          background: transparent;
-          color: #e5e7eb;
-          border: none;
-          margin-bottom: 0.5rem;
-        }
-        .fc .fc-toolbar-title {
-          font-size: 1.5rem;
-          font-weight: 700;
-          color: #e5e7eb;
-          letter-spacing: 0.01em;
-        }
-        .fc .fc-button, .fc .fc-button-primary {
-          background: #23272f;
-          color: #e5e7eb;
-          border-radius: 9999px;
-          border: none;
-          width: 2.2rem;
-          height: 2.2rem;
-          font-size: 1.2rem;
-          margin: 0 0.25rem;
-          box-shadow: none;
-          transition: background 0.2s;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 0;
-        }
-        .fc .fc-button .fc-icon {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 1.5rem;
-          height: 1.5rem;
-        }
-        .fc .fc-button:hover, .fc .fc-button:focus {
-          background: #334155;
-          color: #fff;
-        }
-        .fc .fc-button-primary:not(:disabled).fc-button-active, .fc .fc-button-primary:not(:disabled):active {
-          background: #334155;
-          color: #fff;
-        }
-        .fc .fc-button-group .fc-button {
-          margin: 0 0.25rem;
-        }
-        .fc .fc-daygrid-day.fc-day-today {
-          background: #1e293b !important;
-          border-radius: 0.5rem;
-        }
-        .fc .fc-daygrid-day-number {
-          color: #f1f5f9;
-          font-weight: 600;
-          font-size: 1.1rem;
-          letter-spacing: 0.01em;
-        }
-        .fc .fc-col-header-cell {
-          background: transparent;
-          color: #38bdf8;
-          font-weight: 700;
-          font-size: 1.05rem;
-          border: none;
-        }
-        .fc .fc-daygrid-day {
-          background: #181c23;
-          border: 1px solid #23272f;
-          transition: background 0.2s;
-        }
-        .fc .fc-daygrid-day:hover {
-          background: #23272f;
-        }
-        .fc .fc-daygrid-event {
-          background: none !important;
-          border: none !important;
-          box-shadow: none !important;
-          padding: 0 !important;
-          margin: 0 !important;
-        }
-        .fc .fc-event-title {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 0 !important;
-        }
-        .fc .fc-event-main {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 0 !important;
-        }
-        .fc .fc-daygrid-event-dot {
-          display: none !important;
-        }
-        .bg-card, .rounded-2xl, .border, .border-slate-200, .dark\:border-slate-800, .shadow-xl, .shadow-2xl, .shadow-md, .shadow-none {
-          border: none !important;
-          box-shadow: none !important;
-          background: transparent !important;
-        }
-        .fc .fc-button.customPrev, .fc .fc-button.customNext {
-          font-size: 1.5rem;
-          font-weight: 700;
-          background: #23272f;
-          color: #38bdf8;
-          border-radius: 9999px;
-          border: none;
-          width: 2.2rem;
-          height: 2.2rem;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 0;
-          margin: 0 0.25rem;
-          box-shadow: none;
-          transition: background 0.2s;
-        }
-        .fc .fc-button.customPrev:hover, .fc .fc-button.customNext:hover {
-          background: #334155;
-          color: #fff;
-        }
-      `}</style>
     </>
   );
 };

@@ -337,7 +337,7 @@ const CalendarPage = () => {
 
   return (
     <>
-      <div className="container mx-auto p-4 md:p-6 lg:p-8 max-w-2xl">
+      <div className="container mx-auto p-4 md:p-6 lg:p-8 max-w-2xl bg-transparent border-none shadow-none">
         <h1 className="text-2xl md:text-3xl font-extrabold text-center mb-4">
           Calendar View
         </h1>
@@ -441,8 +441,8 @@ const CalendarPage = () => {
                   },
                 }}
                 height="auto"
-                contentHeight={340}
-                dayMaxEventRows={3}
+                contentHeight={600}
+                dayMaxEventRows={5}
                 eventMinHeight={10}
                 eventClick={handleEventClick}
                 dateClick={handleDateClick}
@@ -454,102 +454,40 @@ const CalendarPage = () => {
                 }))}
                 eventContent={(arg) => {
                   const text = arg.event.title;
-                  const isStarred = starred.includes(text);
                   const contest = arg.event.extendedProps?.contest;
                   const isPast =
                     contest &&
                     contest.endTime &&
                     new Date(contest.endTime) < new Date();
                   const platform = arg.event.extendedProps?.platform;
-                  const dotBg = platformDotColors[platform] || "#888";
-                  const showYoutube = isPast;
+                  const barColor = platformDotColors[platform] || "#888";
                   return (
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div className="flex flex-col items-center justify-center min-h-[32px]">
-                            <span className="flex items-center justify-center">
-                              {platformLogos[platform]}
-                              <div
-                                style={{
-                                  background: dotBg,
-                                  borderRadius: "50%",
-                                  width: 12,
-                                  height: 12,
-                                  display: "inline-block",
-                                  margin: "0 2px",
-                                  border: isStarred ? "2px solid gold" : "none",
-                                  boxShadow: "0 1px 4px rgba(0,0,0,0.10)",
-                                  cursor: "pointer",
-                                  position: "relative",
-                                }}
-                                title={text}
-                              />
-                            </span>
-                            {showYoutube && (
-                              <span className="mt-1 flex items-center justify-center">
-                                <img
-                                  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAABJklEQVR4Ae2WpVaFQRSFcaeS4QVwIjTiLbgk7D1w9xeg4FQcOu6acHeXtNnDmsFd7in/WetLI+f7dbYDAFEsAUvgoeAQ5k5iSQFpIH1kkMyQFXJMTsgpwTuc6jlHes2M3qNP71mge7g76DLNg8gygZ1QckGmuSdZJ7Azq8RDCSQTCJGgBCoFBWqVQLegQJcSmPnWIr9oICMXcIr4C4FJJbD9rUX+NtzX+CIQlfVbgS0lcP4jAVNt/UCA7acCZ0oAPxfQdXMLFNUBvpHflvgbAVM7h0B6zrfeD3kB+Ucg/xLKf4biPyLJX3GH9GFUogRSBQUSTSBZEwskQpFs1USyl6E0gRSRJtJPhsnci1B69oVQeqzXzOo9+kmj3juBeDw2BkSxBCyBO+9s03HRLVCoAAAAAElFTkSuQmCC"
-                                  alt="YouTube PCD"
-                                  className="h-[18px] w-[18px] mt-0.5"
-                                />
-                              </span>
-                            )}
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent side="top" align="center">
-                          <div className="p-2 min-w-[160px]">
-                            <div className="font-bold mb-1 flex items-center gap-2">
-                              {text}
-                            </div>
-                            <div className="text-xs mb-1">
-                              {platform?.charAt(0).toUpperCase() +
-                                platform?.slice(1)}
-                            </div>
-                            <div className="text-xs mb-1">
-                              {contest &&
-                                new Date(
-                                  contest.startTime
-                                ).toLocaleString()}{" "}
-                              -{" "}
-                              {contest &&
-                                new Date(contest.endTime).toLocaleString()}
-                            </div>
-                            {contest?.url && (
-                              <a
-                                href={contest.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-xs text-blue-500 underline"
-                              >
-                                View Contest
-                              </a>
-                            )}
-                            {isPast && (
-                              <a
-                                href={`https://www.youtube.com/results?search_query=tle-eliminators+${encodeURIComponent(
-                                  text
-                                )}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center gap-1 text-red-500 text-xs mt-1 hover:underline"
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  fill="currentColor"
-                                  viewBox="0 0 24 24"
-                                  width="14"
-                                  height="14"
-                                >
-                                  <path d="M23.498 6.186a2.994 2.994 0 0 0-2.112-2.117C19.228 3.5 12 3.5 12 3.5s-7.228 0-9.386.569A2.994 2.994 0 0 0 .502 6.186C0 8.344 0 12 0 12s0 3.656.502 5.814a2.994 2.994 0 0 0 2.112 2.117C4.772 20.5 12 20.5 12 20.5s7.228 0 9.386-.569a2.994 2.994 0 0 0 2.112-2.117C24 15.656 24 12 24 12s0-3.656-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-                                </svg>
-                                TLE Discussion
-                              </a>
-                            )}
-                          </div>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
+                    <div
+                      className={`w-full min-w-0 block flex items-center gap-3 px-4 py-2 rounded-xl shadow-sm cursor-pointer font-bold text-base transition-all duration-150 ${
+                        isPast ? "opacity-60 bg-slate-700" : ""
+                      } hover:scale-[1.03] hover:shadow-lg`}
+                      style={{
+                        background: !isPast ? barColor : undefined,
+                        color: !isPast ? "#fff" : "#cbd5e1",
+                        borderLeft: `6px solid ${barColor}`,
+                        minHeight: 44,
+                        fontSize: "1.08rem",
+                        letterSpacing: "0.01em",
+                        overflow: "hidden",
+                      }}
+                    >
+                      <span className="flex items-center flex-shrink-0 mr-2">
+                        {platformLogos[platform]}
+                      </span>
+                      <span className="flex-grow overflow-hidden whitespace-nowrap text-ellipsis leading-snug">
+                        {text}
+                      </span>
+                      {isPast && (
+                        <span className="ml-2 px-2 py-0.5 rounded bg-slate-800 text-xs font-bold text-slate-200 border border-slate-600">
+                          Completed
+                        </span>
+                      )}
+                    </div>
                   );
                 }}
                 dayHeaderClassNames={() =>
@@ -673,10 +611,10 @@ const CalendarPage = () => {
         .fc .fc-daygrid-event-dot {
           display: none !important;
         }
-        /* Remove all borders and box-shadows from calendar and parents */
-        .fc, .fc-view, .fc-daygrid, .fc-theme-standard, .fc-scrollgrid, .fc-scrollgrid-section, .fc-scrollgrid-sync-table, .fc-scrollgrid-sync-inner, .fc-scrollgrid-section-header, .fc-scrollgrid-section-body, .fc-scrollgrid-section-footer, .fc-scrollgrid-section-liquid, .fc-scrollgrid-section-solid, .fc-scrollgrid-section, .fc-scrollgrid-section *, .bg-card, .rounded-2xl, .border, .border-slate-200, .dark\:border-slate-800 {
+        .bg-card, .rounded-2xl, .border, .border-slate-200, .dark\:border-slate-800, .shadow-xl, .shadow-2xl, .shadow-md, .shadow-none {
           border: none !important;
           box-shadow: none !important;
+          background: transparent !important;
         }
         .fc .fc-button.customPrev, .fc .fc-button.customNext {
           font-size: 1.5rem;

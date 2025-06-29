@@ -172,7 +172,7 @@ const CalendarPage = () => {
     platformOptions.map((p) => p.value)
   );
   const [selectedEventTypes, setSelectedEventTypes] = useState(
-    eventTypeOptions.map((e) => e.value)
+    Array.from(new Set([...eventTypeOptions.map((e) => e.value), "global"]))
   );
   const [searchTerm, setSearchTerm] = useState("");
   const [animateEvents, setAnimateEvents] = useState(false);
@@ -182,8 +182,10 @@ const CalendarPage = () => {
   const calendarRef = useRef<any>(null);
 
   const baseEvents = useMemo(() => {
-    const apiContestEvents = contests
-      ? contests.map((contest) => {
+    const apiContestEvents = [];
+    if (contests) {
+      apiContestEvents.push(
+        ...contests.map((contest) => {
           const platform = contest.site.toLowerCase().replace(/ /g, "");
           const startDate = new Date(contest.startTime);
           let endDate = new Date(contest.endTime);
@@ -214,11 +216,42 @@ const CalendarPage = () => {
               contest: contest,
               platform: platform,
               type: "global",
+              isPast: false,
             },
           };
         })
-      : [];
-
+      );
+    }
+    if (pastContests) {
+      apiContestEvents.push(
+        ...pastContests.map((contest) => {
+          const platform =
+            contest.site?.toLowerCase().replace(/ /g, "") || "other";
+          const startDate = new Date(contest.startTime || contest.date);
+          let endDate = new Date(contest.endTime || contest.date);
+          if (
+            startDate.getFullYear() === endDate.getFullYear() &&
+            startDate.getMonth() === endDate.getMonth() &&
+            startDate.getDate() === endDate.getDate()
+          ) {
+            endDate = new Date(startDate.getTime() + 60 * 1000);
+          }
+          return {
+            title: contest.title,
+            start: startDate,
+            end: endDate,
+            allDay: false,
+            display: "block",
+            extendedProps: {
+              contest: contest,
+              platform: platform,
+              type: "global",
+              isPast: true,
+            },
+          };
+        })
+      );
+    }
     const courseEvents = plannedEvents.map((e) => ({
       ...e,
       extendedProps: {
@@ -227,9 +260,8 @@ const CalendarPage = () => {
         platform: "other",
       },
     }));
-
     return [...apiContestEvents, ...courseEvents];
-  }, [contests, plannedEvents]);
+  }, [contests, pastContests, plannedEvents]);
 
   const filteredEvents = useMemo(() => {
     return baseEvents.filter((event) => {
@@ -274,7 +306,9 @@ const CalendarPage = () => {
 
   const handleResetFilters = () => {
     setSelectedPlatforms(platformOptions.map((p) => p.value));
-    setSelectedEventTypes(eventTypeOptions.map((e) => e.value));
+    setSelectedEventTypes(
+      Array.from(new Set([...eventTypeOptions.map((e) => e.value), "global"]))
+    );
   };
 
   const togglePlatform = (platform: string) => {
@@ -536,7 +570,7 @@ const CalendarPage = () => {
                 }
                 dayCellClassNames={(arg) => {
                   if (arg.isToday) {
-                    return "bg-blue-100/60 border border-blue-200 text-slate-900 backdrop-blur-md";
+                    return "bg-blue-200/40 border border-blue-300 text-slate-900 backdrop-blur-[2px] shadow-md";
                   }
                   return "bg-white border border-slate-200 text-slate-900";
                 }}

@@ -190,3 +190,13 @@
   background-color: var(--fc-event-border-color);
   margin-right: 6px;
 }
+
+/* Remove blue border/background from all FullCalendar events */
+.fc .fc-daygrid-event,
+.fc-event,
+.fc-event-main {
+  border: none !important;
+  background: white !important;
+  box-shadow: none !important;
+  outline: none !important;
+}

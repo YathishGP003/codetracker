@@ -493,86 +493,84 @@ const CalendarPage = () => {
                   allDay: true,
                 }))}
                 eventContent={(arg) => {
-                  const text = arg.event.title;
-                  const contest = arg.event.extendedProps?.contest;
-                  const isPast =
-                    contest &&
-                    contest.endTime &&
-                    new Date(contest.endTime) < new Date();
-                  const platform = arg.event.extendedProps?.platform;
-                  const barColor = platformDotColors[platform] || "#888";
-                  const eventType =
-                    arg.event.extendedProps?.eventType || "default";
-                  // Color by event type (reference image colors)
-                  const eventTypeColors = {
-                    Ongoing: "#22c55e", // vibrant green
-                    Upcoming: "#2563eb", // vibrant blue
-                    "Internal Contest": "#f59e42", // vibrant orange
-                    "Global Contest": "#a259ff", // vibrant purple
-                    default: "#e0e7ef", // light gray
-                  };
-                  const bgColor = eventTypeColors[eventType] || barColor;
+                  // Always use purple for background and border, and show logo + name in a single line
                   return (
                     <div
-                      className="w-full min-w-0 flex items-center gap-2 px-4 py-2 rounded-xl cursor-pointer font-semibold text-base transition-all duration-150 bg-white hover:scale-[1.03]"
                       style={{
+                        background: "rgba(168, 85, 247, 0.15)",
+                        border: "1.5px solid #a855f7",
+                        borderRadius: "12px",
                         color: "#222",
-                        border: "none !important",
-                        boxShadow: "none !important",
+                        fontWeight: 600,
+                        padding: "6px 12px",
                         overflow: "hidden",
                         width: "100%",
                         minWidth: 0,
                         maxWidth: "100%",
+                        boxShadow: "none",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                        whiteSpace: "nowrap",
                       }}
                     >
-                      <span className="flex items-center flex-shrink-0 mr-2">
-                        {platformLogos[platform]}
+                      <span
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          marginRight: 8,
+                        }}
+                      >
+                        {platformLogos[arg.event.extendedProps?.platform]}
                       </span>
-                      <span className="flex-grow overflow-hidden whitespace-nowrap text-ellipsis leading-snug">
-                        {text}
+                      <span
+                        style={{ overflow: "hidden", textOverflow: "ellipsis" }}
+                      >
+                        {arg.event.title}
                       </span>
-                      {isPast && (
-                        <span className="ml-2 px-2 py-0.5 rounded bg-[#e5e7eb] text-xs font-bold text-[#6b7280] border border-[#d1d5db]">
-                          Completed
-                        </span>
-                      )}
                     </div>
                   );
                 }}
                 dayHeaderClassNames={() =>
-                  "text-slate-500 font-bold text-base bg-white"
+                  "text-slate-700 font-bold text-base bg-white"
                 }
                 dayCellClassNames={(arg) => {
                   if (arg.isToday) {
-                    return "bg-blue-100/40 border border-slate-200 text-slate-900";
+                    return "bg-blue-100/60 border border-blue-200 text-slate-900 backdrop-blur-md";
                   }
                   return "bg-white border border-slate-200 text-slate-900";
                 }}
+                headerToolbar={{
+                  left: "",
+                  center: "title",
+                  right: "",
+                }}
+                titleFormat={{ year: "numeric", month: "long" }}
                 dayMaxEvents={3}
                 themeSystem={undefined}
               />
             )}
           </div>
           {/* Legend */}
-          <div className="flex flex-wrap items-center justify-center gap-4 mt-4">
+          <div className="flex flex-wrap items-center justify-center gap-4 mt-4 text-slate-700 text-sm font-semibold">
             <span className="flex items-center gap-1">
-              <span className="w-3 h-3 rounded-full bg-[#a259ff] inline-block" />{" "}
+              <span className="w-3 h-3 rounded-full bg-[#a259ff] inline-block" />
               Global Contest
             </span>
             <span className="flex items-center gap-1">
-              <span className="w-3 h-3 rounded-full bg-[#22c55e] inline-block" />{" "}
+              <span className="w-3 h-3 rounded-full bg-[#22c55e] inline-block" />
               Ongoing
             </span>
             <span className="flex items-center gap-1">
-              <span className="w-3 h-3 rounded-full bg-[#2563eb] inline-block" />{" "}
+              <span className="w-3 h-3 rounded-full bg-[#2563eb] inline-block" />
               Upcoming
             </span>
             <span className="flex items-center gap-1">
-              <span className="w-3 h-3 rounded-full bg-[#f59e42] inline-block" />{" "}
+              <span className="w-3 h-3 rounded-full bg-[#f59e42] inline-block" />
               Internal Contest
             </span>
             <span className="flex items-center gap-1">
-              <span className="w-3 h-3 rounded-full bg-[#e0e7ef] border border-slate-400 inline-block" />{" "}
+              <span className="w-3 h-3 rounded-full bg-[#e0e7ef] border border-slate-400 inline-block" />
               Course Content
             </span>
           </div>

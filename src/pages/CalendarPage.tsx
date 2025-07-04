@@ -416,8 +416,8 @@ const CalendarPage = () => {
     <div className="min-h-screen flex flex-col items-center justify-start bg-[#F6F5F2] py-10">
       {/* Speech bubble */}
       <div className="w-full flex justify-center mb-4">
-        <Alert className="rounded-2xl shadow-lg px-8 py-4 bg-white/90 border border-gray-200 text-2xl font-serif font-semibold text-gray-900 max-w-2xl text-center">
-          Calendar
+        <Alert className="rounded-2xl shadow-lg px-8 py-4 bg-white/90 border border-gray-200 text-2xl font-serif font-semibold text-gray-900 text-center w-fit">
+          Contest Calendar
         </Alert>
       </div>
       {/* Calendar */}

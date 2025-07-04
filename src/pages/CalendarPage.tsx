@@ -283,17 +283,14 @@ const CalendarPage = () => {
       mapped.push(
         ...upcoming.map((contest, idx) => {
           const date = format(new Date(contest.startTime), "yyyy-MM-dd");
-          const { type, icon } = getEventTypeAndIcon(
-            contest.title,
-            contest.site
-          );
+          // Set type to platform for contest events
           return {
             id: `upcoming-${idx}`,
             date,
             title: contest.title,
             description: contest.site,
-            type,
-            icon,
+            type: contest.site ? contest.site.toLowerCase() : "other",
+            icon: null, // CustomCalendar uses its own logo
             _contest: contest,
           };
         })
@@ -303,19 +300,27 @@ const CalendarPage = () => {
       mapped.push(
         ...past.map((contest, idx) => {
           const date = format(parseISO(contest.date), "yyyy-MM-dd");
-          const { type, icon } = getEventTypeAndIcon(contest.name, "");
+          // Infer platform from contest name for past contests
+          let platform = "other";
+          const nameLower = contest.name.toLowerCase();
+          if (nameLower.includes("codeforces")) platform = "codeforces";
+          else if (nameLower.includes("leetcode")) platform = "leetcode";
+          else if (nameLower.includes("codechef")) platform = "codechef";
+          else if (nameLower.includes("atcoder")) platform = "atcoder";
           return {
             id: `past-${idx}`,
             date,
             title: contest.name,
-            description: "Past Contest",
-            type,
-            icon,
+            description: platform.charAt(0).toUpperCase() + platform.slice(1),
+            type: platform,
+            icon: null,
             _contest: contest,
           };
         })
       );
     }
+    // If you have non-contest events, add them here using getEventTypeAndIcon
+    // mapped.push(...demoEvents);
     return mapped;
   }, [upcoming, past]);
 

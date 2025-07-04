@@ -19,7 +19,7 @@ interface CalendarEvent {
   date: string; // ISO string (YYYY-MM-DD)
   title: string;
   description?: string;
-  type: string;
+  type: string; // platform: codeforces, leetcode, codechef, atcoder, etc.
   icon?: React.ReactNode;
   [key: string]: any;
 }
@@ -30,6 +30,81 @@ interface CustomCalendarProps {
   onMonthChange: (date: Date) => void;
   onEventClick?: (event: CalendarEvent) => void;
 }
+
+// Platform color and logo mapping
+const platformStyles: Record<
+  string,
+  { bg: string; border: string; text: string; logo: React.ReactNode }
+> = {
+  codeforces: {
+    bg: "bg-[#EAF3FB]",
+    border: "border-[#1F8ACB]",
+    text: "text-[#1F8ACB]",
+    logo: (
+      <img
+        src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y+mAAAAjVBMVEVHcEwcmdQcmdQcmdQak9Ebl9IbldEZktD82XX82XT812/81m781WoYjs370mHCHCTNWC370mEXi8u7HSTAHCS+HCS8HSUXicu7HST5z1e7HST4zFD4y022HSX4yk23HSUWhcgVhMf3xkGzHib2xDwUgcb2xkL1wzkVgcawHyb2xD31wzkUf8QUgMWxHiamUe3qAAAAL3RSTlMATmz/q////0luJv/u/4glD/+rxP/ibf+R///wieD///+s//+N/7phkrbL8iDY8hvaMEAAAADLSURBVHgBxMm1AcMAEANAhZmZmWPvP16kN1Odaw9/VipTqeAqJn+rlUqNqvlZk3pR1qUgOY1GI5HNFrWVnFS2OtLletmLZ5dFfWVPLAc0DHKk7NmOgeFkSrOBckTMscpyzqIJuqpYLphLL2eWq9XKciF+rtfrGTYs2jJVfq5lh43dPpl2ByVr7+VRTkrWQcnxU+WlKsoz8xSl3UV5lquft5uSQ0yVnzdRqpR3Lx/A82aewNzLF4bvD10BfB2d8wWwdGkyRIRNvxGdVgHKfyOSwlpokQAAAABJRU5ErkJggg=="
+        alt="codeforces"
+        className="h-4 w-4 mr-1 inline-block align-middle"
+      />
+    ),
+  },
+  leetcode: {
+    bg: "bg-[#FFF7E6]",
+    border: "border-[#FFA116]",
+    text: "text-[#FFA116]",
+    logo: (
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 95 111"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-4 w-4 mr-1 inline-block align-middle"
+      >
+        <path
+          d="M68.0063 83.0664C70.5 80.5764 74.5366 80.5829 77.0223 83.0809C79.508 85.579 79.5015 89.6226 77.0078 92.1127L65.9346 103.17C55.7187 113.371 39.06 113.519 28.6718 103.513C28.6117 103.456 23.9861 98.9201 8.72653 83.957C-1.42528 74.0029 -2.43665 58.0749 7.11648 47.8464L24.9282 28.7745C34.4095 18.6219 51.887 17.5122 62.7275 26.2789L78.9048 39.362C81.6444 41.5776 82.0723 45.5985 79.8606 48.3429C77.6488 51.0873 73.635 51.5159 70.8954 49.3003L54.7182 36.2173C49.0488 31.6325 39.1314 32.2622 34.2394 37.5006L16.4274 56.5727C11.7767 61.5522 12.2861 69.574 17.6456 74.8292C28.851 85.8169 37.4869 94.2846 37.4969 94.2942C42.8977 99.496 51.6304 99.4184 56.9331 94.1234L68.0063 83.0664Z"
+          fill="#FFA116"
+        ></path>
+        <path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M41.1067 72.0014C37.5858 72.0014 34.7314 69.1421 34.7314 65.615C34.7314 62.0879 37.5858 59.2286 41.1067 59.2286H88.1245C91.6454 59.2286 94.4997 62.0879 94.4997 65.615C94.4997 69.1421 91.6454 72.0014 88.1245 72.0014H41.1067Z"
+          fill="#B3B3B3"
+        ></path>
+        <path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M49.9118 2.02335C52.3173 -0.55232 56.3517 -0.686894 58.9228 1.72277C61.494 4.13244 61.6284 8.17385 59.2229 10.7495L16.4276 56.5729C11.7768 61.552 12.2861 69.5738 17.6453 74.8292L37.4088 94.2091C39.9249 96.6764 39.968 100.72 37.505 103.24C35.042 105.761 31.0056 105.804 28.4895 103.337L8.72593 83.9567C-1.42529 74.0021 -2.43665 58.0741 7.1169 47.8463L49.9118 2.02335Z"
+          fill="black"
+        ></path>
+      </svg>
+    ),
+  },
+  codechef: {
+    bg: "bg-[#F7F3ED]",
+    border: "border-[#6B4F2E]",
+    text: "text-[#6B4F2E]",
+    logo: (
+      <img
+        src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y+mAAAAbFBMVEVYNyJUMRpNJgdJHwBVMx1PKQ5IHQBMJABRLBNWNR9SLhaGcWHFvK3n5NeHc2RrUD21qJnc18nSy7yklYVjRjP7++79/fDt697///SuoJL///Z1Wkj08uVdOySOe2qVhHRdPiqdjX3Uzb+9s6UG9M0gAAAA1UlEQVR4Ad2QxQHDMAxFY6q5QclY3n/GMmeD/Istll6zOBHKGCX3LxdsJZV+h7Sxznu31leXabveD+NEXkHTAd7kVGNsiIgYfcsfMZEiYMwRAyGlIty+0T5K9QYAvW1TXRs5INSx3Xonn013CLFV3JRrXoWYJFft9NxIdIj96rZnw0uFPF2n3Vb7Deq/4KstEKJVu+ebgPFANdlPz2W1roBDq7dhVNRFCFtejj199R1vp9SIdf84BTLGnfmDcDJzCC98W3LHl/pwfOH7gDdP8PIBflG6AAaYETfXpxQdAAAAAElFTkSuQmCC"
+        alt="codechef"
+        className="h-4 w-4 mr-1 inline-block align-middle"
+      />
+    ),
+  },
+  atcoder: {
+    bg: "bg-[#F2F2F7]",
+    border: "border-[#2C2C54]",
+    text: "text-[#2C2C54]",
+    logo: (
+      <img
+        src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y+mAAAAflBMVEX////o6OjR0dH29vbExMRnZmY0NDTLy8vs7OzW1tatra1HR0d0dHRvb288PDyXl5fl5eXg4OBQUFCjo6NhXl62traPj49ra2v4+PhYWFi/v7+bm5uEhISJiYm5ubl+fn56enr8/PywsLBNSUgdGxkmJSMOCg0AAAAeHB37+/uODyMpAAABZUlEQVR4AYzN0W6EIBCF4bOgK6AWR8RFQFS77db3f8HGhAvTtEm/2z8zB/93Y/gLL8p7xX8LQkLVTfumwbjAFTrqjZL9UPaFHR+ScOGUoaLUSmujJk8q8MvP1o61sTZWbFbJ1ItfL7cCNsWiw7ZBVNHuG0cGHhIqD1eEqIMXKAoUWuQYhoFRwjyGddRx3lhB5RBzVO8aLqjy2d6H9vkYPWF/H3Nshw6IdunjtMY+hhEQTZ3j+vG2doraxzwt89B0M5r6Y8qxfJaRCklhGZolMOnFujzzZfN5B1dCA64TDrDS3tB/Tg7o9OsFQEB3gEoJPEIA+Ho1N9Q6b1OA952DqnBqJ/VC6lPeVp7gGQt5zKwGLAq1AyfNANIHTnYnk7Bx7FLidOhKBoGTYAF8w9VhjMDfDuDg+IEUAC8ZAOz4wWvMVAF+J+Zt2uWl8SrdzKY3MrsipbnBhTsOzgE6BwV3jh/4HmUAADahGi0q8a87AAAAAElFTkSuQmCC"
+        alt="atcoder"
+        className="h-4 w-4 mr-1 inline-block align-middle"
+      />
+    ),
+  },
+};
 
 const weekDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
@@ -117,25 +192,37 @@ export const CustomCalendar: React.FC<CustomCalendarProps> = ({
                 {day.getDate()}
               </div>
               <div className="flex flex-col gap-1 w-full">
-                {dayEvents.map((event) => (
-                  <div
-                    key={event.id}
-                    className={
-                      "flex flex-col rounded-xl bg-white w-full mb-1 last:mb-0 px-3 py-2 cursor-pointer"
-                    }
-                    style={{ fontSize: "1rem" }}
-                    onClick={() => onEventClick && onEventClick(event)}
-                  >
-                    <div className="font-bold text-black truncate leading-tight">
-                      {event.title}
-                    </div>
-                    {event.description && (
-                      <div className="text-xs text-gray-500 truncate leading-tight whitespace-pre-line">
-                        {event.description}
+                {dayEvents.map((event) => {
+                  const platform = event.type?.toLowerCase();
+                  const style = platformStyles[platform] || {
+                    bg: "bg-white",
+                    border: "border-gray-200",
+                    text: "text-gray-700",
+                    logo: null,
+                  };
+                  return (
+                    <div
+                      key={event.id}
+                      className={`flex items-center rounded-xl ${style.bg} ${style.border} border w-full mb-1 last:mb-0 px-3 py-2 cursor-pointer`}
+                      style={{ fontSize: "1rem" }}
+                      onClick={() => onEventClick && onEventClick(event)}
+                    >
+                      {style.logo}
+                      <div className="flex-1 min-w-0">
+                        <div
+                          className={`font-bold truncate leading-tight ${style.text}`}
+                        >
+                          {event.title}
+                        </div>
+                        {event.description && (
+                          <div className="text-xs text-gray-500 truncate leading-tight whitespace-pre-line">
+                            {event.description}
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
-                ))}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           );

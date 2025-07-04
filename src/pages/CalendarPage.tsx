@@ -19,6 +19,12 @@ import {
   CalendarPlus,
   ChevronLeft,
   ChevronRight,
+  Instagram,
+  Youtube,
+  FileText,
+  Linkedin,
+  Mail,
+  Globe,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -28,6 +34,9 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { Calendar } from "@/components/ui/calendar";
+import { Alert } from "@/components/ui/alert";
+import { CustomCalendar } from "@/components/CustomCalendar";
+import { format, parseISO } from "date-fns";
 
 const siteColors: { [key: string]: string } = {
   codeforces: "#1F8ACB",
@@ -155,14 +164,99 @@ const accentThemes = [
   },
 ];
 
+// Demo events for illustration (replace with real data as needed)
+const demoEvents = [
+  {
+    id: "1",
+    date: "2024-09-02",
+    title: "Instagram",
+    description: "Behind the scenes\nImage + Caption",
+    type: "instagram",
+    icon: <Instagram size={16} />,
+  },
+  {
+    id: "2",
+    date: "2024-09-03",
+    title: "Youtube",
+    description: "Product Tutorial\nVideo",
+    type: "youtube",
+    icon: <Youtube size={16} />,
+  },
+  {
+    id: "3",
+    date: "2024-09-05",
+    title: "Blog",
+    description: '"10 Tips for Productiveness"',
+    type: "blog",
+    icon: <FileText size={16} />,
+  },
+  {
+    id: "4",
+    date: "2024-09-11",
+    title: "LinkedIn",
+    description: "Product announcement",
+    type: "linkedin",
+    icon: <Linkedin size={16} />,
+  },
+  {
+    id: "5",
+    date: "2024-09-12",
+    title: "Newsletter",
+    description: "Monthly Recap\nEmail Digest",
+    type: "newsletter",
+    icon: <Mail size={16} />,
+  },
+  {
+    id: "6",
+    date: "2024-09-17",
+    title: "Instagram",
+    description: "Behind the scenes\nImage + Caption",
+    type: "instagram",
+    icon: <Instagram size={16} />,
+  },
+];
+
+const getCurrentMonth = () => {
+  const now = new Date();
+  return new Date(now.getFullYear(), now.getMonth(), 1);
+};
+
+const platformIcons: Record<string, React.ReactNode> = {
+  codeforces: <Globe size={16} />, // Replace with actual icons if available
+  leetcode: <Globe size={16} />, // Replace with actual icons if available
+  codechef: <Globe size={16} />, // Replace with actual icons if available
+  atcoder: <Globe size={16} />, // Replace with actual icons if available
+  // Add more as needed
+};
+
+// Map platform/event type to icon and color type for CustomCalendar
+const eventTypeIconMap: Record<
+  string,
+  { type: string; icon: React.ReactNode }
+> = {
+  instagram: { type: "instagram", icon: <Instagram size={16} /> },
+  youtube: { type: "youtube", icon: <Youtube size={16} /> },
+  blog: { type: "blog", icon: <FileText size={16} /> },
+  linkedin: { type: "linkedin", icon: <Linkedin size={16} /> },
+  newsletter: { type: "newsletter", icon: <Mail size={16} /> },
+};
+
+function getEventTypeAndIcon(title: string, site: string) {
+  // Try to match by site or by title (case-insensitive)
+  const key = (site || title || "").toLowerCase();
+  if (key.includes("instagram")) return eventTypeIconMap.instagram;
+  if (key.includes("youtube")) return eventTypeIconMap.youtube;
+  if (key.includes("blog")) return eventTypeIconMap.blog;
+  if (key.includes("linkedin")) return eventTypeIconMap.linkedin;
+  if (key.includes("newsletter")) return eventTypeIconMap.newsletter;
+  // fallback
+  return { type: "default", icon: null };
+}
+
 const CalendarPage = () => {
   const { isDarkMode } = useDarkMode();
-  const { data: contests, isLoading, error } = useAllContests();
-  const {
-    data: pastContests,
-    isLoading: isLoadingPast,
-    error: errorPast,
-  } = useAllPastContests();
+  const { data: upcoming, isLoading: loadingUpcoming } = useAllContests();
+  const { data: past, isLoading: loadingPast } = useAllPastContests();
   const [isPlanDialogOpen, setIsPlanDialogOpen] = useState(false);
   const [plannedEvents, setPlannedEvents] = useState<any[]>([]);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
@@ -180,123 +274,71 @@ const CalendarPage = () => {
   const [starred, setStarred] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const calendarRef = useRef<any>(null);
+  const [month, setMonth] = useState(getCurrentMonth());
 
-  const baseEvents = useMemo(() => {
-    const apiContestEvents = [];
-    if (contests) {
-      apiContestEvents.push(
-        ...contests.map((contest) => {
-          const platform = contest.site.toLowerCase().replace(/ /g, "");
-          const startDate = new Date(contest.startTime);
-          let endDate = new Date(contest.endTime);
-          if (process.env.NODE_ENV !== "production") {
-            // eslint-disable-next-line no-console
-            console.log(
-              `[DEBUG] ${
-                contest.title
-              }: start=${startDate.toISOString()}, end=${endDate.toISOString()}, duration=${
-                (endDate.getTime() - startDate.getTime()) / 1000 / 60
-              }min`
-            );
-          }
-          if (
-            startDate.getFullYear() === endDate.getFullYear() &&
-            startDate.getMonth() === endDate.getMonth() &&
-            startDate.getDate() === endDate.getDate()
-          ) {
-            endDate = new Date(startDate.getTime() + 60 * 1000);
-          }
+  // Map upcoming and past contests to CustomCalendar event format
+  const events = useMemo(() => {
+    const mapped: any[] = [];
+    if (upcoming) {
+      mapped.push(
+        ...upcoming.map((contest, idx) => {
+          const date = format(new Date(contest.startTime), "yyyy-MM-dd");
+          const { type, icon } = getEventTypeAndIcon(
+            contest.title,
+            contest.site
+          );
           return {
+            id: `upcoming-${idx}`,
+            date,
             title: contest.title,
-            start: startDate,
-            end: endDate,
-            allDay: false,
-            display: "block",
-            extendedProps: {
-              contest: contest,
-              platform: platform,
-              type: "global",
-              isPast: false,
-            },
+            description: contest.site,
+            type,
+            icon,
+            _contest: contest,
           };
         })
       );
     }
-    if (pastContests) {
-      apiContestEvents.push(
-        ...pastContests.map((contest) => {
-          const platform =
-            contest.site?.toLowerCase().replace(/ /g, "") || "other";
-          const startDate = new Date(contest.startTime || contest.date);
-          let endDate = new Date(contest.endTime || contest.date);
-          if (
-            startDate.getFullYear() === endDate.getFullYear() &&
-            startDate.getMonth() === endDate.getMonth() &&
-            startDate.getDate() === endDate.getDate()
-          ) {
-            endDate = new Date(startDate.getTime() + 60 * 1000);
-          }
+    if (past) {
+      mapped.push(
+        ...past.map((contest, idx) => {
+          const date = format(parseISO(contest.date), "yyyy-MM-dd");
+          const { type, icon } = getEventTypeAndIcon(contest.name, "");
           return {
-            title: contest.title,
-            start: startDate,
-            end: endDate,
-            allDay: false,
-            display: "block",
-            extendedProps: {
-              contest: contest,
-              platform: platform,
-              type: "global",
-              isPast: true,
-            },
+            id: `past-${idx}`,
+            date,
+            title: contest.name,
+            description: "Past Contest",
+            type,
+            icon,
+            _contest: contest,
           };
         })
       );
     }
-    const courseEvents = plannedEvents.map((e) => ({
-      ...e,
-      extendedProps: {
-        ...e.extendedProps,
-        type: "course",
-        platform: "other",
-      },
-    }));
-    return [...apiContestEvents, ...courseEvents];
-  }, [contests, pastContests, plannedEvents]);
+    return mapped;
+  }, [upcoming, past]);
 
-  const filteredEvents = useMemo(() => {
-    return baseEvents.filter((event) => {
-      const { type, platform } = event.extendedProps;
-      const typeMatch = selectedEventTypes.includes(type);
-      const platformMatch =
-        type === "course" || selectedPlatforms.includes(platform);
-      return typeMatch && platformMatch;
-    });
-  }, [baseEvents, selectedPlatforms, selectedEventTypes]);
-
-  useEffect(() => {
-    setAnimateEvents(true);
-    const timeout = setTimeout(() => setAnimateEvents(false), 600);
-    return () => clearTimeout(timeout);
-  }, [filteredEvents]);
-
-  const searchedEvents = useMemo(() => {
-    if (!searchTerm.trim()) return filteredEvents;
-    return filteredEvents.filter((e) =>
-      e.title.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [filteredEvents, searchTerm]);
+  const isLoading = loadingUpcoming || loadingPast;
 
   const handlePlanSubmit = (newEvents: any[]) => {
     setPlannedEvents((prev) => [...prev, ...newEvents]);
   };
 
-  const handleEventClick = (clickInfo: any) => {
-    clickInfo.jsEvent.preventDefault();
-    const { extendedProps } = clickInfo.event;
-    if (extendedProps?.contest) {
-      setSelectedContest(extendedProps.contest);
-      setIsDetailModalOpen(true);
+  const handleEventClick = (event: any) => {
+    let contest = event._contest;
+    if (!contest) {
+      contest = {
+        site: event.description,
+        title: event.title,
+        startTime: new Date(event.date).getTime(),
+        duration: 2 * 60 * 60, // fallback 2h
+        endTime: new Date(event.date).getTime() + 2 * 60 * 60 * 1000,
+        url: "#",
+      };
     }
+    setSelectedContest(contest);
+    setIsDetailModalOpen(true);
   };
 
   const handleDateClick = (arg: any) => {
@@ -333,23 +375,23 @@ const CalendarPage = () => {
     );
   };
 
-  const isEmpty = !isLoading && !error && searchedEvents.length === 0;
+  const isEmpty = !isLoading && events.length === 0;
 
   // Helper: Map date string (YYYY-MM-DD) to contest(s)
   const contestMap = useMemo(() => {
     const map: Record<string, any[]> = {};
-    (contests || []).forEach((contest) => {
+    (upcoming || []).forEach((contest) => {
       const date = new Date(contest.startTime).toISOString().slice(0, 10);
       if (!map[date]) map[date] = [];
       map[date].push({ ...contest, isPast: false });
     });
-    (pastContests || []).forEach((contest) => {
+    (past || []).forEach((contest) => {
       const date = contest.date.slice(0, 10);
       if (!map[date]) map[date] = [];
       map[date].push({ ...contest, isPast: true });
     });
     return map;
-  }, [contests, pastContests]);
+  }, [upcoming, past]);
 
   // Modal state for selected day/contests
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
@@ -366,256 +408,32 @@ const CalendarPage = () => {
   };
 
   return (
-    <>
-      <div className="container mx-auto p-0 md:p-0 lg:p-0 max-w-6xl bg-white border border-slate-200 rounded-2xl shadow-2xl">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between px-8 pt-8 pb-2 gap-2">
-          <h1 className="text-3xl font-black text-slate-900 font-serif tracking-tight">
-            Contest Calendar
-          </h1>
-          <div className="flex items-center gap-3">
-            {/* Month/Year Navigation */}
-            <button
-              className="rounded-full bg-slate-100 text-slate-700 w-9 h-9 flex items-center justify-center text-xl hover:bg-slate-200 border border-slate-300 transition"
-              onClick={() => calendarRef.current?.getApi().prev()}
-            >
-              <ChevronLeft size={20} />
-            </button>
-            <button
-              className="rounded-full bg-slate-100 text-slate-700 w-9 h-9 flex items-center justify-center text-xl hover:bg-slate-200 border border-slate-300 transition"
-              onClick={() => calendarRef.current?.getApi().next()}
-            >
-              <ChevronRight size={20} />
-            </button>
-            {/* Reset Button */}
-            <button
-              className="rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-2 ml-2 transition text-base shadow-md"
-              onClick={handleResetFilters}
-            >
-              <span className="font-semibold">Reset</span>
-            </button>
-          </div>
-        </div>
-        {/* Filters */}
-        <div className="bg-white border border-slate-200 rounded-2xl px-8 pt-4 pb-2 shadow-none mb-4">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-2">
-            <div className="flex flex-col gap-2">
-              <h3 className="text-xs font-bold text-slate-500 mb-1">
-                Contest Platforms + Divisions
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {platformOptions.map((opt) =>
-                  selectedPlatforms.includes(opt.value) ? (
-                    <span
-                      key={opt.value}
-                      className="flex items-center bg-blue-50 border border-blue-300 text-blue-700 rounded-full px-3 py-1 text-xs font-semibold cursor-pointer gap-1"
-                    >
-                      {opt.label}
-                      <button
-                        className="ml-1 text-blue-400 hover:text-blue-700 focus:outline-none"
-                        onClick={() => togglePlatform(opt.value)}
-                        aria-label={`Remove ${opt.label}`}
-                      >
-                        ×
-                      </button>
-                    </span>
-                  ) : null
-                )}
-                {platformOptions
-                  .filter((opt) => !selectedPlatforms.includes(opt.value))
-                  .map((opt) => (
-                    <span
-                      key={opt.value}
-                      className="flex items-center bg-slate-100 border border-slate-200 text-slate-500 rounded-full px-3 py-1 text-xs font-semibold cursor-pointer gap-1 opacity-60"
-                      onClick={() => togglePlatform(opt.value)}
-                    >
-                      {opt.label}
-                    </span>
-                  ))}
-              </div>
-            </div>
-            <div className="flex flex-col gap-2">
-              <h3 className="text-xs font-bold text-slate-500 mb-1">
-                Event Types
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {eventTypeOptions.map((opt) =>
-                  selectedEventTypes.includes(opt.value) ? (
-                    <span
-                      key={opt.value}
-                      className="flex items-center bg-blue-50 border border-blue-300 text-blue-700 rounded-full px-3 py-1 text-xs font-semibold cursor-pointer gap-1"
-                    >
-                      {opt.label}
-                      <button
-                        className="ml-1 text-blue-400 hover:text-blue-700 focus:outline-none"
-                        onClick={() => toggleEventType(opt.value)}
-                        aria-label={`Remove ${opt.label}`}
-                      >
-                        ×
-                      </button>
-                    </span>
-                  ) : null
-                )}
-                {eventTypeOptions
-                  .filter((opt) => !selectedEventTypes.includes(opt.value))
-                  .map((opt) => (
-                    <span
-                      key={opt.value}
-                      className="flex items-center bg-slate-100 border border-slate-200 text-slate-500 rounded-full px-3 py-1 text-xs font-semibold cursor-pointer gap-1 opacity-60"
-                      onClick={() => toggleEventType(opt.value)}
-                    >
-                      {opt.label}
-                    </span>
-                  ))}
-              </div>
-            </div>
-            <div className="w-full md:w-auto mt-2 md:mt-0 flex items-center gap-2">
-              <input
-                type="text"
-                placeholder="Search events..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full md:w-64 px-4 py-2 rounded-xl border border-slate-200 bg-slate-50 shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all text-base"
-              />
-            </div>
-          </div>
-          {/* Calendar and legend */}
-          <div className="rounded-xl overflow-hidden min-h-[320px] bg-white">
-            {isLoading && (
-              <div className="space-y-2">
-                <Skeleton className="h-8 w-full" />
-                <Skeleton className="h-64 w-full" />
-              </div>
-            )}
-            {error && (
-              <p className="text-red-500 text-sm">Failed to load contests.</p>
-            )}
-            {isEmpty && (
-              <div className="flex flex-col items-center justify-center py-10">
-                <img
-                  src="/public/placeholder.svg"
-                  alt="No events"
-                  className="w-20 h-20 mb-2 opacity-70"
-                />
-                <h2 className="text-base font-bold mb-1 text-muted-foreground">
-                  No events found
-                </h2>
-                <p className="text-xs text-muted-foreground mb-1">
-                  Try adjusting your search or filters.
-                </p>
-              </div>
-            )}
-            {!isLoading && !error && !isEmpty && (
-              <FullCalendar
-                ref={calendarRef}
-                plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-                initialView="dayGridMonth"
-                headerToolbar={{
-                  left: "",
-                  center: "title",
-                  right: "",
-                }}
-                height="auto"
-                contentHeight={600}
-                dayMaxEventRows={5}
-                eventClick={handleEventClick}
-                dateClick={handleDateClick}
-                displayEventTime={false}
-                events={searchedEvents.map((e) => ({
-                  ...e,
-                  end: undefined,
-                  allDay: true,
-                }))}
-                eventContent={(arg) => {
-                  // Always use purple for background and border, and show logo + name in a single line
-                  return (
-                    <div
-                      style={{
-                        background: "rgba(168, 85, 247, 0.15)",
-                        border: "1.5px solid #a855f7",
-                        borderRadius: "12px",
-                        color: "#222",
-                        fontWeight: 600,
-                        padding: "6px 12px",
-                        overflow: "hidden",
-                        width: "100%",
-                        minWidth: 0,
-                        maxWidth: "100%",
-                        boxShadow: "none",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "8px",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      <span
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          marginRight: 8,
-                        }}
-                      >
-                        {platformLogos[arg.event.extendedProps?.platform]}
-                      </span>
-                      <span
-                        style={{ overflow: "hidden", textOverflow: "ellipsis" }}
-                      >
-                        {arg.event.title}
-                      </span>
-                    </div>
-                  );
-                }}
-                dayHeaderClassNames={() =>
-                  "text-slate-700 font-bold text-base bg-white"
-                }
-                dayCellClassNames={(arg) => {
-                  if (arg.isToday) {
-                    return "bg-blue-200/40 border border-blue-300 text-slate-900 backdrop-blur-[2px] shadow-md";
-                  }
-                  return "bg-white border border-slate-200 text-slate-900";
-                }}
-                headerToolbar={{
-                  left: "",
-                  center: "title",
-                  right: "",
-                }}
-                titleFormat={{ year: "numeric", month: "long" }}
-                dayMaxEvents={3}
-                themeSystem={undefined}
-              />
-            )}
-          </div>
-          {/* Legend */}
-          <div className="flex flex-wrap items-center justify-center gap-4 mt-4 text-slate-700 text-sm font-semibold">
-            <span className="flex items-center gap-1">
-              <span className="w-3 h-3 rounded-full bg-[#a259ff] inline-block" />
-              Global Contest
-            </span>
-            <span className="flex items-center gap-1">
-              <span className="w-3 h-3 rounded-full bg-[#22c55e] inline-block" />
-              Ongoing
-            </span>
-            <span className="flex items-center gap-1">
-              <span className="w-3 h-3 rounded-full bg-[#2563eb] inline-block" />
-              Upcoming
-            </span>
-            <span className="flex items-center gap-1">
-              <span className="w-3 h-3 rounded-full bg-[#f59e42] inline-block" />
-              Internal Contest
-            </span>
-            <span className="flex items-center gap-1">
-              <span className="w-3 h-3 rounded-full bg-[#e0e7ef] border border-slate-400 inline-block" />
-              Course Content
-            </span>
-          </div>
-        </div>
-        <ContestDetailModal
-          isOpen={isDetailModalOpen}
-          onClose={() => setIsDetailModalOpen(false)}
-          contest={selectedContest}
-        />
+    <div className="min-h-screen flex flex-col items-center justify-start bg-[#F6F5F2] py-10">
+      {/* Speech bubble */}
+      <div className="w-full flex justify-center mb-4">
+        <Alert className="rounded-2xl shadow-lg px-8 py-4 bg-white/90 border border-gray-200 text-2xl font-serif font-semibold text-gray-900 max-w-2xl text-center">
+          Calendar
+        </Alert>
       </div>
-    </>
+      {/* Calendar */}
+      {isLoading ? (
+        <div className="flex items-center justify-center min-h-[400px] text-lg text-gray-500">
+          Loading events...
+        </div>
+      ) : (
+        <CustomCalendar
+          events={events}
+          month={month}
+          onMonthChange={setMonth}
+          onEventClick={handleEventClick}
+        />
+      )}
+      <ContestDetailModal
+        isOpen={isDetailModalOpen}
+        onClose={() => setIsDetailModalOpen(false)}
+        contest={selectedContest}
+      />
+    </div>
   );
 };
 

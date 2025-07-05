@@ -125,6 +125,7 @@ export const CustomCalendar: React.FC<CustomCalendarProps> = ({
       if (!map[event.date]) map[event.date] = [];
       map[event.date].push(event);
     }
+    console.log("CustomCalendar: eventMap", map);
     return map;
   }, [events]);
 
@@ -225,12 +226,11 @@ export const CustomCalendar: React.FC<CustomCalendarProps> = ({
                     text: "text-gray-700",
                     logo: null,
                   };
-                  // Highlight past contests with faded style
-                  const isPast =
-                    event._contest &&
-                    event._contest.date &&
-                    new Date(event._contest.date) < new Date();
-                  const faded = isPast ? "opacity-60 grayscale" : "";
+                  // Only fade if contest is before today
+                  const eventDate = new Date(event.date);
+                  const today = new Date();
+                  today.setHours(0, 0, 0, 0);
+                  const faded = eventDate < today ? "opacity-80" : "";
                   return (
                     <div
                       key={event.id}

@@ -276,6 +276,9 @@ const CalendarPage = () => {
   const calendarRef = useRef<any>(null);
   const [month, setMonth] = useState(getCurrentMonth());
 
+  // Debugging: Log past contests, events, and current month
+  console.log("CalendarPage: past contests", past);
+
   // Map upcoming and past contests to CustomCalendar event format
   const events = useMemo(() => {
     const mapped: any[] = [];
@@ -299,16 +302,9 @@ const CalendarPage = () => {
     if (past) {
       mapped.push(
         ...past.map((contest, idx) => {
-          // Handle both ISO string and date object formats
           const contestDate = new Date(contest.date);
           const date = format(contestDate, "yyyy-MM-dd");
-          // Infer platform from contest name for past contests
-          let platform = "other";
-          const nameLower = contest.name.toLowerCase();
-          if (nameLower.includes("codeforces")) platform = "codeforces";
-          else if (nameLower.includes("leetcode")) platform = "leetcode";
-          else if (nameLower.includes("codechef")) platform = "codechef";
-          else if (nameLower.includes("atcoder")) platform = "atcoder";
+          const platform = contest.site ? contest.site.toLowerCase() : "other";
           return {
             id: `past-${idx}`,
             date,
@@ -324,6 +320,7 @@ const CalendarPage = () => {
     // If you have non-contest events, add them here using getEventTypeAndIcon
     // mapped.push(...demoEvents);
 
+    console.log("CalendarPage: events", mapped);
     return mapped;
   }, [upcoming, past]);
 
@@ -334,17 +331,10 @@ const CalendarPage = () => {
   };
 
   const handleEventClick = (event: any) => {
-    let contest = event._contest;
-    if (!contest) {
-      contest = {
-        site: event.description,
-        title: event.title,
-        startTime: new Date(event.date).getTime(),
-        duration: 2 * 60 * 60, // fallback 2h
-        endTime: new Date(event.date).getTime() + 2 * 60 * 60 * 1000,
-        url: "#",
-      };
-    }
+    let contest = event._contest || event;
+    // Ensure contest has url and site for past contests
+    if (!contest.url && event.url) contest.url = event.url;
+    if (!contest.site && event.site) contest.site = event.site;
     setSelectedContest(contest);
     setIsDetailModalOpen(true);
   };
@@ -414,6 +404,9 @@ const CalendarPage = () => {
       setIsDetailModalOpen(true);
     }
   };
+
+  // Log the current month
+  console.log("CalendarPage: current month", month);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-start bg-[#F6F5F2] py-10">

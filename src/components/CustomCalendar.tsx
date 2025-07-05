@@ -184,15 +184,19 @@ export const CustomCalendar: React.FC<CustomCalendarProps> = ({
           return (
             <div
               key={dateStr}
-              className={`min-h-[90px] flex flex-col items-start p-2 rounded-2xl ${
+              className={`w-[170px] h-[110px] min-h-0 flex flex-col items-start p-2 rounded-2xl transition-all duration-150 ${
                 isCurrentMonth ? "bg-[#E9EAEC]" : "bg-[#E9EAEC] opacity-60"
-              } ${isToday ? "border border-blue-400" : ""}`}
+              } ${
+                isToday ? "border border-blue-400" : "border border-transparent"
+              }`}
+              style={{ boxSizing: "border-box" }}
             >
               <div className="text-xs font-semibold text-gray-400 mb-1 select-none">
                 {day.getDate()}
               </div>
-              <div className="flex flex-col gap-1 w-full">
-                {dayEvents.map((event) => {
+              {/* Event list: always scrollable if overflow */}
+              <div className="flex flex-col w-full gap-1 overflow-y-auto max-h-[80px]">
+                {dayEvents.map((event, idx) => {
                   const platform = event.type?.toLowerCase();
                   const style = platformStyles[platform] || {
                     bg: "bg-white",
@@ -203,19 +207,31 @@ export const CustomCalendar: React.FC<CustomCalendarProps> = ({
                   return (
                     <div
                       key={event.id}
-                      className={`flex items-center rounded-xl ${style.bg} ${style.border} border w-full mb-1 last:mb-0 px-3 py-2 cursor-pointer`}
-                      style={{ fontSize: "1rem" }}
+                      className={`flex items-center ${style.bg} ${style.border} border w-full px-1.5 py-0.5 cursor-pointer min-h-0 rounded-md transition-colors duration-100 hover:bg-gray-100/70`}
+                      style={{
+                        fontSize: "0.85rem",
+                        minHeight: "0",
+                        lineHeight: 1.1,
+                        borderWidth: 1,
+                      }}
                       onClick={() => onEventClick && onEventClick(event)}
+                      title={event.title}
                     >
-                      {style.logo}
+                      <span className="flex items-center mr-1">
+                        {style.logo}
+                      </span>
                       <div className="flex-1 min-w-0">
                         <div
-                          className={`font-bold truncate leading-tight ${style.text}`}
+                          className={`truncate leading-tight font-medium ${style.text}`}
+                          style={{ fontSize: "0.97em" }}
                         >
                           {event.title}
                         </div>
                         {event.description && (
-                          <div className="text-xs text-gray-500 truncate leading-tight whitespace-pre-line">
+                          <div
+                            className="text-xs text-gray-500 truncate leading-tight whitespace-pre-line"
+                            style={{ fontSize: "0.72em" }}
+                          >
                             {event.description}
                           </div>
                         )}

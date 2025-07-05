@@ -162,25 +162,25 @@ export const CustomCalendar: React.FC<CustomCalendarProps> = ({
             className="rounded-full border-gray-300"
             title="Go to Today"
           >
-            <CalendarIcon size={18} />
+            <CalendarIcon size={18} className="text-gray-700" />
           </Button>
           <Button
             variant="ghost"
             size="icon"
             onClick={() => onMonthChange(addMonths(month, -1))}
-            className="rounded-full border border-gray-300"
+            className="rounded-full border border-gray-300 group"
             title="Previous Month"
           >
-            <ChevronLeft />
+            <ChevronLeft className="text-gray-700 group-hover:text-gray-900" />
           </Button>
           <Button
             variant="ghost"
             size="icon"
             onClick={() => onMonthChange(addMonths(month, 1))}
-            className="rounded-full border border-gray-300"
+            className="rounded-full border border-gray-300 group"
             title="Next Month"
           >
-            <ChevronRight />
+            <ChevronRight className="text-gray-700 group-hover:text-gray-900" />
           </Button>
         </div>
       </div>

@@ -99,8 +99,19 @@ export const ContestDetailModal = ({
             </span>
           </div>
         </div>
-        {/* Video Solution Button */}
-        <div className="px-5 pb-6 pt-2">
+        {/* Video Solution & Virtual Contest Buttons */}
+        <div className="px-5 pb-6 pt-2 flex flex-col gap-3">
+          {isPast && (
+            <a
+              href={contest.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 w-full py-3 rounded-xl border border-[#B3D0F7] bg-white text-[#1A314B] font-semibold text-base hover:bg-blue-50 transition"
+            >
+              <ExternalLink className="h-5 w-5 text-[#2D5BFF]" />
+              Join Virtual Contest
+            </a>
+          )}
           <a
             href={youtubeChannelUrl}
             target="_blank"

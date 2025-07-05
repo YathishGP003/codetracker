@@ -299,7 +299,9 @@ const CalendarPage = () => {
     if (past) {
       mapped.push(
         ...past.map((contest, idx) => {
-          const date = format(parseISO(contest.date), "yyyy-MM-dd");
+          // Handle both ISO string and date object formats
+          const contestDate = new Date(contest.date);
+          const date = format(contestDate, "yyyy-MM-dd");
           // Infer platform from contest name for past contests
           let platform = "other";
           const nameLower = contest.name.toLowerCase();
@@ -321,6 +323,7 @@ const CalendarPage = () => {
     }
     // If you have non-contest events, add them here using getEventTypeAndIcon
     // mapped.push(...demoEvents);
+
     return mapped;
   }, [upcoming, past]);
 

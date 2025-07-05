@@ -1,7 +1,11 @@
 import React, { useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Calendar as CalendarIcon,
+} from "lucide-react";
 import {
   format,
   startOfMonth,
@@ -134,6 +138,12 @@ export const CustomCalendar: React.FC<CustomCalendarProps> = ({
     days.push(d);
   }
 
+  // Handler for Today button
+  const handleToday = () => {
+    const today = new Date();
+    onMonthChange(new Date(today.getFullYear(), today.getMonth(), 1));
+  };
+
   // Render
   return (
     <div className="rounded-3xl bg-[#F6F5F2] p-6 border border-gray-100">
@@ -144,12 +154,22 @@ export const CustomCalendar: React.FC<CustomCalendarProps> = ({
             {format(month, "MMMM yyyy")}
           </span>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={handleToday}
+            className="rounded-full border-gray-300"
+            title="Go to Today"
+          >
+            <CalendarIcon size={18} />
+          </Button>
           <Button
             variant="ghost"
             size="icon"
             onClick={() => onMonthChange(addMonths(month, -1))}
-            className="rounded-full"
+            className="rounded-full border border-gray-300"
+            title="Previous Month"
           >
             <ChevronLeft />
           </Button>
@@ -157,7 +177,8 @@ export const CustomCalendar: React.FC<CustomCalendarProps> = ({
             variant="ghost"
             size="icon"
             onClick={() => onMonthChange(addMonths(month, 1))}
-            className="rounded-full"
+            className="rounded-full border border-gray-300"
+            title="Next Month"
           >
             <ChevronRight />
           </Button>
@@ -204,10 +225,16 @@ export const CustomCalendar: React.FC<CustomCalendarProps> = ({
                     text: "text-gray-700",
                     logo: null,
                   };
+                  // Highlight past contests with faded style
+                  const isPast =
+                    event._contest &&
+                    event._contest.date &&
+                    new Date(event._contest.date) < new Date();
+                  const faded = isPast ? "opacity-60 grayscale" : "";
                   return (
                     <div
                       key={event.id}
-                      className={`flex items-center ${style.bg} ${style.border} border w-full px-1.5 py-0.5 cursor-pointer min-h-0 rounded-md transition-colors duration-100 hover:bg-gray-100/70`}
+                      className={`flex items-center ${style.bg} ${style.border} border w-full px-1.5 py-0.5 cursor-pointer min-h-0 rounded-md transition-colors duration-100 hover:bg-gray-100/70 ${faded}`}
                       style={{
                         fontSize: "0.85rem",
                         minHeight: "0",

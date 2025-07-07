@@ -336,7 +336,7 @@ const CalendarPage = () => {
     if (!contest.url && event.url) contest.url = event.url;
     if (!contest.site && event.site) contest.site = event.site;
     setSelectedContest(contest);
-      setIsDetailModalOpen(true);
+    setIsDetailModalOpen(true);
   };
 
   const handleDateClick = (arg: any) => {
@@ -413,9 +413,9 @@ const CalendarPage = () => {
       {/* Speech bubble */}
       <div className="w-full flex justify-center mb-4">
         <Alert className="rounded-2xl shadow-lg px-8 py-4 bg-white/90 border border-gray-200 text-2xl font-serif font-semibold text-gray-900 text-center w-fit">
-            Contest Calendar
+          Contest Calendar
         </Alert>
-          </div>
+      </div>
       {/* Calendar */}
       {isLoading ? (
         <div className="flex items-center justify-center min-h-[400px] text-lg text-gray-500">
@@ -429,12 +429,12 @@ const CalendarPage = () => {
           onEventClick={handleEventClick}
         />
       )}
-        <ContestDetailModal
-          isOpen={isDetailModalOpen}
-          onClose={() => setIsDetailModalOpen(false)}
-          contest={selectedContest}
-        />
-      </div>
+      <ContestDetailModal
+        isOpen={isDetailModalOpen}
+        onClose={() => setIsDetailModalOpen(false)}
+        contest={selectedContest}
+      />
+    </div>
   );
 };
 

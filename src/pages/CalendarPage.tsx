@@ -255,8 +255,16 @@ function getEventTypeAndIcon(title: string, site: string) {
 
 const CalendarPage = () => {
   const { isDarkMode } = useDarkMode();
-  const { data: upcoming, isLoading: loadingUpcoming } = useAllContests();
-  const { data: past, isLoading: loadingPast } = useAllPastContests();
+  const {
+    data: upcoming,
+    isLoading: loadingUpcoming,
+    error: errorUpcoming,
+  } = useAllContests();
+  const {
+    data: past,
+    isLoading: loadingPast,
+    error: errorPast,
+  } = useAllPastContests();
   const [isPlanDialogOpen, setIsPlanDialogOpen] = useState(false);
   const [plannedEvents, setPlannedEvents] = useState<any[]>([]);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
@@ -285,8 +293,8 @@ const CalendarPage = () => {
     if (upcoming) {
       mapped.push(
         ...upcoming.map((contest, idx) => {
-          const date = format(new Date(contest.startTime), "yyyy-MM-dd");
-          // Set type to platform for contest events
+          // Use local date string for correct local day
+          const date = new Date(contest.startTime).toLocaleDateString("en-CA");
           return {
             id: `upcoming-${idx}`,
             date,
@@ -302,8 +310,8 @@ const CalendarPage = () => {
     if (past) {
       mapped.push(
         ...past.map((contest, idx) => {
-          const contestDate = new Date(contest.date);
-          const date = format(contestDate, "yyyy-MM-dd");
+          // Use local date string for correct local day
+          const date = new Date(contest.date).toLocaleDateString("en-CA");
           const platform = contest.site ? contest.site.toLowerCase() : "other";
           return {
             id: `past-${idx}`,
@@ -325,6 +333,7 @@ const CalendarPage = () => {
   }, [upcoming, past]);
 
   const isLoading = loadingUpcoming || loadingPast;
+  const hasError = !!errorUpcoming || !!errorPast;
 
   const handlePlanSubmit = (newEvents: any[]) => {
     setPlannedEvents((prev) => [...prev, ...newEvents]);
@@ -379,12 +388,14 @@ const CalendarPage = () => {
   const contestMap = useMemo(() => {
     const map: Record<string, any[]> = {};
     (upcoming || []).forEach((contest) => {
-      const date = new Date(contest.startTime).toISOString().slice(0, 10);
+      // Use local date string for correct local day
+      const date = new Date(contest.startTime).toLocaleDateString("en-CA");
       if (!map[date]) map[date] = [];
       map[date].push({ ...contest, isPast: false });
     });
     (past || []).forEach((contest) => {
-      const date = contest.date.slice(0, 10);
+      // Use local date string for correct local day
+      const date = new Date(contest.date).toLocaleDateString("en-CA");
       if (!map[date]) map[date] = [];
       map[date].push({ ...contest, isPast: true });
     });
@@ -416,19 +427,27 @@ const CalendarPage = () => {
           Contest Calendar
         </Alert>
       </div>
+      {/* Error message */}
+      {hasError && (
+        <div className="flex items-center justify-center min-h-[100px] text-lg text-red-500 mb-4">
+          {errorUpcoming?.message ||
+            errorPast?.message ||
+            "Failed to load contest data. Please try again later."}
+        </div>
+      )}
       {/* Calendar */}
-      {isLoading ? (
+      {isLoading && !hasError ? (
         <div className="flex items-center justify-center min-h-[400px] text-lg text-gray-500">
           Loading events...
         </div>
-      ) : (
+      ) : !hasError ? (
         <CustomCalendar
           events={events}
           month={month}
           onMonthChange={setMonth}
           onEventClick={handleEventClick}
         />
-      )}
+      ) : null}
       <ContestDetailModal
         isOpen={isDetailModalOpen}
         onClose={() => setIsDetailModalOpen(false)}

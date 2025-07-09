@@ -10,15 +10,24 @@ interface UpcomingContest {
 }
 
 const fetchUpcomingContests = async (): Promise<UpcomingContest[]> => {
-  const response = await fetch(
-    "https://competeapi.vercel.app/contests/upcoming/"
-  );
-  if (!response.ok) {
-    throw new Error("Failed to fetch upcoming contests");
+  try {
+    const response = await fetch(
+      "https://competeapi.vercel.app/contests/upcoming/"
+    );
+    if (!response.ok) {
+      throw new Error(
+        `Failed to fetch upcoming contests: ${response.status} ${response.statusText}`
+      );
+    }
+    const data = await response.json();
+    // Show all contests on their actual date
+    return data;
+  } catch (error: any) {
+    // Network/CORS error or other
+    throw new Error(
+      "Unable to fetch upcoming contests. This may be due to a network error, CORS issue, or the API being down. Please try again later."
+    );
   }
-  const data = await response.json();
-  // The API returns the data directly as an array
-  return data;
 };
 
 export const useAllContests = () => {

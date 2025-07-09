@@ -34,5 +34,7 @@ export const useAllContests = () => {
   return useQuery<UpcomingContest[], Error>({
     queryKey: ["allContests"],
     queryFn: fetchUpcomingContests,
+    staleTime: 1000 * 60 * 60 * 24, // 24 hours
+    refetchInterval: 1000 * 60 * 60 * 24, // 24 hours
   });
 };

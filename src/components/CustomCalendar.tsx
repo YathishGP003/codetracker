@@ -160,28 +160,28 @@ export const CustomCalendar: React.FC<CustomCalendarProps> = ({
             variant="outline"
             size="icon"
             onClick={handleToday}
-            className="rounded-full border-gray-300"
+            className="rounded-full border-[#D6E6FB] bg-[#0A1121] hover:bg-[#1A2233] border-2 transition-colors"
             title="Go to Today"
           >
-            <CalendarIcon size={18} className="text-gray-700" />
+            <CalendarIcon size={18} className="text-white" />
           </Button>
           <Button
             variant="ghost"
             size="icon"
             onClick={() => onMonthChange(addMonths(month, -1))}
-            className="rounded-full border border-gray-300 group"
+            className="rounded-full border-2 border-[#D6E6FB] group bg-white hover:bg-[#EAF4FF] transition-colors"
             title="Previous Month"
           >
-            <ChevronLeft className="text-gray-700 group-hover:text-gray-900" />
+            <ChevronLeft className="text-[#0A1121] group-hover:text-[#2563eb] transition-colors" />
           </Button>
           <Button
             variant="ghost"
             size="icon"
             onClick={() => onMonthChange(addMonths(month, 1))}
-            className="rounded-full border border-gray-300 group"
+            className="rounded-full border-2 border-[#D6E6FB] group bg-white hover:bg-[#EAF4FF] transition-colors"
             title="Next Month"
           >
-            <ChevronRight className="text-gray-700 group-hover:text-gray-900" />
+            <ChevronRight className="text-[#0A1121] group-hover:text-[#2563eb] transition-colors" />
           </Button>
         </div>
       </div>

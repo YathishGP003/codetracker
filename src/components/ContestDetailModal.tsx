@@ -85,23 +85,47 @@ export const ContestDetailModal = ({
   contest,
 }: ContestDetailModalProps) => {
   if (!isOpen || !contest) return null;
-  const { color, logo } = getPlatformStyle(contest.site);
+  const { color } = getPlatformStyle(contest.site);
   const start = contest.startTime
-    ? new Date(contest.startTime)
+    ? new Date(
+        new Date(contest.startTime).toLocaleString("en-US", {
+          timeZone: "Asia/Kolkata",
+        })
+      )
     : contest.date
-    ? new Date(contest.date)
+    ? new Date(
+        new Date(contest.date).toLocaleString("en-US", {
+          timeZone: "Asia/Kolkata",
+        })
+      )
     : null;
-  const end = contest.endTime ? new Date(contest.endTime) : null;
-  // Duration in hours (rounded to nearest integer)
-  const duration = contest.duration
-    ? Math.round(contest.duration / 3600)
-    : start && end
-    ? Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60))
+  const end = contest.endTime
+    ? new Date(
+        new Date(contest.endTime).toLocaleString("en-US", {
+          timeZone: "Asia/Kolkata",
+        })
+      )
     : null;
+
+  // Calculate duration in IST
+  let durationStr = "-";
+  if (start && end) {
+    const diffMs = end.getTime() - start.getTime();
+    const totalMinutes = Math.round(diffMs / (1000 * 60));
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+    if (hours > 0 && minutes > 0) durationStr = `${hours}h ${minutes}m`;
+    else if (hours > 0) durationStr = `${hours}h`;
+    else durationStr = `${minutes}m`;
+  }
+
   // Status: COMPLETED if end < now, UPCOMING if start > now, else ONGOING
   let status = "";
-  if (end && end < new Date()) status = "COMPLETED";
-  else if (start && start > new Date()) status = "UPCOMING";
+  const nowIST = new Date(
+    new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" })
+  );
+  if (end && end < nowIST) status = "COMPLETED";
+  else if (start && start > nowIST) status = "UPCOMING";
   else status = "ONGOING";
   const youtubeSearch = `https://www.youtube.com/results?search_query=${encodeURIComponent(
     contest.title + " video solution"
@@ -158,7 +182,7 @@ export const ContestDetailModal = ({
               DURATION
             </span>
             <span className="text-[15px] font-bold text-[#222]">
-              {duration ? `${duration}h` : "-"}
+              {durationStr}
             </span>
           </div>
           <div className="flex flex-col bg-white rounded-2xl p-4 border border-[#D6E6FB]">

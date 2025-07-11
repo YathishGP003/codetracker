@@ -2,6 +2,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Youtube, ExternalLink } from "lucide-react";
 import { format } from "date-fns";
 import React from "react";
+import { formatIST } from "@/lib/utils";
 
 interface UpcomingContest {
   site: string;
@@ -91,103 +92,104 @@ export const ContestDetailModal = ({
     ? new Date(contest.date)
     : null;
   const end = contest.endTime ? new Date(contest.endTime) : null;
+  // Duration in hours (rounded to nearest integer)
   const duration = contest.duration
-    ? contest.duration
+    ? Math.round(contest.duration / 3600)
     : start && end
     ? Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60))
     : null;
-  const status = start ? (start > new Date() ? "UPCOMING" : "PAST") : "";
+  // Status: COMPLETED if end < now, UPCOMING if start > now, else ONGOING
+  let status = "";
+  if (end && end < new Date()) status = "COMPLETED";
+  else if (start && start > new Date()) status = "UPCOMING";
+  else status = "ONGOING";
   const youtubeSearch = `https://www.youtube.com/results?search_query=${encodeURIComponent(
-    contest.title + " TLE PCD"
+    contest.title + " video solution"
   )}`;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[420px] p-0 bg-white rounded-2xl shadow-2xl border border-slate-100">
+      <DialogContent className="sm:max-w-[440px] p-0 bg-white rounded-2xl border border-[#D6E6FB] shadow-[0_4px_24px_0_rgba(30,136,229,0.08)]">
         {/* Header */}
-        <div className="flex items-center justify-between px-5 pt-5 pb-2">
+        <div className="flex items-center justify-between px-6 pt-6 pb-2">
           <div className="flex items-center gap-2">
-            {logo}
             <a
               href={contest.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[#2D5BFF] font-bold text-base hover:underline flex items-center gap-1"
+              className="text-[#2563eb] font-bold text-lg hover:underline flex items-center gap-1"
               style={{ color }}
             >
               <span className="truncate max-w-[220px]">{contest.title}</span>
+              <ExternalLink className="h-5 w-5 text-[#2563eb]" />
             </a>
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-600 text-xl font-bold focus:outline-none"
+            className="text-[#2563eb] hover:text-blue-700 text-2xl font-bold focus:outline-none"
           >
             ×
           </button>
         </div>
         {/* Subtitle */}
-        <div className="px-5 pt-0 pb-2 text-[15px] text-[#8B98A9] font-medium">
+        <div className="px-6 pt-0 pb-3 text-[15px] text-[#7A7A7A] font-normal">
           {contest.site} Contest
         </div>
         {/* Info grid */}
-        <div className="grid grid-cols-2 gap-3 px-5 pb-2">
-          <div className="flex flex-col bg-[#F7F9FB] rounded-xl p-4 border border-[#E6ECF3]">
-            <span className="text-xs text-[#8B98A9] font-bold mb-1 tracking-wide">
+        <div className="grid grid-cols-2 gap-4 px-6 pb-2">
+          <div className="flex flex-col bg-white rounded-2xl p-4 border border-[#D6E6FB]">
+            <span className="text-xs text-[#7A7A7A] font-bold mb-1 tracking-wide uppercase">
               START
             </span>
-            <span className="text-[15px] font-bold text-[#1A314B]">
-              {start ? start.toLocaleString() : "-"}
+            <span className="text-[15px] font-bold text-[#222]">
+              {start ? formatIST(start) : "-"}
             </span>
           </div>
-          <div className="flex flex-col bg-[#F7F9FB] rounded-xl p-4 border border-[#E6ECF3]">
-            <span className="text-xs text-[#8B98A9] font-bold mb-1 tracking-wide">
+          <div className="flex flex-col bg-white rounded-2xl p-4 border border-[#D6E6FB]">
+            <span className="text-xs text-[#7A7A7A] font-bold mb-1 tracking-wide uppercase">
               END
             </span>
-            <span className="text-[15px] font-bold text-[#1A314B]">
-              {end ? end.toLocaleString() : "-"}
+            <span className="text-[15px] font-bold text-[#222]">
+              {end ? formatIST(end) : "-"}
             </span>
           </div>
-          <div className="flex flex-col bg-[#F7F9FB] rounded-xl p-4 border border-[#E6ECF3]">
-            <span className="text-xs text-[#8B98A9] font-bold mb-1 tracking-wide">
+          <div className="flex flex-col bg-white rounded-2xl p-4 border border-[#D6E6FB]">
+            <span className="text-xs text-[#7A7A7A] font-bold mb-1 tracking-wide uppercase">
               DURATION
             </span>
-            <span className="text-[15px] font-bold text-[#1A314B]">
+            <span className="text-[15px] font-bold text-[#222]">
               {duration ? `${duration}h` : "-"}
             </span>
           </div>
-          <div className="flex flex-col bg-[#F7F9FB] rounded-xl p-4 border border-[#E6ECF3]">
-            <span className="text-xs text-[#8B98A9] font-bold mb-1 tracking-wide">
+          <div className="flex flex-col bg-white rounded-2xl p-4 border border-[#D6E6FB]">
+            <span className="text-xs text-[#7A7A7A] font-bold mb-1 tracking-wide uppercase">
               STATUS
             </span>
             <span
               className={`text-[15px] font-bold ${
-                status === "UPCOMING" ? "text-blue-500" : "text-[#E14B4B]"
+                status === "COMPLETED"
+                  ? "text-[#E14B4B]"
+                  : status === "UPCOMING"
+                  ? "text-[#2563eb]"
+                  : "text-yellow-500"
               }`}
             >
               {status}
             </span>
           </div>
         </div>
-        {/* Video Solution & Virtual Contest Buttons */}
-        <div className="px-5 pb-6 pt-2 flex flex-col gap-3">
-          {status === "PAST" && (
-            <a
-              href={contest.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 w-full py-3 rounded-xl border border-[#B3D0F7] bg-white text-[#1A314B] font-semibold text-base hover:bg-blue-50 transition"
-            >
-              <ExternalLink className="h-5 w-5 text-[#2D5BFF]" />
-              Join Virtual Contest
-            </a>
-          )}
+        {/* Video Solution Button */}
+        <div className="px-6 pb-6 pt-4 flex flex-col gap-3">
           <a
             href={youtubeSearch}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 w-full py-3 rounded-xl border border-[#B3D0F7] bg-[#F5FAFF] text-[#1A314B] font-semibold text-base hover:bg-blue-50 transition"
+            className="flex items-center justify-center gap-2 w-full py-3 rounded-2xl border border-[#B3D0F7] bg-[#EAF4FF] text-[#2563eb] font-semibold text-base hover:bg-blue-50 transition"
+            style={{ boxShadow: "none" }}
           >
-            <Youtube className="h-5 w-5 text-[#E14B4B]" />
+            <span className="mr-1">
+              <Youtube className="h-5 w-5 text-[#E14B4B]" />
+            </span>
             Video Solution
           </a>
         </div>

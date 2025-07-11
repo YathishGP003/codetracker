@@ -344,6 +344,23 @@ const CalendarPage = () => {
     // Ensure contest has url and site for past contests
     if (!contest.url && event.url) contest.url = event.url;
     if (!contest.site && event.site) contest.site = event.site;
+    // Fallback: if still no url, try to find by title and date in upcoming/past
+    if (!contest.url) {
+      if (upcoming) {
+        const found = upcoming.find(
+          (c) => c.title === contest.title && c.startTime === contest.startTime
+        );
+        if (found && found.url) contest.url = found.url;
+      }
+      if (!contest.url && past) {
+        const found = past.find(
+          (c) =>
+            (c.name === contest.title || c.title === contest.title) &&
+            (c.date === contest.date || c.startTime === contest.startTime)
+        );
+        if (found && found.url) contest.url = found.url;
+      }
+    }
     setSelectedContest(contest);
     setIsDetailModalOpen(true);
   };

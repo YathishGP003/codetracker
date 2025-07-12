@@ -8,6 +8,7 @@ interface CPSheetStatsProps {
   problemsSolved: number;
   totalProblems: number;
   leaderboardRank?: number;
+  allSolved?: number; // Add this prop
 }
 
 const CPSheetStats: React.FC<CPSheetStatsProps> = ({
@@ -16,6 +17,7 @@ const CPSheetStats: React.FC<CPSheetStatsProps> = ({
   problemsSolved,
   totalProblems,
   leaderboardRank,
+  allSolved,
 }) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
@@ -36,6 +38,11 @@ const CPSheetStats: React.FC<CPSheetStatsProps> = ({
           {problemsSolved} / {totalProblems}
         </div>
         <div className="text-xs text-gray-500 mt-1">Solved / Total</div>
+        {typeof allSolved === "number" && (
+          <div className="text-xs text-blue-400 mt-2">
+            All Codeforces: {allSolved}
+          </div>
+        )}
       </Card>
       {/* Leaderboard Rank */}
       <Card className="flex flex-col items-center p-6">

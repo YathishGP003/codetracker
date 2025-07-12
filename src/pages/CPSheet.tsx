@@ -228,6 +228,35 @@ const CPSheet: React.FC = () => {
     );
   }
 
+  // Calculate CP Sheet solved (problems from CP sheet solved by user)
+  const cpSheetProblemSet = new Set(
+    Object.values(staticCPProblems)
+      .flat()
+      .map((p) => {
+        const urlParts = p.url.split("/");
+        return `${urlParts[urlParts.length - 2]}${
+          urlParts[urlParts.length - 1]
+        }`;
+      })
+  );
+  const cpSheetSolved = problems.filter((p) => {
+    // Try to match by contestId+index
+    if (p.contest_id && p.problem_index) {
+      return cpSheetProblemSet.has(`${p.contest_id}${p.problem_index}`);
+    }
+    // Fallback: try to match by problem_url
+    if (p.problem_url) {
+      const urlParts = p.problem_url.split("/");
+      return cpSheetProblemSet.has(
+        `${urlParts[urlParts.length - 2]}${urlParts[urlParts.length - 1]}`
+      );
+    }
+    return false;
+  }).length;
+  const cpSheetTotal = Object.values(staticCPProblems).flat().length;
+  // All unique Codeforces problems solved by user
+  const allSolved = problems.length;
+
   // Calculate total problems from all ratings
   const totalProblems = Object.values(staticCPProblems).reduce(
     (total, problems) => total + problems.length,
@@ -243,9 +272,10 @@ const CPSheet: React.FC = () => {
           <CPSheetStats
             currentRating={student.currentRating}
             maxRating={student.maxRating}
-            problemsSolved={problems.length}
-            totalProblems={totalProblems}
+            problemsSolved={cpSheetSolved}
+            totalProblems={cpSheetTotal}
             leaderboardRank={leaderboardRank}
+            allSolved={allSolved}
           />
 
           {/* 800 Rated Problems */}

@@ -28,3 +28,13 @@ export function formatIST(date: Date): string {
   // Remove seconds and add IST suffix
   return istDate.toLocaleString("en-US", options).replace(",", "") + " IST";
 }
+
+export const getRatingColor = (rating: number) => {
+  if (rating >= 2400) return "text-red-500";
+  if (rating >= 2200) return "text-orange-500";
+  if (rating >= 1900) return "text-yellow-500";
+  if (rating >= 1600) return "text-purple-500";
+  if (rating >= 1400) return "text-blue-500";
+  if (rating >= 1200) return "text-green-500";
+  return "text-gray-500";
+};

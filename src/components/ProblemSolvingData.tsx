@@ -22,6 +22,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { getRatingColor } from "../lib/utils";
 
 interface ProblemSolvingDataProps {
   student: Student;
@@ -54,16 +55,6 @@ const ProblemSolvingData: React.FC<ProblemSolvingDataProps> = ({
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const getRatingColor = (rating: number) => {
-    if (rating >= 2400) return "text-red-500";
-    if (rating >= 2200) return "text-orange-500";
-    if (rating >= 1900) return "text-yellow-500";
-    if (rating >= 1600) return "text-purple-500";
-    if (rating >= 1400) return "text-blue-500";
-    if (rating >= 1200) return "text-green-500";
-    return "text-gray-500";
   };
 
   const getHeatmapColor = (count: number) => {

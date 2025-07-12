@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { useDarkMode } from "@/contexts/DarkModeContext";
 import { useProblemData } from "../hooks/useProblemData";
+import { getRatingColor } from "../lib/utils";
 
 interface Problem {
   id: string;

@@ -1,23 +1,8 @@
-
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
-import { useEffect } from 'react';
-
-interface Student {
-  id: string;
-  name: string;
-  email: string;
-  phoneNumber: string;
-  codeforcesHandle: string;
-  currentRating: number;
-  maxRating: number;
-  lastUpdated: string;
-  isActive: boolean;
-  reminderCount: number;
-  emailEnabled: boolean;
-  lastSubmissionDate: string | null;
-}
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { Student } from "../types/Student";
+import { toast } from "sonner";
+import { useEffect } from "react";
 
 interface CreateStudentData {
   name: string;
@@ -36,24 +21,28 @@ interface UpdateStudentData {
   emailEnabled: boolean;
 }
 
+/**
+ * Fetches all students. Returns { data, isLoading, error }.
+ * Surfaces errors for UI display.
+ */
 export const useStudents = () => {
   const queryClient = useQueryClient();
 
   // Set up real-time subscription for students table
   useEffect(() => {
     const channel = supabase
-      .channel('students-changes')
+      .channel("students-changes")
       .on(
-        'postgres_changes',
+        "postgres_changes",
         {
-          event: '*',
-          schema: 'public',
-          table: 'students'
+          event: "*",
+          schema: "public",
+          table: "students",
         },
         (payload) => {
-          console.log('Students table changed:', payload);
+          console.log("Students table changed:", payload);
           // Invalidate and refetch students data
-          queryClient.invalidateQueries({ queryKey: ['students'] });
+          queryClient.invalidateQueries({ queryKey: ["students"] });
         }
       )
       .subscribe();
@@ -64,30 +53,34 @@ export const useStudents = () => {
   }, [queryClient]);
 
   return useQuery({
-    queryKey: ['students'],
+    queryKey: ["students"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('students')
-        .select('*')
-        .order('created_at', { ascending: false });
+        .from("students")
+        .select("*")
+        .order("created_at", { ascending: false });
 
-      if (error) throw error;
+      if (error) throw new Error(error.message || "Failed to fetch students");
 
-      return data.map(student => ({
+      return (data || []).map((student) => ({
         id: student.id,
         name: student.name,
         email: student.email,
-        phoneNumber: student.phone_number || '',
+        phoneNumber: student.phone_number || "",
         codeforcesHandle: student.codeforces_handle,
         currentRating: student.current_rating || 0,
         maxRating: student.max_rating || 0,
-        lastUpdated: student.last_updated || '',
+        lastUpdated: student.last_updated || "",
         isActive: student.is_active || false,
         reminderCount: student.reminder_count || 0,
         emailEnabled: student.email_enabled || false,
-        lastSubmissionDate: student.last_submission_date
+        lastSubmissionDate: student.last_submission_date,
       })) as Student[];
-    }
+    },
+    onError: (error: any) => {
+      // Optionally surface error to UI
+      // e.g., toast.error(error.message)
+    },
   });
 };
 
@@ -97,7 +90,7 @@ export const useCreateStudent = () => {
   return useMutation({
     mutationFn: async (studentData: CreateStudentData) => {
       const { data, error } = await supabase
-        .from('students')
+        .from("students")
         .insert({
           name: studentData.name,
           email: studentData.email,
@@ -111,12 +104,12 @@ export const useCreateStudent = () => {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['students'] });
-      toast.success('Student added successfully!');
+      queryClient.invalidateQueries({ queryKey: ["students"] });
+      toast.success("Student added successfully!");
     },
     onError: (error: any) => {
       toast.error(`Failed to add student: ${error.message}`);
-    }
+    },
   });
 };
 
@@ -126,7 +119,7 @@ export const useUpdateStudent = () => {
   return useMutation({
     mutationFn: async (studentData: UpdateStudentData) => {
       const { data, error } = await supabase
-        .from('students')
+        .from("students")
         .update({
           name: studentData.name,
           email: studentData.email,
@@ -135,7 +128,7 @@ export const useUpdateStudent = () => {
           is_active: studentData.isActive,
           email_enabled: studentData.emailEnabled,
         })
-        .eq('id', studentData.id)
+        .eq("id", studentData.id)
         .select()
         .single();
 
@@ -143,12 +136,12 @@ export const useUpdateStudent = () => {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['students'] });
-      toast.success('Student updated successfully!');
+      queryClient.invalidateQueries({ queryKey: ["students"] });
+      toast.success("Student updated successfully!");
     },
     onError: (error: any) => {
       toast.error(`Failed to update student: ${error.message}`);
-    }
+    },
   });
 };
 
@@ -158,19 +151,19 @@ export const useDeleteStudent = () => {
   return useMutation({
     mutationFn: async (studentId: string) => {
       const { error } = await supabase
-        .from('students')
+        .from("students")
         .delete()
-        .eq('id', studentId);
+        .eq("id", studentId);
 
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['students'] });
-      toast.success('Student deleted successfully!');
+      queryClient.invalidateQueries({ queryKey: ["students"] });
+      toast.success("Student deleted successfully!");
     },
     onError: (error: any) => {
       toast.error(`Failed to delete student: ${error.message}`);
-    }
+    },
   });
 };
 
@@ -180,19 +173,19 @@ export const useDeleteMultipleStudents = () => {
   return useMutation({
     mutationFn: async (studentIds: string[]) => {
       const { error } = await supabase
-        .from('students')
+        .from("students")
         .delete()
-        .in('id', studentIds);
+        .in("id", studentIds);
 
       if (error) throw error;
     },
     onSuccess: (_, studentIds) => {
-      queryClient.invalidateQueries({ queryKey: ['students'] });
+      queryClient.invalidateQueries({ queryKey: ["students"] });
       toast.success(`${studentIds.length} students deleted successfully!`);
     },
     onError: (error: any) => {
       toast.error(`Failed to delete students: ${error.message}`);
-    }
+    },
   });
 };
 
@@ -200,21 +193,31 @@ export const useToggleStudentStatus = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ studentIds, isActive }: { studentIds: string[], isActive: boolean }) => {
+    mutationFn: async ({
+      studentIds,
+      isActive,
+    }: {
+      studentIds: string[];
+      isActive: boolean;
+    }) => {
       const { error } = await supabase
-        .from('students')
+        .from("students")
         .update({ is_active: isActive })
-        .in('id', studentIds);
+        .in("id", studentIds);
 
       if (error) throw error;
     },
     onSuccess: (_, { studentIds, isActive }) => {
-      queryClient.invalidateQueries({ queryKey: ['students'] });
-      toast.success(`${studentIds.length} students ${isActive ? 'activated' : 'deactivated'} successfully!`);
+      queryClient.invalidateQueries({ queryKey: ["students"] });
+      toast.success(
+        `${studentIds.length} students ${
+          isActive ? "activated" : "deactivated"
+        } successfully!`
+      );
     },
     onError: (error: any) => {
       toast.error(`Failed to update student status: ${error.message}`);
-    }
+    },
   });
 };
 
@@ -222,28 +225,39 @@ export const useSyncStudentData = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ studentId, handle }: { studentId: string; handle: string }) => {
-      const { data, error } = await supabase.functions.invoke('sync-codeforces-data', {
-        body: { studentId, handle }
-      });
+    mutationFn: async ({
+      studentId,
+      handle,
+    }: {
+      studentId: string;
+      handle: string;
+    }) => {
+      const { data, error } = await supabase.functions.invoke(
+        "sync-codeforces-data",
+        {
+          body: { studentId, handle },
+        }
+      );
 
       if (error) throw error;
       return data;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['students'] });
-      queryClient.invalidateQueries({ queryKey: ['contests'] });
-      queryClient.invalidateQueries({ queryKey: ['problems'] });
-      
+      queryClient.invalidateQueries({ queryKey: ["students"] });
+      queryClient.invalidateQueries({ queryKey: ["contests"] });
+      queryClient.invalidateQueries({ queryKey: ["problems"] });
+
       if (data.success) {
-        toast.success(`Sync completed! ${data.contestsFetched} contests and ${data.problemsFetched} problems fetched.`);
+        toast.success(
+          `Sync completed! ${data.contestsFetched} contests and ${data.problemsFetched} problems fetched.`
+        );
       } else {
         toast.error(`Sync failed: ${data.error}`);
       }
     },
     onError: (error: any) => {
       toast.error(`Sync failed: ${error.message}`);
-    }
+    },
   });
 };
 
@@ -252,26 +266,37 @@ export const useSyncAllStudents = () => {
 
   return useMutation({
     mutationFn: async () => {
-      const { data, error } = await supabase.functions.invoke('sync-codeforces-data', {
-        body: { syncAll: true }
-      });
+      const { data, error } = await supabase.functions.invoke(
+        "sync-codeforces-data",
+        {
+          body: { syncAll: true },
+        }
+      );
 
       if (error) throw error;
       return data;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['students'] });
-      queryClient.invalidateQueries({ queryKey: ['contests'] });
-      queryClient.invalidateQueries({ queryKey: ['problems'] });
-      
+      queryClient.invalidateQueries({ queryKey: ["students"] });
+      queryClient.invalidateQueries({ queryKey: ["contests"] });
+      queryClient.invalidateQueries({ queryKey: ["problems"] });
+
       if (data.success) {
-        const totalContests = data.results.reduce((sum: number, result: any) => sum + (result.contestsFetched || 0), 0);
-        const totalProblems = data.results.reduce((sum: number, result: any) => sum + (result.problemsFetched || 0), 0);
-        toast.success(`Global sync completed! ${totalContests} contests and ${totalProblems} problems fetched across all students.`);
+        const totalContests = data.results.reduce(
+          (sum: number, result: any) => sum + (result.contestsFetched || 0),
+          0
+        );
+        const totalProblems = data.results.reduce(
+          (sum: number, result: any) => sum + (result.problemsFetched || 0),
+          0
+        );
+        toast.success(
+          `Global sync completed! ${totalContests} contests and ${totalProblems} problems fetched across all students.`
+        );
       }
     },
     onError: (error: any) => {
       toast.error(`Global sync failed: ${error.message}`);
-    }
+    },
   });
 };

@@ -11,17 +11,7 @@ import {
 import { useDarkMode } from "@/contexts/DarkModeContext";
 import { useProblemData } from "../hooks/useProblemData";
 import { getRatingColor } from "../lib/utils";
-
-interface Problem {
-  id: string;
-  name: string;
-  contestId: number;
-  index: string;
-  rating?: number;
-  tags: string[];
-  solved: boolean;
-  solvedAt?: string;
-}
+import { Problem } from "../types/Student";
 
 interface ProblemTrackerProps {
   studentId: string;

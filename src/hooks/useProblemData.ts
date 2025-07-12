@@ -1,20 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../integrations/supabase/client";
-
-interface Problem {
-  id: string;
-  student_id: string;
-  problem_id: string;
-  problem_name: string;
-  contest_id: number;
-  problem_index: string;
-  rating: number;
-  tags: string[];
-  solved_at: Date;
-  verdict: string;
-  created_at: Date;
-  programming_language?: string | null;
-}
+import { Problem } from "../types/Student";
 
 interface ProblemError {
   message: string;
@@ -108,10 +94,10 @@ export function useProblemData(studentId?: string) {
     }
   };
 
-      return {
+  return {
     data,
     isLoading,
     error,
     refreshData,
-      };
+  };
 }

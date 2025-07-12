@@ -1,4 +1,3 @@
-
 export interface Student {
   id: string;
   name: string;
@@ -11,7 +10,7 @@ export interface Student {
   isActive: boolean;
   reminderCount: number;
   emailEnabled: boolean;
-  lastSubmissionDate: string | null;
+  lastSubmissionDate?: string;
 }
 
 export interface Contest {
@@ -27,10 +26,18 @@ export interface Contest {
 
 export interface Problem {
   id: string;
-  name: string;
+  student_id: string;
+  problem_id: string;
+  problem_name: string;
+  contest_id: number;
+  problem_index: string;
   rating: number;
-  solvedAt: string;
   tags: string[];
+  solved_at: Date;
+  verdict: string;
+  created_at: Date;
+  programming_language?: string | null;
+  problem_url?: string;
 }
 
 export interface StudentStats {
@@ -45,8 +52,8 @@ export interface StudentStats {
 export interface SyncLog {
   id: string;
   studentId: string;
-  syncType: 'scheduled' | 'manual' | 'handle_update';
-  status: 'success' | 'error' | 'partial';
+  syncType: "scheduled" | "manual" | "handle_update";
+  status: "success" | "error" | "partial";
   message: string | null;
   contestsFetched: number;
   problemsFetched: number;

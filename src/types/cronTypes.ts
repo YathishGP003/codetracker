@@ -1,4 +1,3 @@
-
 export interface CronSettings {
   enabled: boolean;
   frequency: string;

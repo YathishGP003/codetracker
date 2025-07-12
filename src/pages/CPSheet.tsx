@@ -6,16 +6,170 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import { Card } from "../components/ui/card";
 import { Skeleton } from "../components/ui/skeleton";
-import ProblemTracker from "../components/ProblemTracker";
+import CPSheetProblemTracker from "../components/CPSheetProblemTracker";
 import CPSheetStats from "../components/CPSheetStats";
 
-// TODO: Import or create the following components as needed
-// import RatingFilter from '../components/RatingFilter';
-// import ProgressCards from '../components/ProgressCards';
-// import ProblemTable from '../components/ProblemTable';
-// import UserInfoBar from '../components/UserInfoBar';
-// import Sidebar from '../components/Sidebar';
-// import ReportBugButton from '../components/ReportBugButton';
+// --- Static 800-rated problems ---
+const staticCPProblems = {
+  800: [
+    {
+      name: "Forked!",
+      url: "https://codeforces.com/problemset/problem/1903/A",
+      rating: 800,
+    },
+    {
+      name: "Chemistry",
+      url: "https://codeforces.com/problemset/problem/1901/A",
+      rating: 800,
+    },
+    {
+      name: "1900/A",
+      url: "https://codeforces.com/problemset/problem/1900/A",
+      rating: 800,
+    },
+    {
+      name: "1899/A",
+      url: "https://codeforces.com/problemset/problem/1899/A",
+      rating: 800,
+    },
+    {
+      name: "1896/A",
+      url: "https://codeforces.com/problemset/problem/1896/A",
+      rating: 800,
+    },
+    {
+      name: "1890/A",
+      url: "https://codeforces.com/problemset/problem/1890/A",
+      rating: 800,
+    },
+    {
+      name: "1881/A",
+      url: "https://codeforces.com/problemset/problem/1881/A",
+      rating: 800,
+    },
+    {
+      name: "1878/A",
+      url: "https://codeforces.com/problemset/problem/1878/A",
+      rating: 800,
+    },
+    {
+      name: "1877/A",
+      url: "https://codeforces.com/problemset/problem/1877/A",
+      rating: 800,
+    },
+    {
+      name: "1873/C",
+      url: "https://codeforces.com/problemset/problem/1873/C",
+      rating: 800,
+    },
+    {
+      name: "1866/A",
+      url: "https://codeforces.com/problemset/problem/1866/A",
+      rating: 800,
+    },
+    {
+      name: "1862/B",
+      url: "https://codeforces.com/problemset/problem/1862/B",
+      rating: 800,
+    },
+    {
+      name: "1859/A",
+      url: "https://codeforces.com/problemset/problem/1859/A",
+      rating: 800,
+    },
+    {
+      name: "1858/A",
+      url: "https://codeforces.com/problemset/problem/1858/A",
+      rating: 800,
+    },
+    {
+      name: "1857/A",
+      url: "https://codeforces.com/problemset/problem/1857/A",
+      rating: 800,
+    },
+    {
+      name: "1853/A",
+      url: "https://codeforces.com/problemset/problem/1853/A",
+      rating: 800,
+    },
+    {
+      name: "1845/A",
+      url: "https://codeforces.com/problemset/problem/1845/A",
+      rating: 800,
+    },
+    {
+      name: "1837/A",
+      url: "https://codeforces.com/problemset/problem/1837/A",
+      rating: 800,
+    },
+    {
+      name: "1834/A",
+      url: "https://codeforces.com/problemset/problem/1834/A",
+      rating: 800,
+    },
+    {
+      name: "1831/A",
+      url: "https://codeforces.com/problemset/problem/1831/A",
+      rating: 800,
+    },
+    {
+      name: "1829/B",
+      url: "https://codeforces.com/problemset/problem/1829/B",
+      rating: 800,
+    },
+    {
+      name: "1814/A",
+      url: "https://codeforces.com/problemset/problem/1814/A",
+      rating: 800,
+    },
+    {
+      name: "1806/A",
+      url: "https://codeforces.com/problemset/problem/1806/A",
+      rating: 800,
+    },
+    {
+      name: "1805/A",
+      url: "https://codeforces.com/problemset/problem/1805/A",
+      rating: 800,
+    },
+    {
+      name: "1791/C",
+      url: "https://codeforces.com/problemset/problem/1791/C",
+      rating: 800,
+    },
+    {
+      name: "1789/A",
+      url: "https://codeforces.com/problemset/problem/1789/A",
+      rating: 800,
+    },
+    {
+      name: "1788/A",
+      url: "https://codeforces.com/problemset/problem/1788/A",
+      rating: 800,
+    },
+    {
+      name: "1783/A",
+      url: "https://codeforces.com/problemset/problem/1783/A",
+      rating: 800,
+    },
+    {
+      name: "1777/A",
+      url: "https://codeforces.com/problemset/problem/1777/A",
+      rating: 800,
+    },
+    {
+      name: "1766/A",
+      url: "https://codeforces.com/problemset/problem/1766/A",
+      rating: 800,
+    },
+    {
+      name: "1761/A",
+      url: "https://codeforces.com/problemset/problem/1761/A",
+      rating: 800,
+    },
+  ],
+  // TODO: Add 900, 1000, ..., 1900
+};
 
 const CPSheet: React.FC = () => {
   const { user } = useAuth();
@@ -74,15 +228,15 @@ const CPSheet: React.FC = () => {
     );
   }
 
-  // Placeholder: totalProblems and leaderboardRank (replace with real data if available)
-  const totalProblems = 372; // TODO: Replace with real total if available
+  // Calculate total problems from all ratings
+  const totalProblems = Object.values(staticCPProblems).reduce(
+    (total, problems) => total + problems.length,
+    0
+  );
   const leaderboardRank = undefined; // TODO: Replace with real rank if available
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-8">
-      {/* User Info Bar */}
-      {/* <UserInfoBar handle={codeforcesHandle} /> */}
-
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="md:col-span-3 space-y-6">
           <h2 className="text-2xl font-bold mb-4">Your CP Sheet</h2>
@@ -93,22 +247,57 @@ const CPSheet: React.FC = () => {
             totalProblems={totalProblems}
             leaderboardRank={leaderboardRank}
           />
-          <ProblemTracker
+
+          {/* 800 Rated Problems */}
+          <CPSheetProblemTracker
             studentId={student.id}
-            title="CP Sheet Problems"
-            groupByRating={true}
+            title="800 Rated Problems"
+            problems={staticCPProblems[800]}
           />
-          {/* Progress Cards */}
-          {/* <ProgressCards progress={progress} stats={stats} leaderboard={leaderboard} /> */}
+
+          {/* TODO: Add more rating sections as they become available */}
+          {/* 
+          <CPSheetProblemTracker
+            studentId={student.id}
+            title="900 Rated Problems"
+            problems={staticCPProblems[900]}
+          />
+          */}
         </div>
         <div className="md:col-span-1 space-y-6">
-          {/* Sidebar */}
-          {/* <Sidebar stats={stats} /> */}
+          {/* Quick Stats Card */}
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold mb-4">Quick Stats</h3>
+            <div className="space-y-3">
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-600">Total Problems</span>
+                <span className="font-semibold">{totalProblems}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-600">800 Rated</span>
+                <span className="font-semibold">
+                  {staticCPProblems[800].length}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-600">Your Rating</span>
+                <span className="font-semibold">{student.currentRating}</span>
+              </div>
+            </div>
+          </Card>
+
+          {/* Progress Tips */}
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold mb-4">Progress Tips</h3>
+            <div className="space-y-3 text-sm text-gray-600">
+              <p>• Start with 800 rated problems</p>
+              <p>• Solve at least 2-3 problems daily</p>
+              <p>• Focus on understanding concepts</p>
+              <p>• Practice consistently</p>
+            </div>
+          </Card>
         </div>
       </div>
-
-      {/* Report Bug Button */}
-      {/* <ReportBugButton /> */}
     </div>
   );
 };

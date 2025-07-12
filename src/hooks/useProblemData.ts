@@ -6,6 +6,11 @@ interface ProblemError {
   message: string;
 }
 
+/**
+ * Fetches all solved problems for a student (or all students if no ID).
+ * Returns { data, isLoading, error, refreshData }.
+ * Surfaces errors for UI display.
+ */
 export function useProblemData(studentId?: string) {
   const [data, setData] = useState<Problem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -13,6 +18,8 @@ export function useProblemData(studentId?: string) {
 
   useEffect(() => {
     async function fetchProblems() {
+      setIsLoading(true);
+      setError(null);
       try {
         let query = supabase
           .from("problems")
@@ -26,26 +33,26 @@ export function useProblemData(studentId?: string) {
         const { data: problems, error: dbError } = await query;
 
         if (dbError) {
-          throw dbError;
+          setError({ message: dbError.message });
+          setData([]);
+          return;
         }
 
         setData(
-          problems.map((problem) => ({
+          (problems || []).map((problem) => ({
             ...problem,
             solved_at: new Date(problem.solved_at),
             created_at: new Date(problem.created_at),
           }))
         );
-        setError(null); // Clear any previous errors
       } catch (err) {
-        console.error("Error fetching problems:", err);
         setError({
           message:
             err instanceof Error
               ? err.message
               : "An error occurred while fetching problems",
         });
-        setData([]); // Clear data on error
+        setData([]);
       } finally {
         setIsLoading(false);
       }
@@ -56,6 +63,7 @@ export function useProblemData(studentId?: string) {
 
   const refreshData = async () => {
     setIsLoading(true);
+    setError(null);
     try {
       let query = supabase
         .from("problems")
@@ -69,26 +77,26 @@ export function useProblemData(studentId?: string) {
       const { data: problems, error: dbError } = await query;
 
       if (dbError) {
-        throw dbError;
+        setError({ message: dbError.message });
+        setData([]);
+        return;
       }
 
       setData(
-        problems.map((problem) => ({
+        (problems || []).map((problem) => ({
           ...problem,
           solved_at: new Date(problem.solved_at),
           created_at: new Date(problem.created_at),
         }))
       );
-      setError(null); // Clear any previous errors
     } catch (err) {
-      console.error("Error refreshing problems:", err);
       setError({
         message:
           err instanceof Error
             ? err.message
             : "An error occurred while fetching problems",
       });
-      setData([]); // Clear data on error
+      setData([]);
     } finally {
       setIsLoading(false);
     }

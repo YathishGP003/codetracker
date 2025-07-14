@@ -102,10 +102,10 @@ export function useProblemData(studentId?: string) {
     }
   };
 
-  return {
+      return {
     data,
     isLoading,
     error,
     refreshData,
-  };
+      };
 }

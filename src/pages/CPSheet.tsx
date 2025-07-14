@@ -168,8 +168,169 @@ const staticCPProblems = {
       rating: 800,
     },
   ],
-  // TODO: Add 900, 1000, ..., 1900
+  900: [
+    {
+      name: "1904/A",
+      url: "https://codeforces.com/problemset/problem/1904/A",
+      rating: 900,
+    },
+    {
+      name: "1883/B",
+      url: "https://codeforces.com/problemset/problem/1883/B",
+      rating: 900,
+    },
+    {
+      name: "1878/C",
+      url: "https://codeforces.com/problemset/problem/1878/C",
+      rating: 900,
+    },
+    {
+      name: "1875/A",
+      url: "https://codeforces.com/problemset/problem/1875/A",
+      rating: 900,
+    },
+    {
+      name: "1869/A",
+      url: "https://codeforces.com/problemset/problem/1869/A",
+      rating: 900,
+    },
+    {
+      name: "1855/B",
+      url: "https://codeforces.com/problemset/problem/1855/B",
+      rating: 900,
+    },
+    {
+      name: "1850/D",
+      url: "https://codeforces.com/problemset/problem/1850/D",
+      rating: 900,
+    },
+    {
+      name: "1837/B",
+      url: "https://codeforces.com/problemset/problem/1837/B",
+      rating: 900,
+    },
+    {
+      name: "1828/B",
+      url: "https://codeforces.com/problemset/problem/1828/B",
+      rating: 900,
+    },
+    {
+      name: "1807/D",
+      url: "https://codeforces.com/problemset/problem/1807/D",
+      rating: 900,
+    },
+    {
+      name: "1794/B",
+      url: "https://codeforces.com/problemset/problem/1794/B",
+      rating: 900,
+    },
+    {
+      name: "1726/A",
+      url: "https://codeforces.com/problemset/problem/1726/A",
+      rating: 900,
+    },
+    {
+      name: "1696/B",
+      url: "https://codeforces.com/problemset/problem/1696/B",
+      rating: 900,
+    },
+    {
+      name: "1679/A",
+      url: "https://codeforces.com/problemset/problem/1679/A",
+      rating: 900,
+    },
+    {
+      name: "1675/B",
+      url: "https://codeforces.com/problemset/problem/1675/B",
+      rating: 900,
+    },
+    {
+      name: "1666/D",
+      url: "https://codeforces.com/problemset/problem/1666/D",
+      rating: 900,
+    },
+    {
+      name: "1665/B",
+      url: "https://codeforces.com/problemset/problem/1665/B",
+      rating: 900,
+    },
+    {
+      name: "1624/B",
+      url: "https://codeforces.com/problemset/problem/1624/B",
+      rating: 900,
+    },
+    {
+      name: "1607/B",
+      url: "https://codeforces.com/problemset/problem/1607/B",
+      rating: 900,
+    },
+    {
+      name: "1606/A",
+      url: "https://codeforces.com/problemset/problem/1606/A",
+      rating: 900,
+    },
+    {
+      name: "1593/B",
+      url: "https://codeforces.com/problemset/problem/1593/B",
+      rating: 900,
+    },
+    {
+      name: "1582/B",
+      url: "https://codeforces.com/problemset/problem/1582/B",
+      rating: 900,
+    },
+    {
+      name: "1559/A",
+      url: "https://codeforces.com/problemset/problem/1559/A",
+      rating: 900,
+    },
+    {
+      name: "1543/A",
+      url: "https://codeforces.com/problemset/problem/1543/A",
+      rating: 900,
+    },
+    {
+      name: "1537/B",
+      url: "https://codeforces.com/problemset/problem/1537/B",
+      rating: 900,
+    },
+    {
+      name: "1475/A",
+      url: "https://codeforces.com/problemset/problem/1475/A",
+      rating: 900,
+    },
+    {
+      name: "1471/A",
+      url: "https://codeforces.com/problemset/problem/1471/A",
+      rating: 900,
+    },
+    {
+      name: "1440/B",
+      url: "https://codeforces.com/problemset/problem/1440/B",
+      rating: 900,
+    },
+    {
+      name: "1380/A",
+      url: "https://codeforces.com/problemset/problem/1380/A",
+      rating: 900,
+    },
+    {
+      name: "1373/B",
+      url: "https://codeforces.com/problemset/problem/1373/B",
+      rating: 900,
+    },
+    {
+      name: "1374/B",
+      url: "https://codeforces.com/problemset/problem/1374/B",
+      rating: 900,
+    },
+  ],
+  // TODO: Add 1000, 1100, ..., 1900
 };
+
+const ratingOptions = [
+  800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900,
+];
 
 const CPSheet: React.FC = () => {
   const { user } = useAuth();
@@ -183,6 +344,7 @@ const CPSheet: React.FC = () => {
   );
   const navigate = useNavigate();
   const [codeforcesHandle, setCodeforcesHandle] = useState<string | null>(null);
+  const [selectedRating, setSelectedRating] = useState(800);
 
   // Debug logs
   console.log("Auth user email:", user?.email);
@@ -228,23 +390,20 @@ const CPSheet: React.FC = () => {
     );
   }
 
-  // Calculate CP Sheet solved (problems from CP sheet solved by user)
+  // Get problems for the selected rating
+  const currentProblems = staticCPProblems[selectedRating] || [];
+
+  // Calculate CP Sheet solved for selected rating
   const cpSheetProblemSet = new Set(
-    Object.values(staticCPProblems)
-      .flat()
-      .map((p) => {
-        const urlParts = p.url.split("/");
-        return `${urlParts[urlParts.length - 2]}${
-          urlParts[urlParts.length - 1]
-        }`;
-      })
+    currentProblems.map((p) => {
+      const urlParts = p.url.split("/");
+      return `${urlParts[urlParts.length - 2]}${urlParts[urlParts.length - 1]}`;
+    })
   );
   const cpSheetSolved = problems.filter((p) => {
-    // Try to match by contestId+index
     if (p.contest_id && p.problem_index) {
       return cpSheetProblemSet.has(`${p.contest_id}${p.problem_index}`);
     }
-    // Fallback: try to match by problem_url
     if (p.problem_url) {
       const urlParts = p.problem_url.split("/");
       return cpSheetProblemSet.has(
@@ -253,7 +412,7 @@ const CPSheet: React.FC = () => {
     }
     return false;
   }).length;
-  const cpSheetTotal = Object.values(staticCPProblems).flat().length;
+  const cpSheetTotal = currentProblems.length;
   // All unique Codeforces problems solved by user
   const allSolved = problems.length;
 
@@ -278,21 +437,38 @@ const CPSheet: React.FC = () => {
             allSolved={allSolved}
           />
 
-          {/* 800 Rated Problems */}
-          <CPSheetProblemTracker
-            studentId={student.id}
-            title="800 Rated Problems"
-            problems={staticCPProblems[800]}
-          />
+          {/* Rating Selector Row (moved below stats) */}
+          <div className="flex flex-wrap gap-3 mb-8 items-center justify-center rounded-2xl border border-slate-700 bg-slate-900 py-4">
+            <span className="text-lg font-semibold mr-4 text-gray-400 dark:text-slate-500">
+              Rating
+            </span>
+            {ratingOptions.map((rating) => (
+              <button
+                key={rating}
+                className={`px-6 py-2 rounded-xl font-bold border transition-all duration-200 focus:outline-none text-lg
+                  ${
+                    selectedRating === rating
+                      ? "bg-green-100 border-green-500 text-green-700 dark:bg-green-700/30 dark:text-green-300 dark:border-green-400 shadow-lg"
+                      : "bg-white border-gray-300 text-gray-700 hover:bg-gray-100 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300 hover:dark:bg-slate-700"
+                  }
+                `}
+                style={
+                  selectedRating === rating
+                    ? { boxShadow: "0 0 0 2px #22c55e" }
+                    : {}
+                }
+                onClick={() => setSelectedRating(rating)}
+              >
+                {rating}
+              </button>
+            ))}
+          </div>
 
-          {/* TODO: Add more rating sections as they become available */}
-          {/* 
           <CPSheetProblemTracker
             studentId={student.id}
-            title="900 Rated Problems"
-            problems={staticCPProblems[900]}
+            title={`${selectedRating} Rated Problems`}
+            problems={currentProblems}
           />
-          */}
         </div>
         <div className="md:col-span-1 space-y-6">
           {/* Quick Stats Card */}

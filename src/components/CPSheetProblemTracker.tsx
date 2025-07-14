@@ -212,31 +212,6 @@ const CPSheetProblemTracker: React.FC<CPSheetProblemTrackerProps> = ({
     }));
   }, [problemsWithStatus]);
 
-  // --- Dynamic Rating Selection ---
-  const ratingOptions = useMemo(() => {
-    // Get all unique ratings from the problems list, sorted
-    const ratings = Array.from(new Set(problems.map((p) => p.rating))).sort(
-      (a, b) => a - b
-    );
-    return ratings;
-  }, [problems]);
-  const [selectedRating, setSelectedRating] = useState(ratingOptions[0] || 800);
-
-  // Filter problems and stats by selected rating
-  const problemsForRating = useMemo(
-    () => problemsWithStatus.filter((p) => p.rating === selectedRating),
-    [problemsWithStatus, selectedRating]
-  );
-  const progressForRating = useMemo(() => {
-    const solved = problemsForRating.filter((p) => p.solved).length;
-    const total = problemsForRating.length;
-    return {
-      solved,
-      total,
-      percentage: total > 0 ? Math.round((solved / total) * 100) : 0,
-    };
-  }, [problemsForRating]);
-
   // Helper for rating color
   const getRatingColor = (rating: number) => {
     if (rating >= 2400) return "text-red-500";
@@ -283,25 +258,8 @@ const CPSheetProblemTracker: React.FC<CPSheetProblemTrackerProps> = ({
   return (
     <div>
       {/* Rating Selector */}
-      <div className="flex flex-wrap gap-2 mb-6">
-        {ratingOptions.map((rating) => (
-          <button
-            key={rating}
-            className={`px-4 py-2 rounded-lg font-semibold border transition-all duration-200 focus:outline-none ${
-              selectedRating === rating
-                ? isDarkMode
-                  ? "bg-green-700/30 border-green-400 text-green-300"
-                  : "bg-green-100 border-green-500 text-green-700"
-                : isDarkMode
-                ? "bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700"
-                : "bg-white border-gray-300 text-gray-700 hover:bg-gray-100"
-            }`}
-            onClick={() => setSelectedRating(rating)}
-          >
-            {rating}
-          </button>
-        ))}
-      </div>
+      {/* Remove the dynamic rating selector and any standalone rating button from this component.
+          Only render the cards and problem list for the problems prop provided. */}
 
       {/* Cards Row */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
@@ -314,7 +272,7 @@ const CPSheetProblemTracker: React.FC<CPSheetProblemTrackerProps> = ({
           }`}
         >
           <div className="text-lg font-semibold mb-2 text-gray-500 dark:text-slate-400">
-            {selectedRating} Rated Problems
+            All Problems
           </div>
           <div className="flex items-end gap-2 mb-2">
             <span
@@ -322,21 +280,21 @@ const CPSheetProblemTracker: React.FC<CPSheetProblemTrackerProps> = ({
                 isDarkMode ? "text-green-400" : "text-green-600"
               }`}
             >
-              {progressForRating.solved}
+              {progress.solved}
             </span>
             <span
               className={`text-2xl font-bold ${
                 isDarkMode ? "text-slate-400" : "text-gray-400"
               }`}
             >
-              / {progressForRating.total}
+              / {progress.total}
             </span>
             <span
               className={`ml-4 text-2xl font-extrabold ${
                 isDarkMode ? "text-blue-400" : "text-blue-600"
               }`}
             >
-              {progressForRating.percentage}%
+              {progress.percentage}%
             </span>
           </div>
           <div className="flex items-center gap-8 w-full justify-between">
@@ -350,7 +308,7 @@ const CPSheetProblemTracker: React.FC<CPSheetProblemTrackerProps> = ({
           <div className="w-full h-3 rounded-full bg-gray-200 dark:bg-slate-700 overflow-hidden mt-2">
             <div
               className="h-3 rounded-full bg-gradient-to-r from-green-400 to-blue-500 transition-all duration-300"
-              style={{ width: `${progressForRating.percentage}%` }}
+              style={{ width: `${progress.percentage}%` }}
             ></div>
           </div>
         </div>
@@ -368,20 +326,29 @@ const CPSheetProblemTracker: React.FC<CPSheetProblemTrackerProps> = ({
           </div>
           <div className="text-center">
             <div
-              className={`text-2xl font-bold ${getRatingColor(selectedRating)}`}
+              className={`text-2xl font-bold ${getRatingColor(
+                // This will be undefined if no rating is selected in the parent
+                // For now, we'll use a placeholder or the first problem's rating
+                // If no problems, this will be 800 (default)
+                problemsWithStatus.length > 0
+                  ? problemsWithStatus[0].rating
+                  : 800
+              )}`}
             >
-              {selectedRating}
+              {problemsWithStatus.length > 0
+                ? problemsWithStatus[0].rating
+                : 800}
             </div>
             <div className="text-lg text-gray-600 dark:text-slate-400">
-              {progressForRating.solved}/{progressForRating.total}
+              {progress.solved}/{progress.total}
             </div>
             <div className="text-sm text-gray-500 dark:text-slate-500">
-              {progressForRating.percentage}%
+              {progress.percentage}%
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2 mt-2 dark:bg-slate-700">
               <div
                 className="bg-gradient-to-r from-green-500 to-blue-500 h-2 rounded-full"
-                style={{ width: `${progressForRating.percentage}%` }}
+                style={{ width: `${progress.percentage}%` }}
               ></div>
             </div>
           </div>
@@ -408,14 +375,17 @@ const CPSheetProblemTracker: React.FC<CPSheetProblemTrackerProps> = ({
                   ? "bg-slate-800 border-slate-700 text-slate-100"
                   : "bg-white border-gray-300 text-gray-900"
               }`}
-              value={selectedRating}
-              onChange={(e) => setSelectedRating(Number(e.target.value))}
+              value={filterRating}
+              onChange={(e) => setFilterRating(Number(e.target.value))}
             >
-              {ratingOptions.map((rating) => (
-                <option key={rating} value={rating}>
-                  {rating}
-                </option>
-              ))}
+              <option value="">All Ratings</option>
+              {Array.from(new Set(problemsWithStatus.map((p) => p.rating)))
+                .sort((a, b) => a - b)
+                .map((rating) => (
+                  <option key={rating} value={rating}>
+                    {rating}
+                  </option>
+                ))}
             </select>
           </div>
         </div>

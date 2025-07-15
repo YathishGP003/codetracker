@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 
 const SignIn = () => {
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState(""); // username or email
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -23,7 +23,6 @@ const SignIn = () => {
   // Redirect if already logged in
   useEffect(() => {
     if (user) {
-      console.log("User already logged in, redirecting to:", from);
       navigate(from, { replace: true });
     }
   }, [user, navigate, from]);
@@ -33,7 +32,7 @@ const SignIn = () => {
     setIsLoading(true);
 
     // Basic validation
-    if (!email || !password) {
+    if (!identifier || !password) {
       toast({
         title: "Error",
         description: "Please fill in all fields.",
@@ -43,40 +42,19 @@ const SignIn = () => {
       return;
     }
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      toast({
-        title: "Error",
-        description: "Please enter a valid email address.",
-        variant: "destructive",
-      });
-      setIsLoading(false);
-      return;
+    // If identifier contains '@', treat as email, else as username
+    let error;
+    if (identifier.includes("@")) {
+      // Email login
+      error = (await signIn(identifier, password)).error;
+    } else {
+      // Username login
+      error = (await signIn(identifier, password)).error;
     }
 
-    console.log("Submitting sign in form with email:", email);
-    const { error } = await signIn(email, password);
-
     if (error) {
-      console.error("Sign in failed:", error);
-
       let errorMessage = "Failed to sign in. Please try again.";
-
-      // Handle specific error cases
-      if (error.message?.includes("Invalid login credentials")) {
-        errorMessage =
-          "Invalid email or password. Please check your credentials and try again.";
-      } else if (error.message?.includes("Email not confirmed")) {
-        errorMessage =
-          "Please check your email and click the confirmation link before signing in.";
-      } else if (error.message?.includes("Too many requests")) {
-        errorMessage =
-          "Too many sign in attempts. Please wait a moment and try again.";
-      } else if (error.message) {
-        errorMessage = error.message;
-      }
-
+      if (error.message) errorMessage = error.message;
       toast({
         title: "Sign In Failed",
         description: errorMessage,
@@ -84,7 +62,6 @@ const SignIn = () => {
       });
       setIsLoading(false);
     } else {
-      console.log("Sign in successful, redirecting...");
       toast({
         title: "Success",
         description: "Welcome back to CodeTracker Pro!",
@@ -117,18 +94,18 @@ const SignIn = () => {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <Label htmlFor="email" className="text-slate-300">
-                Email
+              <Label htmlFor="identifier" className="text-slate-300">
+                Username or Email
               </Label>
               <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                id="identifier"
+                type="text"
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
                 className="mt-1 bg-slate-800/50 border-slate-700/50 text-white placeholder-slate-400"
-                placeholder="Enter your email"
+                placeholder="Enter your username or email"
                 disabled={isLoading}
-                autoComplete="email"
+                autoComplete="username"
               />
             </div>
 

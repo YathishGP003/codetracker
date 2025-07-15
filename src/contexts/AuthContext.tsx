@@ -6,11 +6,12 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
-  signIn: (email: string, password: string) => Promise<{ error: any }>;
+  signIn: (username: string, password: string) => Promise<{ error: any }>;
   signUp: (
-    email: string,
+    username: string,
     password: string,
-    fullName: string
+    firstName: string,
+    lastName: string
   ) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
 }
@@ -34,19 +35,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     console.log("AuthProvider: Setting up auth state listener...");
-    
+
     // Set up auth state listener
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("AuthProvider: Auth state changed:", event, {
-          user: session?.user?.email,
-          hasSession: !!session,
+        user: session?.user?.email,
+        hasSession: !!session,
         expiresAt: session?.expires_at,
-        });
-        setSession(session);
-        setUser(session?.user ?? null);
-        setLoading(false);
+      });
+      setSession(session);
+      setUser(session?.user ?? null);
+      setLoading(false);
     });
 
     // Check for existing session
@@ -83,50 +84,58 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     };
   }, []);
 
-  const signIn = async (email: string, password: string) => {
-    console.log("AuthProvider: Attempting to sign in with email:", email);
+  const signIn = async (username: string, password: string) => {
+    console.log("AuthProvider: Attempting to sign in with username:", username);
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: email.trim(),
-        password,
-      });
-      
+      // Look up email by username
+      const { data, error: profileError } = await supabase
+        .from("profiles")
+        .select("email")
+        .eq("username", username)
+        .single();
+      if (profileError || !data?.email) {
+        return { error: { message: "Invalid username or password." } };
+      }
+      const { data: signInData, error } =
+        await supabase.auth.signInWithPassword({
+          email: data.email,
+          password,
+        });
       if (error) {
-        console.error("AuthProvider: Sign in error:", error);
         return { error };
       }
-      
-      console.log("AuthProvider: Sign in successful:", data.user?.email);
       return { error: null };
     } catch (error) {
-      console.error("AuthProvider: Unexpected sign in error:", error);
       return { error };
     }
   };
 
-  const signUp = async (email: string, password: string, fullName: string) => {
-    console.log("AuthProvider: Attempting to sign up with email:", email);
+  const signUp = async (
+    username: string,
+    password: string,
+    firstName: string,
+    lastName: string
+  ) => {
+    console.log("AuthProvider: Attempting to sign up with username:", username);
     try {
+      // You must use a unique email for Supabase Auth. We'll use username@local.fake as a workaround if you don't want real emails.
+      const fakeEmail = `${username}@local.fake`;
       const { data, error } = await supabase.auth.signUp({
-        email: email.trim(),
+        email: fakeEmail,
         password,
         options: {
-          emailRedirectTo: import.meta.env.VITE_SITE_URL,
           data: {
-            full_name: fullName,
+            username,
+            first_name: firstName,
+            last_name: lastName,
           },
         },
       });
-      
       if (error) {
-        console.error("AuthProvider: Sign up error:", error);
         return { error };
       }
-      
-      console.log("AuthProvider: Sign up successful:", data.user?.email);
       return { error: null };
     } catch (error) {
-      console.error("AuthProvider: Unexpected sign up error:", error);
       return { error };
     }
   };

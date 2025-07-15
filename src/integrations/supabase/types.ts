@@ -140,6 +140,9 @@ export type Database = {
           full_name: string | null;
           id: string;
           updated_at: string;
+          username: string | null;
+          first_name: string | null;
+          last_name: string | null;
         };
         Insert: {
           created_at?: string;
@@ -147,6 +150,9 @@ export type Database = {
           full_name?: string | null;
           id: string;
           updated_at?: string;
+          username?: string | null;
+          first_name?: string | null;
+          last_name?: string | null;
         };
         Update: {
           created_at?: string;
@@ -154,6 +160,9 @@ export type Database = {
           full_name?: string | null;
           id?: string;
           updated_at?: string;
+          username?: string | null;
+          first_name?: string | null;
+          last_name?: string | null;
         };
         Relationships: [];
       };

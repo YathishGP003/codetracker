@@ -6,9 +6,10 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
-  signIn: (username: string, password: string) => Promise<{ error: any }>;
+  signIn: (identifier: string, password: string) => Promise<{ error: any }>;
   signUp: (
     username: string,
+    email: string,
     password: string,
     firstName: string,
     lastName: string
@@ -84,44 +85,58 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     };
   }, []);
 
-  const signIn = async (username: string, password: string) => {
-    console.log("AuthProvider: Attempting to sign in with username:", username);
-    try {
-      // Look up email by username
-      const { data, error: profileError } = await supabase
-        .from("profiles")
-        .select("email")
-        .eq("username", username)
-        .single();
-      if (profileError || !data?.email) {
-        return { error: { message: "Invalid username or password." } };
-      }
-      const { data: signInData, error } =
-        await supabase.auth.signInWithPassword({
-          email: data.email,
+  const signIn = async (identifier: string, password: string) => {
+    // If identifier contains '@', treat as email, else as username
+    if (identifier.includes("@")) {
+      // Email login
+      try {
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: identifier,
           password,
         });
-      if (error) {
+        if (error) {
+          return { error };
+        }
+        return { error: null };
+      } catch (error) {
         return { error };
       }
-      return { error: null };
-    } catch (error) {
-      return { error };
+    } else {
+      // Username login
+      try {
+        const { data, error: profileError } = await supabase
+          .from("profiles")
+          .select("email")
+          .eq("username", identifier)
+          .single();
+        if (profileError || !data?.email) {
+          return { error: { message: "Invalid username or password." } };
+        }
+        const { data: signInData, error } =
+          await supabase.auth.signInWithPassword({
+            email: data.email,
+            password,
+          });
+        if (error) {
+          return { error };
+        }
+        return { error: null };
+      } catch (error) {
+        return { error };
+      }
     }
   };
 
   const signUp = async (
     username: string,
+    email: string,
     password: string,
     firstName: string,
     lastName: string
   ) => {
-    console.log("AuthProvider: Attempting to sign up with username:", username);
     try {
-      // You must use a unique email for Supabase Auth. We'll use username@local.fake as a workaround if you don't want real emails.
-      const fakeEmail = `${username}@local.fake`;
       const { data, error } = await supabase.auth.signUp({
-        email: fakeEmail,
+        email,
         password,
         options: {
           data: {

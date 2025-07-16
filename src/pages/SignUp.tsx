@@ -9,6 +9,7 @@ import { useAuth } from "@/contexts/AuthContext";
 
 const SignUp = () => {
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [password, setPassword] = useState("");
@@ -30,7 +31,7 @@ const SignUp = () => {
     setIsLoading(true);
 
     // Basic validation
-    if (!username || !firstName || !lastName || !password) {
+    if (!username || !email || !firstName || !lastName || !password) {
       toast({
         title: "Error",
         description: "Please fill in all fields.",
@@ -50,7 +51,13 @@ const SignUp = () => {
       return;
     }
 
-    const { error } = await signUp(username, password, firstName, lastName);
+    const { error } = await signUp(
+      username,
+      email,
+      password,
+      firstName,
+      lastName
+    );
 
     if (error) {
       toast({
@@ -107,6 +114,21 @@ const SignUp = () => {
                 className="mt-1 bg-slate-800/50 border-slate-700/50 text-white placeholder-slate-400"
                 placeholder="Enter your username"
                 disabled={isLoading}
+              />
+            </div>
+            <div>
+              <Label htmlFor="email" className="text-slate-300">
+                Email
+              </Label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="mt-1 bg-slate-800/50 border-slate-700/50 text-white placeholder-slate-400"
+                placeholder="Enter your email"
+                disabled={isLoading}
+                autoComplete="email"
               />
             </div>
             <div className="flex gap-4">

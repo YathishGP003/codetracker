@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 
 const SignIn = () => {
-  const [identifier, setIdentifier] = useState(""); // username or email
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -32,7 +32,7 @@ const SignIn = () => {
     setIsLoading(true);
 
     // Basic validation
-    if (!identifier || !password) {
+    if (!email || !password) {
       toast({
         title: "Error",
         description: "Please fill in all fields.",
@@ -42,15 +42,7 @@ const SignIn = () => {
       return;
     }
 
-    // If identifier contains '@', treat as email, else as username
-    let error;
-    if (identifier.includes("@")) {
-      // Email login
-      error = (await signIn(identifier, password)).error;
-    } else {
-      // Username login
-      error = (await signIn(identifier, password)).error;
-    }
+    const { error } = await signIn(email, password);
 
     if (error) {
       let errorMessage = "Failed to sign in. Please try again.";
@@ -95,15 +87,15 @@ const SignIn = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <Label htmlFor="identifier" className="text-slate-300">
-                Username or Email
+                Email or Username
               </Label>
               <Input
                 id="identifier"
                 type="text"
-                value={identifier}
-                onChange={(e) => setIdentifier(e.target.value)}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="mt-1 bg-slate-800/50 border-slate-700/50 text-white placeholder-slate-400"
-                placeholder="Enter your username or email"
+                placeholder="Enter your email or username"
                 disabled={isLoading}
                 autoComplete="username"
               />

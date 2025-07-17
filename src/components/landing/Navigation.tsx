@@ -1,7 +1,6 @@
 import React from "react";
 import { Sun, Moon } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
+import { Link } from "react-router-dom";
 
 interface NavigationProps {
   isDarkMode: boolean;
@@ -9,17 +8,6 @@ interface NavigationProps {
 }
 
 const Navigation = ({ isDarkMode, setIsDarkMode }: NavigationProps) => {
-  const { user } = useAuth();
-  const navigate = useNavigate();
-
-  const handleGetStarted = () => {
-    if (user) {
-      navigate("/dashboard");
-    } else {
-      navigate("/signup");
-    }
-  };
-
   return (
     <nav
       className={`sticky top-0 z-50 backdrop-blur-xl border-b transition-all duration-300 ${
@@ -80,12 +68,12 @@ const Navigation = ({ isDarkMode, setIsDarkMode }: NavigationProps) => {
               {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
             </button>
 
-            <button
-              onClick={handleGetStarted}
+            <Link
+              to="/dashboard"
               className="px-6 py-3 rounded-2xl bg-gradient-to-r from-teal-500 to-blue-600 text-white font-medium flex items-center space-x-2 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-teal-500/25"
             >
               <span>Get Started</span>
-            </button>
+            </Link>
           </div>
         </div>
       </div>

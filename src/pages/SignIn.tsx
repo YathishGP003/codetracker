@@ -23,6 +23,7 @@ const SignIn = () => {
   // Redirect if already logged in
   useEffect(() => {
     if (user) {
+      console.log("User already logged in, redirecting to:", from);
       navigate(from, { replace: true });
     }
   }, [user, navigate, from]);
@@ -42,11 +43,40 @@ const SignIn = () => {
       return;
     }
 
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast({
+        title: "Error",
+        description: "Please enter a valid email address.",
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      return;
+    }
+
+    console.log("Submitting sign in form with email:", email);
     const { error } = await signIn(email, password);
 
     if (error) {
+      console.error("Sign in failed:", error);
+
       let errorMessage = "Failed to sign in. Please try again.";
-      if (error.message) errorMessage = error.message;
+
+      // Handle specific error cases
+      if (error.message?.includes("Invalid login credentials")) {
+        errorMessage =
+          "Invalid email or password. Please check your credentials and try again.";
+      } else if (error.message?.includes("Email not confirmed")) {
+        errorMessage =
+          "Please check your email and click the confirmation link before signing in.";
+      } else if (error.message?.includes("Too many requests")) {
+        errorMessage =
+          "Too many sign in attempts. Please wait a moment and try again.";
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
       toast({
         title: "Sign In Failed",
         description: errorMessage,
@@ -54,6 +84,7 @@ const SignIn = () => {
       });
       setIsLoading(false);
     } else {
+      console.log("Sign in successful, redirecting...");
       toast({
         title: "Success",
         description: "Welcome back to CodeTracker Pro!",
@@ -86,18 +117,18 @@ const SignIn = () => {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <Label htmlFor="identifier" className="text-slate-300">
-                Email or Username
+              <Label htmlFor="email" className="text-slate-300">
+                Email
               </Label>
               <Input
-                id="identifier"
-                type="text"
+                id="email"
+                type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="mt-1 bg-slate-800/50 border-slate-700/50 text-white placeholder-slate-400"
-                placeholder="Enter your email or username"
+                placeholder="Enter your email"
                 disabled={isLoading}
-                autoComplete="username"
+                autoComplete="email"
               />
             </div>
 

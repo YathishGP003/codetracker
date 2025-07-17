@@ -6,13 +6,11 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
-  signIn: (identifier: string, password: string) => Promise<{ error: any }>;
+  signIn: (email: string, password: string) => Promise<{ error: any }>;
   signUp: (
-    username: string,
     email: string,
     password: string,
-    firstName: string,
-    lastName: string
+    fullName: string
   ) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
 }
@@ -36,19 +34,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     console.log("AuthProvider: Setting up auth state listener...");
-
+    
     // Set up auth state listener
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("AuthProvider: Auth state changed:", event, {
-        user: session?.user?.email,
-        hasSession: !!session,
+          user: session?.user?.email,
+          hasSession: !!session,
         expiresAt: session?.expires_at,
-      });
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
+        });
+        setSession(session);
+        setUser(session?.user ?? null);
+        setLoading(false);
     });
 
     // Check for existing session
@@ -85,72 +83,50 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     };
   }, []);
 
-  const signIn = async (identifier: string, password: string) => {
-    // If identifier contains '@', treat as email, else as username
-    if (identifier.includes("@")) {
-      // Email login
-      try {
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email: identifier,
-          password,
-        });
-        if (error) {
-          return { error };
-        }
-        return { error: null };
-      } catch (error) {
+  const signIn = async (email: string, password: string) => {
+    console.log("AuthProvider: Attempting to sign in with email:", email);
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password,
+      });
+      
+      if (error) {
+        console.error("AuthProvider: Sign in error:", error);
         return { error };
       }
-    } else {
-      // Username login
-      try {
-        const { data, error: profileError } = await supabase
-          .from("profiles")
-          .select("email")
-          .eq("username", identifier)
-          .single();
-        if (profileError || !data?.email) {
-          return { error: { message: "Invalid username or password." } };
-        }
-        const { data: signInData, error } =
-          await supabase.auth.signInWithPassword({
-            email: data.email,
-            password,
-          });
-        if (error) {
-          return { error };
-        }
-        return { error: null };
-      } catch (error) {
-        return { error };
-      }
+      
+      console.log("AuthProvider: Sign in successful:", data.user?.email);
+      return { error: null };
+    } catch (error) {
+      console.error("AuthProvider: Unexpected sign in error:", error);
+      return { error };
     }
   };
 
-  const signUp = async (
-    username: string,
-    email: string,
-    password: string,
-    firstName: string,
-    lastName: string
-  ) => {
+  const signUp = async (email: string, password: string, fullName: string) => {
+    console.log("AuthProvider: Attempting to sign up with email:", email);
     try {
       const { data, error } = await supabase.auth.signUp({
-        email,
+        email: email.trim(),
         password,
         options: {
+          emailRedirectTo: import.meta.env.VITE_SITE_URL,
           data: {
-            username,
-            first_name: firstName,
-            last_name: lastName,
+            full_name: fullName,
           },
         },
       });
+      
       if (error) {
+        console.error("AuthProvider: Sign up error:", error);
         return { error };
       }
+      
+      console.log("AuthProvider: Sign up successful:", data.user?.email);
       return { error: null };
     } catch (error) {
+      console.error("AuthProvider: Unexpected sign up error:", error);
       return { error };
     }
   };

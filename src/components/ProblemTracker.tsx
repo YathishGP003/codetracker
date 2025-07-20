@@ -83,23 +83,6 @@ const ProblemTracker: React.FC<ProblemTrackerProps> = ({
     problemsByRating,
   } = useProblemFilters(problems, contestId);
 
-  // Group problems by rating ranges for CP Sheet
-  const problemsByRating = useMemo(() => {
-    if (!groupByRating) return null;
-
-    const ratingRanges = [];
-    for (let rating = 800; rating <= 1900; rating += 100) {
-      ratingRanges.push(rating);
-    }
-
-    const grouped = ratingRanges.map((rating) => ({
-      rating,
-      problems: filteredProblems.filter((p) => p.rating === rating),
-    }));
-
-    return grouped;
-  }, [filteredProblems, groupByRating]);
-
   // Handle outside click for tag dropdown
   useEffect(() => {
     if (!tagDropdownOpen) return;

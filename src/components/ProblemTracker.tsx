@@ -12,6 +12,9 @@ import { useDarkMode } from "@/contexts/DarkModeContext";
 import { useProblemData } from "../hooks/useProblemData";
 import { getRatingColor } from "../lib/utils";
 import { Problem } from "../types/Student";
+import ProblemTableRow from "@/components/ProblemTableRow";
+import TagDropdown from "@/components/TagDropdown";
+import ProblemTableHeader from "@/components/ProblemTableHeader";
 
 interface ProblemTrackerProps {
   studentId: string;
@@ -147,37 +150,6 @@ const ProblemTracker: React.FC<ProblemTrackerProps> = ({
     return grouped;
   }, [filteredProblems, groupByRating]);
 
-  // Table header with sorting
-  const renderHeader = (
-    label: string,
-    key: "name" | "rating" | "solvedAt" | undefined
-  ) => {
-    if (!key) return <th className="px-4 py-2 text-left border">{label}</th>;
-    return (
-      <th
-        className="px-4 py-2 text-left border cursor-pointer select-none hover:bg-blue-50 dark:hover:bg-slate-800"
-        onClick={() => {
-          if (sortBy === key) {
-            setSortDir(sortDir === "asc" ? "desc" : "asc");
-          } else {
-            setSortBy(key);
-            setSortDir("asc");
-          }
-        }}
-      >
-        <span className="inline-flex items-center text-blue-700 dark:text-blue-400 font-semibold">
-          {label}
-          {sortBy === key &&
-            (sortDir === "asc" ? (
-              <ChevronUp className="ml-1 w-4 h-4" />
-            ) : (
-              <ChevronDown className="ml-1 w-4 h-4" />
-            ))}
-        </span>
-      </th>
-    );
-  };
-
   // Handle outside click for tag dropdown
   useEffect(() => {
     if (!tagDropdownOpen) return;
@@ -234,60 +206,22 @@ const ProblemTracker: React.FC<ProblemTrackerProps> = ({
                 style={{ borderCollapse: "collapse" }}
               >
                 <thead>
-                  <tr className={isDarkMode ? "bg-slate-800" : "bg-gray-100"}>
-                    <th className="px-4 py-2 text-left border">#</th>
-                    {renderHeader("Name", "name")}
-                    <th className="px-4 py-2 text-left border">Tags</th>
-                    {renderHeader("Rating", "rating")}
-                    {renderHeader("Solved At", "solvedAt")}
-                    <th className="px-4 py-2 text-left border">Status</th>
-                  </tr>
+                  <ProblemTableHeader
+                    isDarkMode={isDarkMode}
+                    sortBy={sortBy}
+                    sortDir={sortDir}
+                    setSortBy={setSortBy}
+                    setSortDir={setSortDir}
+                  />
                 </thead>
                 <tbody>
                   {problems.map((problem, idx) => (
-                    <tr
+                    <ProblemTableRow
                       key={problem.id}
-                      className={
-                        isDarkMode
-                          ? idx % 2 === 0
-                            ? "bg-slate-900/40 hover:bg-slate-800/60"
-                            : "bg-slate-800/40 hover:bg-slate-700/60"
-                          : idx % 2 === 0
-                          ? "bg-white hover:bg-gray-100"
-                          : "bg-gray-50 hover:bg-gray-200"
-                      }
-                      style={{ borderBottom: "1px solid #e5e7eb" }}
-                    >
-                      <td className="px-4 py-2 font-mono border">{idx + 1}</td>
-                      <td className="px-4 py-2 border">
-                        <a
-                          href={`https://codeforces.com/contest/${problem.contestId}/problem/${problem.index}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-500 hover:underline"
-                        >
-                          {problem.name}
-                        </a>
-                      </td>
-                      <td className="px-4 py-2 border">
-                        {problem.tags && problem.tags.length > 0
-                          ? problem.tags.join(", ")
-                          : "-"}
-                      </td>
-                      <td className="px-4 py-2 border">
-                        {problem.rating || "-"}
-                      </td>
-                      <td className="px-4 py-2 border">
-                        {problem.solvedAt
-                          ? new Date(problem.solvedAt).toLocaleDateString()
-                          : "-"}
-                      </td>
-                      <td className="px-4 py-2 border">
-                        <span className="inline-flex items-center text-green-600">
-                          <Check size={16} className="mr-1" /> Solved
-                        </span>
-                      </td>
-                    </tr>
+                      problem={problem}
+                      idx={idx}
+                      isDarkMode={isDarkMode}
+                    />
                   ))}
                 </tbody>
               </table>
@@ -417,7 +351,7 @@ const ProblemTracker: React.FC<ProblemTrackerProps> = ({
               </select>
             </div>
             {/* Tag filter dropdown */}
-            <div className="relative" ref={tagDropdownRef}>
+            <div className="relative">
               <label className="block text-xs font-semibold mb-1">
                 Filter by tag
               </label>
@@ -433,50 +367,14 @@ const ProblemTracker: React.FC<ProblemTrackerProps> = ({
                 <span className="truncate text-left">{tagButtonLabel}</span>
                 <ChevronDown className="ml-2 w-4 h-4" />
               </button>
-              {tagDropdownOpen && (
-                <div
-                  className={`absolute z-20 mt-1 left-0 w-full max-h-48 overflow-y-auto rounded border shadow-lg ${
-                    isDarkMode
-                      ? "bg-slate-800 border-slate-700 text-slate-100"
-                      : "bg-white border-gray-300 text-gray-900"
-                  }`}
-                >
-                  {allTags.length === 0 && (
-                    <div className="px-3 py-2 text-sm text-gray-400">
-                      No tags
-                    </div>
-                  )}
-                  {allTags.map((tag) => (
-                    <label
-                      key={tag}
-                      className="flex items-center px-3 py-2 cursor-pointer hover:bg-blue-50 dark:hover:bg-slate-700"
-                    >
-                      <input
-                        type="checkbox"
-                        className="mr-2 accent-blue-500"
-                        checked={selectedTags.includes(tag)}
-                        onChange={() => {
-                          setSelectedTags(
-                            selectedTags.includes(tag)
-                              ? selectedTags.filter((t) => t !== tag)
-                              : [...selectedTags, tag]
-                          );
-                        }}
-                      />
-                      <span>{tag}</span>
-                    </label>
-                  ))}
-                  <div
-                    className="px-3 py-2 border-t text-xs text-blue-600 dark:text-blue-400 cursor-pointer hover:underline"
-                    onClick={() => {
-                      setSelectedTags([]);
-                      setTagDropdownOpen(false);
-                    }}
-                  >
-                    Clear all
-                  </div>
-                </div>
-              )}
+              <TagDropdown
+                allTags={allTags}
+                selectedTags={selectedTags}
+                setSelectedTags={setSelectedTags}
+                isDarkMode={isDarkMode}
+                open={tagDropdownOpen}
+                setOpen={setTagDropdownOpen}
+              />
             </div>
             {/* Rating filter */}
             <div>
@@ -553,62 +451,24 @@ const ProblemTracker: React.FC<ProblemTrackerProps> = ({
               style={{ borderCollapse: "collapse" }}
             >
               <thead>
-                <tr className={isDarkMode ? "bg-slate-800" : "bg-gray-100"}>
-                  <th className="px-4 py-2 text-left border">#</th>
-                  {renderHeader("Name", "name")}
-                  <th className="px-4 py-2 text-left border">Tags</th>
-                  {renderHeader("Rating", "rating")}
-                  {renderHeader("Solved At", "solvedAt")}
-                  <th className="px-4 py-2 text-left border">Status</th>
-                </tr>
+                <ProblemTableHeader
+                  isDarkMode={isDarkMode}
+                  sortBy={sortBy}
+                  sortDir={sortDir}
+                  setSortBy={setSortBy}
+                  setSortDir={setSortDir}
+                />
               </thead>
               <tbody>
                 {paginatedProblems.map((problem, idx) => (
-                  <tr
+                  <ProblemTableRow
                     key={problem.id}
-                    className={
-                      isDarkMode
-                        ? idx % 2 === 0
-                          ? "bg-slate-900/40 hover:bg-slate-800/60"
-                          : "bg-slate-800/40 hover:bg-slate-700/60"
-                        : idx % 2 === 0
-                        ? "bg-white hover:bg-gray-100"
-                        : "bg-gray-50 hover:bg-gray-200"
-                    }
-                    style={{ borderBottom: "1px solid #e5e7eb" }}
-                  >
-                    <td className="px-4 py-2 font-mono border">
-                      {page * pageSize + idx + 1}
-                    </td>
-                    <td className="px-4 py-2 border">
-                      <a
-                        href={`https://codeforces.com/contest/${problem.contestId}/problem/${problem.index}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-500 hover:underline"
-                      >
-                        {problem.name}
-                      </a>
-                    </td>
-                    <td className="px-4 py-2 border">
-                      {problem.tags && problem.tags.length > 0
-                        ? problem.tags.join(", ")
-                        : "-"}
-                    </td>
-                    <td className="px-4 py-2 border">
-                      {problem.rating || "-"}
-                    </td>
-                    <td className="px-4 py-2 border">
-                      {problem.solvedAt
-                        ? new Date(problem.solvedAt).toLocaleDateString()
-                        : "-"}
-                    </td>
-                    <td className="px-4 py-2 border">
-                      <span className="inline-flex items-center text-green-600">
-                        <Check size={16} className="mr-1" /> Solved
-                      </span>
-                    </td>
-                  </tr>
+                    problem={problem}
+                    idx={idx}
+                    isDarkMode={isDarkMode}
+                    page={page}
+                    pageSize={pageSize}
+                  />
                 ))}
               </tbody>
             </table>

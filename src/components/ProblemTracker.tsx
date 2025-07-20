@@ -15,6 +15,7 @@ import { Problem } from "../types/Student";
 import ProblemTableRow from "@/components/ProblemTableRow";
 import TagDropdown from "@/components/TagDropdown";
 import ProblemTableHeader from "@/components/ProblemTableHeader";
+import { useProblemFilters } from "@/hooks/useProblemFilters";
 
 interface ProblemTrackerProps {
   studentId: string;
@@ -40,17 +41,6 @@ const ProblemTracker: React.FC<ProblemTrackerProps> = ({
   const { isDarkMode } = useDarkMode();
   const { data: dbProblems = [], isLoading, error } = useProblemData(studentId);
   const [problems, setProblems] = useState<Problem[]>([]);
-  const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(PAGE_SIZE_OPTIONS[0]);
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [minRating, setMinRating] = useState<number | "">("");
-  const [maxRating, setMaxRating] = useState<number | "">("");
-  const [sortBy, setSortBy] = useState<"name" | "rating" | "solvedAt">(
-    "solvedAt"
-  );
-  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
-  const [tagDropdownOpen, setTagDropdownOpen] = useState(false);
-  const tagDropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // Map database problems to component format
@@ -69,69 +59,29 @@ const ProblemTracker: React.FC<ProblemTrackerProps> = ({
       ? mappedProblems.filter((p) => p.contestId === contestId)
       : mappedProblems;
     setProblems(filteredProblems);
-    setPage(0); // Reset to first page on data change
   }, [dbProblems, contestId]);
 
-  // Unique tags for filter dropdown
-  const allTags = useMemo(() => getUniqueTags(problems), [problems]);
-
-  // Filtering
-  const filteredProblems = useMemo(() => {
-    return problems.filter((p) => {
-      // Tag filter
-      if (
-        selectedTags.length > 0 &&
-        !selectedTags.some((tag) => p.tags.includes(tag))
-      ) {
-        return false;
-      }
-      // Rating filter
-      if (
-        minRating !== "" &&
-        (p.rating === undefined || p.rating < minRating)
-      ) {
-        return false;
-      }
-      if (
-        maxRating !== "" &&
-        (p.rating === undefined || p.rating > maxRating)
-      ) {
-        return false;
-      }
-      return true;
-    });
-  }, [problems, selectedTags, minRating, maxRating]);
-
-  // Sorting
-  const sortedProblems = useMemo(() => {
-    const sorted = [...filteredProblems];
-    sorted.sort((a, b) => {
-      let cmp = 0;
-      if (sortBy === "name") {
-        cmp = a.name.localeCompare(b.name);
-      } else if (sortBy === "rating") {
-        cmp = (a.rating || 0) - (b.rating || 0);
-      } else if (sortBy === "solvedAt") {
-        cmp =
-          new Date(a.solvedAt || "").getTime() -
-          new Date(b.solvedAt || "").getTime();
-      }
-      return sortDir === "asc" ? cmp : -cmp;
-    });
-    return sorted;
-  }, [filteredProblems, sortBy, sortDir]);
-
-  // Pagination
-  const totalPages = Math.ceil(sortedProblems.length / pageSize);
-  const paginatedProblems = sortedProblems.slice(
-    page * pageSize,
-    (page + 1) * pageSize
-  );
-
-  // Reset page if filters/pageSize change
-  useEffect(() => {
-    setPage(0);
-  }, [pageSize, selectedTags, minRating, maxRating, sortBy, sortDir]);
+  // Replace all state and logic for filtering, sorting, and pagination with the hook:
+  const {
+    allTags,
+    selectedTags,
+    setSelectedTags,
+    minRating,
+    setMinRating,
+    maxRating,
+    setMaxRating,
+    sortBy,
+    setSortBy,
+    sortDir,
+    setSortDir,
+    page,
+    setPage,
+    pageSize,
+    setPageSize,
+    totalPages,
+    paginatedProblems,
+    problemsByRating,
+  } = useProblemFilters(problems, contestId);
 
   // Group problems by rating ranges for CP Sheet
   const problemsByRating = useMemo(() => {

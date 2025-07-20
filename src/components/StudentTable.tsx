@@ -22,6 +22,8 @@ import StudentProfileModal from "@/components/StudentProfileModal";
 import EditStudentDialog from "@/components/EditStudentDialog";
 import { useCreateStudent, useDeleteStudent } from "@/hooks/useStudentData";
 import ContestHistoryModal from "@/components/ContestHistoryModal";
+import StudentTableRowV2 from "@/components/manage-students/StudentTableRowV2";
+import { getRatingColor, getRatingBadge } from "@/lib/utils";
 
 interface StudentTableProps {
   students: Student[];
@@ -44,7 +46,7 @@ const StudentTable: React.FC<StudentTableProps> = ({
   const { isDarkMode } = useDarkMode();
   const createStudent = useCreateStudent();
   const deleteStudent = useDeleteStudent();
-  
+
   // Use real data from props, fallback to empty array
   const [students, setStudents] = useState<Student[]>(propStudents || []);
 
@@ -112,7 +114,7 @@ const StudentTable: React.FC<StudentTableProps> = ({
   const getFilteredStudents = () => {
     let filtered = students.filter(
       (student) =>
-      student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         student.codeforcesHandle
           .toLowerCase()
           .includes(searchTerm.toLowerCase())
@@ -140,30 +142,6 @@ const StudentTable: React.FC<StudentTableProps> = ({
 
   const filteredStudents = getFilteredStudents();
 
-  const getRatingColor = (rating: number) => {
-    if (rating >= 2100) return "text-red-400";
-    if (rating >= 1900) return "text-orange-400";
-    if (rating >= 1600) return "text-purple-400";
-    if (rating >= 1400) return "text-blue-400";
-    if (rating >= 1200) return "text-green-400";
-    if (rating > 0) return "text-gray-400";
-    return "text-gray-500";
-  };
-
-  const getRatingBadge = (rating: number) => {
-    if (rating >= 3000) return "Legendary Grandmaster";
-    if (rating >= 2600) return "International Grandmaster";
-    if (rating >= 2400) return "Grandmaster";
-    if (rating >= 2300) return "International Master";
-    if (rating >= 2100) return "Master";
-    if (rating >= 1900) return "Candidate Master";
-    if (rating >= 1600) return "Expert";
-    if (rating >= 1400) return "Specialist";
-    if (rating >= 1200) return "Pupil";
-    if (rating > 0) return "Newbie";
-    return "Unrated";
-  };
-
   const handleDeleteStudent = (studentId: string) => {
     deleteStudent.mutate(studentId);
   };
@@ -186,7 +164,7 @@ const StudentTable: React.FC<StudentTableProps> = ({
   const handleToggleEmail = (studentId: string) => {
     setStudents(
       students.map((s) =>
-      s.id === studentId ? { ...s, emailEnabled: !s.emailEnabled } : s
+        s.id === studentId ? { ...s, emailEnabled: !s.emailEnabled } : s
       )
     );
     toast({
@@ -198,7 +176,7 @@ const StudentTable: React.FC<StudentTableProps> = ({
   const handleSendReminder = (studentId: string) => {
     setStudents(
       students.map((s) =>
-      s.id === studentId ? { ...s, reminderCount: s.reminderCount + 1 } : s
+        s.id === studentId ? { ...s, reminderCount: s.reminderCount + 1 } : s
       )
     );
     toast({
@@ -233,12 +211,12 @@ const StudentTable: React.FC<StudentTableProps> = ({
       headers.join(","),
       ...filteredStudents.map((student) =>
         [
-        `"${student.name}"`,
-        `"${student.email}"`,
-        `"${student.phoneNumber}"`,
-        `"${student.codeforcesHandle}"`,
-        student.currentRating,
-        student.maxRating,
+          `"${student.name}"`,
+          `"${student.email}"`,
+          `"${student.phoneNumber}"`,
+          `"${student.codeforcesHandle}"`,
+          student.currentRating,
+          student.maxRating,
           student.isActive ? "Active" : "Inactive",
           `"${student.lastUpdated}"`,
         ].join(",")
@@ -257,7 +235,7 @@ const StudentTable: React.FC<StudentTableProps> = ({
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    
+
     toast({
       title: "CSV Downloaded",
       description: `Downloaded data for ${filteredStudents.length} students.`,
@@ -276,7 +254,7 @@ const StudentTable: React.FC<StudentTableProps> = ({
     <>
       <div
         className={`rounded-3xl p-8 transition-all duration-500 ${
-        isDarkMode 
+          isDarkMode
             ? "bg-slate-900/50 backdrop-blur-xl border border-slate-800/50"
             : "bg-white/80 backdrop-blur-xl border border-gray-200/50"
         }`}
@@ -295,13 +273,13 @@ const StudentTable: React.FC<StudentTableProps> = ({
               Monitor and track student progress across Codeforces platform
             </p>
           </div>
-          
+
           <div className="flex items-center space-x-3 flex-wrap">
             {students.length === 0 && (
               <button
                 onClick={addTopCodeforcesUsers}
                 className={`px-4 py-3 rounded-2xl flex items-center space-x-2 transition-all duration-300 hover:scale-105 ${
-                  isDarkMode 
+                  isDarkMode
                     ? "bg-blue-900/50 hover:bg-blue-800/50 text-blue-400"
                     : "bg-blue-100 hover:bg-blue-200 text-blue-700"
                 }`}
@@ -315,7 +293,7 @@ const StudentTable: React.FC<StudentTableProps> = ({
             <button
               onClick={downloadCSV}
               className={`px-4 py-3 rounded-2xl flex items-center space-x-2 transition-all duration-300 hover:scale-105 ${
-                isDarkMode 
+                isDarkMode
                   ? "bg-green-900/50 hover:bg-green-800/50 text-green-400"
                   : "bg-green-100 hover:bg-green-200 text-green-700"
               }`}
@@ -326,10 +304,10 @@ const StudentTable: React.FC<StudentTableProps> = ({
             </button>
 
             <div className="relative">
-              <button 
+              <button
                 onClick={() => setShowFilterDropdown(!showFilterDropdown)}
                 className={`px-4 py-3 rounded-2xl flex items-center space-x-2 transition-all duration-300 hover:scale-105 ${
-                  isDarkMode 
+                  isDarkMode
                     ? "bg-slate-800/50 hover:bg-slate-700/50 text-slate-300"
                     : "bg-gray-100 hover:bg-gray-200 text-gray-700"
                 }`}
@@ -337,11 +315,11 @@ const StudentTable: React.FC<StudentTableProps> = ({
                 <Filter size={18} />
                 <span>Filter</span>
               </button>
-              
+
               {showFilterDropdown && (
                 <div
                   className={`absolute right-0 mt-2 w-48 rounded-2xl shadow-lg border z-50 ${
-                  isDarkMode 
+                    isDarkMode
                       ? "bg-slate-900/95 border-slate-700/50 backdrop-blur-xl"
                       : "bg-white/95 border-gray-200/50 backdrop-blur-xl"
                   }`}
@@ -371,7 +349,7 @@ const StudentTable: React.FC<StudentTableProps> = ({
                 </div>
               )}
             </div>
-            
+
             <AddStudentDialog />
           </div>
         </div>
@@ -389,7 +367,7 @@ const StudentTable: React.FC<StudentTableProps> = ({
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className={`w-full pl-12 pr-4 py-4 rounded-2xl border transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-teal-500/50 ${
-              isDarkMode 
+              isDarkMode
                 ? "bg-slate-800/50 border-slate-700/50 text-white placeholder-slate-400"
                 : "bg-white/50 border-gray-300/50 text-gray-900 placeholder-gray-500"
             }`}
@@ -485,197 +463,16 @@ const StudentTable: React.FC<StudentTableProps> = ({
               </thead>
               <tbody>
                 {filteredStudents.map((student) => (
-                  <tr
+                  <StudentTableRowV2
                     key={student.id}
-                    className={`border-b transition-all duration-300 hover:bg-opacity-50 ${
-                      isDarkMode 
-                        ? "border-slate-700/30 hover:bg-slate-800/30"
-                        : "border-gray-200/30 hover:bg-gray-100/30"
-                    }`}
-                  >
-                    <td className="py-4 px-4">
-                      <div className="flex items-center space-x-3">
-                        {student.codeforcesHandle ? (
-                          <img
-                            src={`https://userpic.codeforces.org/${student.codeforcesHandle}/avatar`}
-                            alt="CF Avatar"
-                            className="w-10 h-10 rounded-2xl object-cover border border-gray-300 dark:border-slate-700 bg-white"
-                            onError={(e) => {
-                              e.currentTarget.onerror = null;
-                              e.currentTarget.style.display = "none";
-                              e.currentTarget.nextElementSibling.style.display =
-                                "flex";
-                            }}
-                          />
-                        ) : null}
-                        <div
-                          className={`w-10 h-10 rounded-2xl flex items-center justify-center font-semibold text-white ${
-                          student.isActive 
-                              ? "bg-gradient-to-br from-green-500 to-teal-500"
-                              : "bg-gradient-to-br from-gray-500 to-slate-500"
-                          }`}
-                          style={{
-                            display: student.codeforcesHandle ? "none" : "flex",
-                          }}
-                        >
-                          {student.name
-                            .split(" ")
-                            .map((n) => n[0])
-                            .join("")}
-                        </div>
-                        <div>
-                          <div
-                            className={`font-semibold ${
-                              isDarkMode ? "text-white" : "text-gray-900"
-                            }`}
-                          >
-                            <a
-                              href={`https://codeforces.com/profile/${student.codeforcesHandle}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="hover:underline flex items-center space-x-1 hover:text-blue-500 transition-colors"
-                            >
-                              <span>{student.name}</span>
-                              <ExternalLink size={14} />
-                            </a>
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="py-4 px-4">
-                      <span className="px-3 py-1 rounded-full bg-blue-500/20 text-blue-400 text-sm font-medium">
-                        {student.codeforcesHandle}
-                      </span>
-                    </td>
-                    <td className={`py-4 px-4`}>
-                      <div className="flex flex-col">
-                        <span
-                          className={`font-bold text-lg ${getRatingColor(
-                            student.currentRating
-                          )}`}
-                        >
-                          {student.currentRating || 0}
-                        </span>
-                        <span
-                          className={`text-xs ${
-                            isDarkMode ? "text-slate-400" : "text-gray-500"
-                          }`}
-                        >
-                          {getRatingBadge(student.currentRating)}
-                        </span>
-                      </div>
-                    </td>
-                    <td className={`py-4 px-4`}>
-                      <div className="flex flex-col">
-                        <span
-                          className={`font-bold text-lg ${getRatingColor(
-                            student.maxRating
-                          )}`}
-                        >
-                          {student.maxRating || 0}
-                        </span>
-                        <span
-                          className={`text-xs ${
-                            isDarkMode ? "text-slate-400" : "text-gray-500"
-                          }`}
-                        >
-                          {getRatingBadge(student.maxRating)}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="py-4 px-4">
-                      <div className="flex flex-col space-y-2">
-                        <span
-                          className={`px-3 py-1 rounded-full text-xs font-medium w-fit ${
-                          student.isActive
-                              ? "bg-green-500/20 text-green-400"
-                              : "bg-red-500/20 text-red-400"
-                          }`}
-                        >
-                          {student.isActive ? "Active" : "Inactive"}
-                        </span>
-                        {student.reminderCount > 0 && (
-                          <div className="flex items-center space-x-1 text-xs text-orange-400">
-                            <AlertCircle size={12} />
-                            <span>{student.reminderCount} reminders sent</span>
-                          </div>
-                        )}
-                        <div className="flex items-center space-x-1 text-xs">
-                          <span
-                            className={`px-2 py-1 rounded text-xs ${
-                            student.emailEnabled
-                                ? "bg-green-500/20 text-green-400"
-                                : "bg-red-500/20 text-red-400"
-                            }`}
-                          >
-                            {student.emailEnabled ? "Emails On" : "Emails Off"}
-                          </span>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="py-4 px-4">
-                      <button
-                        onClick={() => handleViewContestHistory(student)}
-                        className={`p-2 rounded-xl transition-all duration-300 hover:scale-110 ${
-                          isDarkMode
-                            ? "bg-purple-900/50 text-purple-400 hover:bg-purple-800/50"
-                            : "bg-purple-100 text-purple-600 hover:bg-purple-200"
-                        }`}
-                        title="View Contest History"
-                      >
-                        <History size={16} />
-                      </button>
-                    </td>
-                    <td className="py-4 px-4">
-                      <div className="flex items-center space-x-2">
-                        <button
-                          onClick={() => handleViewStudent(student)}
-                          disabled={!student || !student.id}
-                          className={`p-2 rounded-xl transition-all duration-300 hover:scale-110 ${
-                            isDarkMode
-                              ? "bg-blue-900/50 text-blue-400 hover:bg-blue-800/50"
-                              : "bg-blue-100 text-blue-600 hover:bg-blue-200"
-                          }`}
-                          title="View Details"
-                        >
-                          <Eye size={16} />
-                        </button>
-                        <button
-                          onClick={() => handleEditStudent(student)}
-                          className={`p-2 rounded-xl transition-all duration-300 hover:scale-110 ${
-                            isDarkMode
-                              ? "bg-green-900/50 text-green-400 hover:bg-green-800/50"
-                              : "bg-green-100 text-green-600 hover:bg-green-200"
-                          }`}
-                          title="Edit Student"
-                        >
-                          <Edit size={16} />
-                        </button>
-                        <button 
-                          onClick={() => handleSendReminder(student.id)}
-                          className={`p-2 rounded-xl transition-all duration-300 hover:scale-110 ${
-                            isDarkMode
-                              ? "bg-yellow-900/50 text-yellow-400 hover:bg-yellow-800/50"
-                              : "bg-yellow-100 text-yellow-600 hover:bg-yellow-200"
-                          }`}
-                          title="Send Reminder"
-                        >
-                          <Mail size={16} />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteStudent(student.id)}
-                          className={`p-2 rounded-xl transition-all duration-300 hover:scale-110 ${
-                            isDarkMode
-                              ? "bg-red-900/50 text-red-400 hover:bg-red-800/50"
-                              : "bg-red-100 text-red-600 hover:bg-red-200"
-                          }`}
-                          title="Delete Student"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
+                    student={student}
+                    isDarkMode={isDarkMode}
+                    onView={handleViewStudent}
+                    onEdit={handleEditStudent}
+                    onDelete={handleDeleteStudent}
+                    onSendReminder={handleSendReminder}
+                    onViewContestHistory={handleViewContestHistory}
+                  />
                 ))}
               </tbody>
             </table>
@@ -684,8 +481,8 @@ const StudentTable: React.FC<StudentTableProps> = ({
 
         {/* Overlay to close filter dropdown when clicking outside */}
         {showFilterDropdown && (
-          <div 
-            className="fixed inset-0 z-40" 
+          <div
+            className="fixed inset-0 z-40"
             onClick={() => setShowFilterDropdown(false)}
           />
         )}

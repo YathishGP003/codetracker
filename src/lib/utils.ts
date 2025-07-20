@@ -30,11 +30,25 @@ export function formatIST(date: Date): string {
 }
 
 export const getRatingColor = (rating: number) => {
-  if (rating >= 2400) return "text-red-500";
-  if (rating >= 2200) return "text-orange-500";
-  if (rating >= 1900) return "text-yellow-500";
-  if (rating >= 1600) return "text-purple-500";
-  if (rating >= 1400) return "text-blue-500";
-  if (rating >= 1200) return "text-green-500";
+  if (rating >= 2100) return "text-red-400";
+  if (rating >= 1900) return "text-orange-400";
+  if (rating >= 1600) return "text-purple-400";
+  if (rating >= 1400) return "text-blue-400";
+  if (rating >= 1200) return "text-green-400";
+  if (rating > 0) return "text-gray-400";
   return "text-gray-500";
+};
+
+export const getRatingBadge = (rating: number) => {
+  if (rating >= 3000) return "Legendary Grandmaster";
+  if (rating >= 2600) return "International Grandmaster";
+  if (rating >= 2400) return "Grandmaster";
+  if (rating >= 2300) return "International Master";
+  if (rating >= 2100) return "Master";
+  if (rating >= 1900) return "Candidate Master";
+  if (rating >= 1600) return "Expert";
+  if (rating >= 1400) return "Specialist";
+  if (rating >= 1200) return "Pupil";
+  if (rating > 0) return "Newbie";
+  return "Unrated";
 };

@@ -42,6 +42,10 @@ const ProblemTracker: React.FC<ProblemTrackerProps> = ({
   const { data: dbProblems = [], isLoading, error } = useProblemData(studentId);
   const [problems, setProblems] = useState<Problem[]>([]);
 
+  // Add missing state and ref for tag dropdown
+  const [tagDropdownOpen, setTagDropdownOpen] = useState(false);
+  const tagDropdownRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     // Map database problems to component format
     const mappedProblems = dbProblems.map((problem) => ({

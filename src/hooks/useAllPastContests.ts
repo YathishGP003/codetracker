@@ -10,7 +10,7 @@ export interface PastContest {
 
 function getCurrentYearStart() {
   const now = new Date();
-  return new Date(now.getFullYear(), 0, 1); // Jan 1st of current year
+  return new Date(now.getFullYear(), 0, 1);
 }
 
 export const useAllPastContests = () => {

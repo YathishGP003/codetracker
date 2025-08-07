@@ -455,7 +455,7 @@ const CPSheet: React.FC = () => {
             <iframe
               width="100%"
               height="100%"
-              src="https://www.youtube.com/embed/0QwQFQbAq2A"
+              src="https://www.youtube.com/watch?v=jzzjTa3z9xE"
               title="CP Sheet | Handpicked Problems from 800 to 1900 | NEWBIE TO EXPERT"
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

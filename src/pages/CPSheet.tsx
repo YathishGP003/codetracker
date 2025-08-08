@@ -426,26 +426,26 @@ const CPSheet: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-indigo-50 dark:from-slate-950 dark:to-slate-900">
       {/* Hero Section */}
-      <div className="w-full relative overflow-hidden py-12 md:py-14">
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0b1220] via-[#0e1626] to-[#0b1220] dark:from-[#0b1220] dark:via-[#0e1626] dark:to-[#0b1220]"></div>
-        <div className="relative z-10 px-4 md:px-16 flex flex-col md:flex-row items-center justify-between gap-10">
+      <div className="w-full relative overflow-hidden py-10 md:py-12">
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0d1423] via-[#101a2b] to-[#0d1423]"></div>
+        <div className="relative z-10 px-4 md:px-16 flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="flex-1 max-w-2xl">
-            <h1 className="text-[40px] md:text-[56px] lg:text-[64px] font-extrabold text-white leading-tight tracking-tight">
-              <span className="inline-block rounded-2xl bg-white/10 px-4 py-2 backdrop-blur-sm shadow-sm">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-white leading-tight tracking-tight">
+              <span className="inline-block rounded-xl bg-white/10 px-3 py-1.5 backdrop-blur-sm shadow-sm">
                 CP-31 Sheet
               </span>
               <br />
-              <span className="inline-block mt-3 rounded-2xl bg-white/10 px-4 py-2 backdrop-blur-sm shadow-sm">
+              <span className="inline-block mt-3 rounded-xl bg-white/10 px-3 py-1.5 backdrop-blur-sm shadow-sm">
                 Hand-picked Problems
               </span>
             </h1>
-            <p className="mt-6 text-[15px] md:text-[17px] leading-8 text-white/90 font-mono">
+            <p className="mt-5 text-[14px] md:text-[16px] leading-7 text-white/85">
               This sheet is curated by
               <a
                 href="https://codeforces.com/profile/Priyansh31dec"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mx-2 text-white font-semibold underline decoration-white/50 underline-offset-4 hover:decoration-white"
+                className="mx-2 text-white font-semibold underline decoration-white/40 underline-offset-4 hover:decoration-white"
               >
                 Priyansh31dec
               </a>
@@ -459,7 +459,7 @@ const CPSheet: React.FC = () => {
             </p>
           </div>
           <div className="flex-1 flex justify-center md:justify-end">
-            <div className="rounded-[24px] overflow-hidden shadow-2xl border border-white/10 w-[340px] h-[210px] md:w-[520px] md:h-[300px] bg-black/80">
+            <div className="rounded-2xl overflow-hidden shadow-2xl border border-white/10 w-[320px] h-[190px] md:w-[460px] md:h-[260px] bg-black/80">
               <iframe
                 width="100%"
                 height="100%"

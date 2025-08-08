@@ -424,71 +424,73 @@ const CPSheet: React.FC = () => {
   const leaderboardRank = undefined; // TODO: Replace with real rank if available
 
   return (
-    <div className="min-h-screen bg-[#f6faff] dark:bg-[#0a1627] px-0 md:px-0">
+    <div className="min-h-screen bg-gradient-to-b from-white to-indigo-50 dark:from-slate-950 dark:to-slate-900">
       {/* Hero Section */}
-      <div className="w-full bg-gradient-to-r from-[#e0f2fe] to-[#f0fdf4] dark:from-[#0a1627] dark:to-[#0a1627] py-10 px-4 md:px-16 flex flex-col md:flex-row items-center justify-between border-b border-[#e0e7ef] dark:border-[#1e293b]">
-        <div className="flex-1 max-w-2xl">
-          <h1 className="text-4xl md:text-5xl font-extrabold text-[#1e293b] dark:text-white mb-2 leading-tight">
-            CP-31 Sheet{" "}
-            <span className="text-[#0ea5e9]">Hand-picked Problems</span>
-          </h1>
-          <p className="text-lg md:text-xl text-[#334155] dark:text-[#cbd5e1] mb-4">
-            This sheet is curated by{" "}
-            <a
-              href="https://codeforces.com/profile/Priyansh31dec"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[#2563eb] font-semibold underline"
-            >
-              Priyansh31dec
-            </a>{" "}
-            - <span className="text-[#f59e42] font-bold">Master</span> on
-            Codeforces and{" "}
-            <span className="font-bold">ICPC World Finalist</span>. Priyansh has
-            solved 4000+ algorithmic problems and has spent 200+ hours reading
-            1800+ problems to pick 31 problems in each rating from 800 - 1900
-            containing the most interesting and reusable concepts.
-          </p>
-        </div>
-        <div className="flex-1 flex justify-center md:justify-end mt-6 md:mt-0">
-          <div className="rounded-2xl overflow-hidden shadow-xl border-4 border-[#0ea5e9] w-[340px] h-[190px] md:w-[400px] md:h-[225px] bg-black">
-            <iframe
-              width="100%"
-              height="100%"
-              src="https://www.youtube.com/watch?v=jzzjTa3z9xE"
-              title="CP Sheet | Handpicked Problems from 800 to 1900 | NEWBIE TO EXPERT"
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            ></iframe>
+      <div className="w-full relative overflow-hidden py-12 md:py-14">
+        <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-500 opacity-90 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900"></div>
+        <div className="relative z-10 px-4 md:px-16 flex flex-col md:flex-row items-center justify-between gap-8">
+          <div className="flex-1 max-w-2xl">
+            <h1 className="text-4xl md:text-5xl font-extrabold text-white drop-shadow-sm mb-3 leading-tight">
+              CP-31 Sheet{" "}
+              <span className="bg-white/20 text-white px-3 py-1 rounded-xl ml-1">
+                Hand-picked Problems
+              </span>
+            </h1>
+            <p className="text-base md:text-lg text-white/90">
+              This sheet is curated by
+              <a
+                href="https://codeforces.com/profile/Priyansh31dec"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="ml-2 text-white font-semibold underline decoration-white/50 underline-offset-4 hover:decoration-white"
+              >
+                Priyansh31dec
+              </a>
+              <span className="mx-1">-</span>
+              <span className="font-bold text-amber-200">Master</span> on
+              Codeforces and
+              <span className="ml-1 font-bold">ICPC World Finalist</span>.
+              Priyansh has solved 4000+ algorithmic problems and has spent 200+
+              hours reading 1800+ problems to pick 31 problems in each rating
+              from 800 - 1900 containing the most interesting and reusable
+              concepts.
+            </p>
+          </div>
+          <div className="flex-1 flex justify-center md:justify-end">
+            <div className="rounded-2xl overflow-hidden shadow-2xl ring-4 ring-white/30 w-[340px] h-[190px] md:w-[420px] md:h-[236px] bg-black/90">
+              <iframe
+                width="100%"
+                height="100%"
+                src="https://www.youtube.com/watch?v=jzzjTa3z9xE"
+                title="CP Sheet | Handpicked Problems from 800 to 1900 | NEWBIE TO EXPERT"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Main Content Section */}
-      <div className="max-w-7xl mx-auto py-8 px-4 md:px-8 grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div className="max-w-7xl mx-auto py-10 px-4 md:px-8 grid grid-cols-1 md:grid-cols-4 gap-8">
         {/* Left/Main Section */}
         <div className="md:col-span-3 space-y-8">
           {/* Rating Selector Row */}
-          <div className="flex flex-wrap gap-2 mb-8 items-center justify-center rounded-2xl border border-[#bae6fd] dark:border-[#334155] bg-[#e0f2fe] dark:bg-[#1e293b] py-4 shadow-md">
-            <span className="text-lg font-semibold mr-4 text-[#0ea5e9] dark:text-[#38bdf8]">
+          <div className="flex flex-wrap gap-3 mb-8 items-center justify-center rounded-2xl bg-white/70 dark:bg-slate-900/60 backdrop-blur-md border border-indigo-200/60 dark:border-slate-700/60 py-4 px-4 shadow-lg">
+            <span className="text-base md:text-lg font-semibold mr-2 text-indigo-700 dark:text-indigo-300">
               Rating
             </span>
             {ratingOptions.map((rating) => (
               <button
                 key={rating}
-                className={`px-6 py-2 rounded-xl font-bold border transition-all duration-200 focus:outline-none text-lg
+                className={`px-5 py-2 rounded-xl font-semibold transition-all duration-200 focus:outline-none text-base ring-1 ring-inset
                   ${
                     selectedRating === rating
-                      ? "bg-[#0ea5e9] border-[#0ea5e9] text-white shadow-lg scale-105"
-                      : "bg-white border-[#bae6fd] text-[#0ea5e9] hover:bg-[#f0fdf4] dark:bg-[#1e293b] dark:border-[#334155] dark:text-[#38bdf8] hover:dark:bg-[#0a1627]"
+                      ? "text-white bg-gradient-to-r from-indigo-600 to-fuchsia-500 shadow-md scale-105 ring-transparent"
+                      : "bg-white/80 dark:bg-slate-800/70 text-slate-700 dark:text-slate-200 hover:bg-white ring-indigo-200/70 dark:ring-slate-700/70"
                   }
                 `}
-                style={
-                  selectedRating === rating
-                    ? { boxShadow: "0 0 0 2px #0ea5e9" }
-                    : {}
-                }
                 onClick={() => setSelectedRating(rating)}
               >
                 {rating}
@@ -515,32 +517,32 @@ const CPSheet: React.FC = () => {
         {/* Right/Sidebar Section */}
         <div className="md:col-span-1 space-y-8">
           {/* Quick Stats Card */}
-          <Card className="p-8 bg-[#f0fdf4] dark:bg-[#1e293b] border border-[#bbf7d0] dark:border-[#334155] rounded-2xl shadow-md">
-            <h3 className="text-lg font-bold mb-4 text-[#0ea5e9] dark:text-[#38bdf8]">
+          <Card className="p-8 bg-white/80 dark:bg-slate-900/70 border border-indigo-200/60 dark:border-slate-800/60 rounded-2xl shadow-xl backdrop-blur-md">
+            <h3 className="text-lg font-bold mb-4 text-indigo-700 dark:text-indigo-300">
               Quick Stats
             </h3>
             <div className="space-y-3">
               <div className="flex justify-between">
-                <span className="text-sm text-[#334155] dark:text-[#cbd5e1]">
+                <span className="text-sm text-slate-600 dark:text-slate-300">
                   Total Problems
                 </span>
-                <span className="font-semibold text-[#0ea5e9] dark:text-[#38bdf8]">
+                <span className="font-semibold text-indigo-700 dark:text-indigo-300">
                   {totalProblems}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm text-[#334155] dark:text-[#cbd5e1]">
+                <span className="text-sm text-slate-600 dark:text-slate-300">
                   800 Rated
                 </span>
-                <span className="font-semibold text-[#0ea5e9] dark:text-[#38bdf8]">
+                <span className="font-semibold text-indigo-700 dark:text-indigo-300">
                   {staticCPProblems[800].length}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm text-[#334155] dark:text-[#cbd5e1]">
+                <span className="text-sm text-slate-600 dark:text-slate-300">
                   Your Rating
                 </span>
-                <span className="font-semibold text-[#0ea5e9] dark:text-[#38bdf8]">
+                <span className="font-semibold text-indigo-700 dark:text-indigo-300">
                   {student.currentRating}
                 </span>
               </div>
@@ -548,11 +550,11 @@ const CPSheet: React.FC = () => {
           </Card>
 
           {/* Progress Tips */}
-          <Card className="p-8 bg-[#e0f2fe] dark:bg-[#0a1627] border border-[#bae6fd] dark:border-[#334155] rounded-2xl shadow-md">
-            <h3 className="text-lg font-bold mb-4 text-[#0ea5e9] dark:text-[#38bdf8]">
+          <Card className="p-8 bg-gradient-to-br from-indigo-50 to-fuchsia-50 dark:from-slate-900 dark:to-slate-900 border border-indigo-200/60 dark:border-slate-800/60 rounded-2xl shadow-xl">
+            <h3 className="text-lg font-bold mb-4 text-indigo-700 dark:text-indigo-300">
               Progress Tips
             </h3>
-            <div className="space-y-3 text-sm text-[#334155] dark:text-[#cbd5e1]">
+            <div className="space-y-3 text-sm text-slate-700 dark:text-slate-300">
               <p>• Start with 800 rated problems</p>
               <p>• Solve at least 2-3 problems daily</p>
               <p>• Focus on understanding concepts</p>

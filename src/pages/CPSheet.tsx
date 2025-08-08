@@ -427,29 +427,31 @@ const CPSheet: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-b from-white to-indigo-50 dark:from-slate-950 dark:to-slate-900">
       {/* Hero Section */}
       <div className="w-full relative overflow-hidden py-12 md:py-14">
-        <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-500 opacity-90 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900"></div>
-        <div className="relative z-10 px-4 md:px-16 flex flex-col md:flex-row items-center justify-between gap-8">
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0b1220] via-[#0e1626] to-[#0b1220] dark:from-[#0b1220] dark:via-[#0e1626] dark:to-[#0b1220]"></div>
+        <div className="relative z-10 px-4 md:px-16 flex flex-col md:flex-row items-center justify-between gap-10">
           <div className="flex-1 max-w-2xl">
-            <h1 className="text-4xl md:text-5xl font-extrabold text-white drop-shadow-sm mb-3 leading-tight">
-              CP-31 Sheet{" "}
-              <span className="bg-white/20 text-white px-3 py-1 rounded-xl ml-1">
+            <h1 className="text-[40px] md:text-[56px] lg:text-[64px] font-extrabold text-white leading-tight tracking-tight">
+              <span className="inline-block rounded-2xl bg-white/10 px-4 py-2 backdrop-blur-sm shadow-sm">
+                CP-31 Sheet
+              </span>
+              <br />
+              <span className="inline-block mt-3 rounded-2xl bg-white/10 px-4 py-2 backdrop-blur-sm shadow-sm">
                 Hand-picked Problems
               </span>
             </h1>
-            <p className="text-base md:text-lg text-white/90">
+            <p className="mt-6 text-[15px] md:text-[17px] leading-8 text-white/90 font-mono">
               This sheet is curated by
               <a
                 href="https://codeforces.com/profile/Priyansh31dec"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="ml-2 text-white font-semibold underline decoration-white/50 underline-offset-4 hover:decoration-white"
+                className="mx-2 text-white font-semibold underline decoration-white/50 underline-offset-4 hover:decoration-white"
               >
                 Priyansh31dec
               </a>
-              <span className="mx-1">-</span>
-              <span className="font-bold text-amber-200">Master</span> on
+              - <span className="font-bold text-amber-300">Master</span> on
               Codeforces and
-              <span className="ml-1 font-bold">ICPC World Finalist</span>.
+              <span className="mx-1 font-bold">ICPC World Finalist</span>.
               Priyansh has solved 4000+ algorithmic problems and has spent 200+
               hours reading 1800+ problems to pick 31 problems in each rating
               from 800 - 1900 containing the most interesting and reusable
@@ -457,14 +459,14 @@ const CPSheet: React.FC = () => {
             </p>
           </div>
           <div className="flex-1 flex justify-center md:justify-end">
-            <div className="rounded-2xl overflow-hidden shadow-2xl ring-4 ring-white/30 w-[340px] h-[190px] md:w-[420px] md:h-[236px] bg-black/90">
+            <div className="rounded-[24px] overflow-hidden shadow-2xl border border-white/10 w-[340px] h-[210px] md:w-[520px] md:h-[300px] bg-black/80">
               <iframe
                 width="100%"
                 height="100%"
-                src="https://www.youtube.com/watch?v=jzzjTa3z9xE"
+                src="https://www.youtube.com/embed/jzzjTa3z9xE?rel=0&modestbranding=1"
                 title="CP Sheet | Handpicked Problems from 800 to 1900 | NEWBIE TO EXPERT"
                 frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 allowFullScreen
               ></iframe>
             </div>

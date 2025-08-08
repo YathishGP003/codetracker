@@ -395,26 +395,34 @@ const CPSheetProblemTracker: React.FC<CPSheetProblemTrackerProps> = ({
       <div
         className={`rounded-3xl p-6 transition-all duration-500 ${
           isDarkMode
-            ? "bg-slate-900/50 backdrop-blur-xl border border-slate-800/50"
-            : "bg-white/80 backdrop-blur-xl border border-gray-200/50"
+            ? "bg-slate-900/60 backdrop-blur-xl border border-slate-800/60"
+            : "bg-white/90 backdrop-blur-xl border border-indigo-100/80 shadow-xl"
         }`}
         style={{
-          fontFamily: "Verdana, Geneva, Tahoma, sans-serif",
+          fontFamily:
+            "Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, Noto Sans, sans-serif",
           fontSize: "15px",
         }}
       >
         <div className="overflow-x-auto">
-          <table
-            className="min-w-full border border-gray-300 dark:border-slate-700 text-sm"
-            style={{ borderCollapse: "collapse" }}
-          >
+          <table className="min-w-full text-sm">
             <thead>
-              <tr className={isDarkMode ? "bg-slate-800" : "bg-gray-100"}>
-                <th className="px-4 py-2 text-left border">#</th>
+              <tr
+                className={
+                  isDarkMode
+                    ? "bg-slate-800/80"
+                    : "bg-gradient-to-r from-indigo-50 to-fuchsia-50"
+                }
+              >
+                <th className="px-4 py-3 text-left border-b border-indigo-100 dark:border-slate-700">
+                  #
+                </th>
                 {renderHeader("Name", "name")}
                 {renderHeader("Rating", "rating")}
                 {renderHeader("Status", "status")}
-                <th className="px-4 py-2 text-left border">Actions</th>
+                <th className="px-4 py-3 text-left border-b border-indigo-100 dark:border-slate-700">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -428,23 +436,27 @@ const CPSheetProblemTracker: React.FC<CPSheetProblemTrackerProps> = ({
                           ? "bg-slate-900/40 hover:bg-slate-800/60"
                           : "bg-slate-800/40 hover:bg-slate-700/60"
                         : idx % 2 === 0
-                        ? "bg-white hover:bg-gray-100"
-                        : "bg-gray-50 hover:bg-gray-200"
+                        ? "bg-white hover:bg-indigo-50/70"
+                        : "bg-indigo-50/60 hover:bg-indigo-100/80"
                     }
-                    style={{ borderBottom: "1px solid #e5e7eb" }}
+                    style={{
+                      borderBottom: isDarkMode
+                        ? "1px solid #1f2937"
+                        : "1px solid #e0e7ff",
+                    }}
                   >
-                    <td className="px-4 py-2 font-mono border">{idx + 1}</td>
-                    <td className="px-4 py-2 border">
+                    <td className="px-4 py-3 font-mono">{idx + 1}</td>
+                    <td className="px-4 py-3">
                       <a
                         href={problem.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-blue-500 hover:underline font-medium"
+                        className="text-indigo-600 hover:text-indigo-700 hover:underline font-medium"
                       >
                         {problem.realName}
                       </a>
                     </td>
-                    <td className="px-4 py-2 border">
+                    <td className="px-4 py-3">
                       <span
                         className={`font-semibold ${getRatingColor(
                           problem.rating
@@ -453,27 +465,27 @@ const CPSheetProblemTracker: React.FC<CPSheetProblemTrackerProps> = ({
                         {problem.rating}
                       </span>
                     </td>
-                    <td className="px-4 py-2 border">
+                    <td className="px-4 py-3">
                       {problem.solved ? (
-                        <span className="inline-flex items-center text-green-600 bg-green-100 dark:bg-green-900/30 px-2 py-1 rounded-full">
+                        <span className="inline-flex items-center text-emerald-700 bg-emerald-100 dark:text-emerald-300 dark:bg-emerald-900/30 px-2 py-1 rounded-full">
                           <Check size={14} className="mr-1" /> Solved
                         </span>
                       ) : (
-                        <span className="inline-flex items-center text-orange-600 bg-orange-100 dark:bg-orange-900/30 px-2 py-1 rounded-full">
+                        <span className="inline-flex items-center text-amber-700 bg-amber-100 dark:text-amber-300 dark:bg-amber-900/30 px-2 py-1 rounded-full">
                           <Target size={14} className="mr-1" /> Unsolved
                         </span>
                       )}
                     </td>
-                    <td className="px-4 py-2 border">
+                    <td className="px-4 py-3">
                       <div className="flex space-x-2">
                         <a
                           href={problem.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className={`inline-flex items-center px-3 py-1 text-xs rounded transition-colors ${
+                          className={`inline-flex items-center px-3 py-1 text-xs rounded transition-colors shadow-sm ${
                             problem.solved
-                              ? "bg-green-500 text-white hover:bg-green-600"
-                              : "bg-blue-500 text-white hover:bg-blue-600"
+                              ? "bg-emerald-600 text-white hover:bg-emerald-700"
+                              : "bg-indigo-600 text-white hover:bg-indigo-700"
                           }`}
                         >
                           {problem.solved ? (

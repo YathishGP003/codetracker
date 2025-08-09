@@ -1,5 +1,12 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Youtube, ExternalLink } from "lucide-react";
+import {
+  Youtube,
+  ExternalLink,
+  Clock3,
+  CalendarDays,
+  Trophy,
+  Radio,
+} from "lucide-react";
 import { format } from "date-fns";
 import React from "react";
 import { formatIST } from "@/lib/utils";
@@ -133,87 +140,100 @@ export const ContestDetailModal = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[440px] p-0 bg-white rounded-2xl border border-[#D6E6FB] shadow-[0_4px_24px_0_rgba(30,136,229,0.08)]">
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 pt-6 pb-2">
-          <div className="flex items-center gap-2">
+      <DialogContent className="sm:max-w-[560px] p-0 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/90 shadow-2xl">
+        {/* Decorative header with gradient + shapes */}
+        <div className="relative px-6 pt-6 pb-5 bg-gradient-to-br from-violet-600 via-indigo-600 to-sky-500 text-white">
+          <div className="absolute -top-10 -right-8 h-32 w-32 rounded-full bg-white/20 blur-2xl" />
+          <div className="absolute -bottom-10 -left-8 h-32 w-32 rounded-full bg-sky-300/20 blur-2xl" />
+          <div className="relative z-10">
             <a
               href={contest.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[#2563eb] font-bold text-lg hover:underline flex items-center gap-1"
-              style={{ color }}
+              className="inline-flex items-center gap-2 text-2xl font-extrabold tracking-tight hover:opacity-90"
             >
-              <span className="truncate max-w-[220px]">{contest.title}</span>
-              <ExternalLink className="h-5 w-5 text-[#2563eb]" />
+              <span className="truncate max-w-[380px]">{contest.title}</span>
+              <ExternalLink className="h-5 w-5" />
             </a>
+            <div className="mt-1 text-sm/6 text-white/80">
+              {contest.site} Contest
+            </div>
           </div>
-          <button
-            onClick={onClose}
-            className="text-[#2563eb] hover:text-blue-700 text-2xl font-bold focus:outline-none"
-          >
-            ×
-          </button>
         </div>
-        {/* Subtitle */}
-        <div className="px-6 pt-0 pb-3 text-[15px] text-[#7A7A7A] font-normal">
-          {contest.site} Contest
-        </div>
+
         {/* Info grid */}
-        <div className="grid grid-cols-2 gap-4 px-6 pb-2">
-          <div className="flex flex-col bg-white rounded-2xl p-4 border border-[#D6E6FB]">
-            <span className="text-xs text-[#7A7A7A] font-bold mb-1 tracking-wide uppercase">
-              START
-            </span>
-            <span className="text-[15px] font-bold text-[#222]">
-              {start ? formatIST(start) : "-"}
-            </span>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 px-6 py-5 bg-slate-950/10 dark:bg-transparent">
+          <div className="flex items-start gap-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/40 p-3">
+            <CalendarDays className="shrink-0 text-sky-500" />
+            <div>
+              <div className="text-[11px] uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold">
+                Start
+              </div>
+              <div className="text-sm font-bold text-slate-900 dark:text-white">
+                {start ? formatIST(start) : "-"}
+              </div>
+            </div>
           </div>
-          <div className="flex flex-col bg-white rounded-2xl p-4 border border-[#D6E6FB]">
-            <span className="text-xs text-[#7A7A7A] font-bold mb-1 tracking-wide uppercase">
-              END
-            </span>
-            <span className="text-[15px] font-bold text-[#222]">
-              {end ? formatIST(end) : "-"}
-            </span>
+          <div className="flex items-start gap-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/40 p-3">
+            <CalendarDays className="shrink-0 text-purple-500" />
+            <div>
+              <div className="text-[11px] uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold">
+                End
+              </div>
+              <div className="text-sm font-bold text-slate-900 dark:text-white">
+                {end ? formatIST(end) : "-"}
+              </div>
+            </div>
           </div>
-          <div className="flex flex-col bg-white rounded-2xl p-4 border border-[#D6E6FB]">
-            <span className="text-xs text-[#7A7A7A] font-bold mb-1 tracking-wide uppercase">
-              DURATION
-            </span>
-            <span className="text-[15px] font-bold text-[#222]">
-              {durationStr}
-            </span>
+          <div className="flex items-start gap-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/40 p-3">
+            <Clock3 className="shrink-0 text-emerald-500" />
+            <div>
+              <div className="text-[11px] uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold">
+                Duration
+              </div>
+              <div className="text-sm font-bold text-slate-900 dark:text-white">
+                {durationStr}
+              </div>
+            </div>
           </div>
-          <div className="flex flex-col bg-white rounded-2xl p-4 border border-[#D6E6FB]">
-            <span className="text-xs text-[#7A7A7A] font-bold mb-1 tracking-wide uppercase">
-              STATUS
-            </span>
-            <span
-              className={`text-[15px] font-bold ${
+          <div className="flex items-start gap-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/40 p-3">
+            <Radio
+              className={`shrink-0 ${
                 status === "COMPLETED"
-                  ? "text-[#E14B4B]"
+                  ? "text-rose-500"
                   : status === "UPCOMING"
-                  ? "text-[#2563eb]"
-                  : "text-yellow-500"
+                  ? "text-sky-500"
+                  : "text-amber-500"
               }`}
-            >
-              {status}
-            </span>
+            />
+            <div>
+              <div className="text-[11px] uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold">
+                Status
+              </div>
+              <div
+                className={`text-sm font-bold ${
+                  status === "COMPLETED"
+                    ? "text-rose-600 dark:text-rose-400"
+                    : status === "UPCOMING"
+                    ? "text-sky-600 dark:text-sky-400"
+                    : "text-amber-600 dark:text-amber-400"
+                }`}
+              >
+                {status}
+              </div>
+            </div>
           </div>
         </div>
-        {/* Video Solution Button */}
-        <div className="px-6 pb-6 pt-4 flex flex-col gap-3">
+
+        {/* Actions */}
+        <div className="px-6 pb-6">
           <a
             href={youtubeSearch}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 w-full py-3 rounded-2xl border border-[#B3D0F7] bg-[#EAF4FF] text-[#2563eb] font-semibold text-base hover:bg-blue-50 transition"
-            style={{ boxShadow: "none" }}
+            className="flex items-center justify-center gap-2 w-full py-3 rounded-xl border border-rose-200/60 dark:border-rose-900/50 bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-300 font-semibold hover:bg-rose-100 dark:hover:bg-rose-900/50 transition"
           >
-            <span className="mr-1">
-              <Youtube className="h-5 w-5 text-[#E14B4B]" />
-            </span>
+            <Youtube className="h-5 w-5" />
             Video Solution
           </a>
         </div>

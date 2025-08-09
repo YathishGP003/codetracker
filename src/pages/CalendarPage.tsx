@@ -437,12 +437,12 @@ const CalendarPage = () => {
   console.log("CalendarPage: current month", month);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-start bg-[#F6F5F2] py-10">
-      {/* Speech bubble */}
-      <div className="w-full flex justify-center mb-4">
-        <Alert className="rounded-2xl shadow-lg px-8 py-4 bg-white/90 border border-gray-200 text-2xl font-serif font-semibold text-gray-900 text-center w-fit">
+    <div className="min-h-screen flex flex-col items-center justify-start bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900 py-6 sm:py-10">
+      {/* Title chip */}
+      <div className="w-full flex justify-center mb-3 sm:mb-6">
+        <div className="rounded-full px-5 py-2 shadow-xl border border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/70 text-lg sm:text-2xl font-bold text-slate-900 dark:text-white">
           Contest Calendar
-        </Alert>
+        </div>
       </div>
       {/* Error message */}
       {hasError && (
@@ -454,16 +454,18 @@ const CalendarPage = () => {
       )}
       {/* Calendar */}
       {isLoading && !hasError ? (
-        <div className="flex items-center justify-center min-h-[400px] text-lg text-gray-500">
+        <div className="flex items-center justify-center min-h-[400px] text-lg text-slate-500">
           Loading events...
         </div>
       ) : !hasError ? (
-        <CustomCalendar
-          events={events}
-          month={month}
-          onMonthChange={setMonth}
-          onEventClick={handleEventClick}
-        />
+        <div className="w-full max-w-[1200px] px-3 sm:px-6">
+          <CustomCalendar
+            events={events}
+            month={month}
+            onMonthChange={setMonth}
+            onEventClick={handleEventClick}
+          />
+        </div>
       ) : null}
       <ContestDetailModal
         isOpen={isDetailModalOpen}

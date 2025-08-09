@@ -147,11 +147,11 @@ export const CustomCalendar: React.FC<CustomCalendarProps> = ({
 
   // Render
   return (
-    <div className="rounded-3xl bg-[#F6F5F2] p-6 border border-gray-100">
+    <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/60 backdrop-blur p-4 sm:p-6 shadow-xl">
       {/* Header: Month navigation */}
-      <div className="flex items-center justify-between mb-4 px-2">
+      <div className="flex items-center justify-between mb-3 sm:mb-4 px-1">
         <div className="flex items-center gap-2">
-          <span className="text-2xl font-bold font-serif text-gray-900 select-none text-left">
+          <span className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white select-none">
             {format(month, "MMMM yyyy")}
           </span>
         </div>
@@ -160,116 +160,122 @@ export const CustomCalendar: React.FC<CustomCalendarProps> = ({
             variant="outline"
             size="icon"
             onClick={handleToday}
-            className="rounded-full border-[#D6E6FB] bg-[#0A1121] hover:bg-[#1A2233] border-2 transition-colors"
+            className="rounded-full border-sky-200 dark:border-slate-700 bg-sky-600 text-white hover:bg-sky-700"
             title="Go to Today"
           >
-            <CalendarIcon size={18} className="text-white" />
+            <CalendarIcon size={18} />
           </Button>
           <Button
             variant="ghost"
             size="icon"
             onClick={() => onMonthChange(addMonths(month, -1))}
-            className="rounded-full border-2 border-[#D6E6FB] group bg-white hover:bg-[#EAF4FF] transition-colors"
+            className="rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700"
             title="Previous Month"
           >
-            <ChevronLeft className="text-[#0A1121] group-hover:text-[#2563eb] transition-colors" />
+            <ChevronLeft className="text-slate-800 dark:text-slate-200" />
           </Button>
           <Button
             variant="ghost"
             size="icon"
             onClick={() => onMonthChange(addMonths(month, 1))}
-            className="rounded-full border-2 border-[#D6E6FB] group bg-white hover:bg-[#EAF4FF] transition-colors"
+            className="rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700"
             title="Next Month"
           >
-            <ChevronRight className="text-[#0A1121] group-hover:text-[#2563eb] transition-colors" />
+            <ChevronRight className="text-slate-800 dark:text-slate-200" />
           </Button>
         </div>
       </div>
       {/* Weekdays */}
-      <div className="grid grid-cols-7 gap-2 mb-2 px-1">
+      <div className="grid grid-cols-7 gap-2 sm:gap-3 mb-2 sm:mb-3 px-1">
         {weekDays.map((wd) => (
           <div
             key={wd}
-            className="text-left text-base font-bold text-gray-500 pl-2"
+            className="text-left text-[10px] sm:text-xs font-semibold tracking-wide text-slate-500 dark:text-slate-400 pl-1"
           >
             {wd}
           </div>
         ))}
       </div>
-      {/* Calendar grid */}
-      <div className="grid grid-cols-7 gap-2">
-        {days.map((day) => {
-          const dateStr = format(day, "yyyy-MM-dd");
-          const isCurrentMonth = isSameMonth(day, month);
-          const isToday = isSameDay(day, new Date());
-          const dayEvents = eventMap[dateStr] || [];
-          return (
-            <div
-              key={dateStr}
-              className={`w-[170px] h-[110px] min-h-0 flex flex-col items-start p-2 rounded-2xl transition-all duration-150 ${
-                isCurrentMonth ? "bg-[#E9EAEC]" : "bg-[#E9EAEC] opacity-60"
-              } ${
-                isToday ? "border border-blue-400" : "border border-transparent"
-              }`}
-              style={{ boxSizing: "border-box" }}
-            >
-              <div className="text-xs font-semibold text-gray-400 mb-1 select-none">
-                {day.getDate()}
-              </div>
-              {/* Event list: always scrollable if overflow */}
-              <div className="flex flex-col w-full gap-1 overflow-y-auto max-h-[80px]">
-                {dayEvents.map((event, idx) => {
-                  const platform = event.type?.toLowerCase();
-                  const style = platformStyles[platform] || {
-                    bg: "bg-white",
-                    border: "border-gray-200",
-                    text: "text-gray-700",
-                    logo: null,
-                  };
-                  // Only fade if contest is before today
-                  const eventDate = new Date(event.date);
-                  const today = new Date();
-                  today.setHours(0, 0, 0, 0);
-                  const faded = eventDate < today ? "opacity-80" : "";
-                  return (
-                    <div
-                      key={event.id}
-                      className={`flex items-center ${style.bg} ${style.border} border w-full px-1.5 py-0.5 cursor-pointer min-h-0 rounded-md transition-colors duration-100 hover:bg-gray-100/70 ${faded}`}
-                      style={{
-                        fontSize: "0.85rem",
-                        minHeight: "0",
-                        lineHeight: 1.1,
-                        borderWidth: 1,
-                      }}
-                      onClick={() => onEventClick && onEventClick(event)}
-                      title={event.title}
-                    >
-                      <span className="flex items-center mr-1">
-                        {style.logo}
-                      </span>
-                      <div className="flex-1 min-w-0">
-                        <div
-                          className={`truncate leading-tight font-medium ${style.text}`}
-                          style={{ fontSize: "0.97em" }}
-                        >
-                          {event.title}
-                        </div>
-                        {event.description && (
+      {/* Calendar grid - horizontally scrollable on very small screens */}
+      <div className="w-full overflow-x-auto">
+        <div className="min-w-[720px] sm:min-w-0 grid grid-cols-7 gap-2 sm:gap-3">
+          {days.map((day) => {
+            const dateStr = format(day, "yyyy-MM-dd");
+            const isCurrentMonth = isSameMonth(day, month);
+            const isToday = isSameDay(day, new Date());
+            const dayEvents = eventMap[dateStr] || [];
+            return (
+              <div
+                key={dateStr}
+                className={`w-full min-h-[84px] sm:min-h-[100px] lg:min-h-[120px] flex flex-col items-start p-2 sm:p-2.5 rounded-xl transition-all duration-150 ring-1 ${
+                  isCurrentMonth
+                    ? "bg-slate-50 dark:bg-slate-900/40 ring-slate-200/70 dark:ring-slate-800"
+                    : "bg-slate-50/60 dark:bg-slate-900/20 ring-slate-200/40 dark:ring-slate-800/40 opacity-70"
+                } ${
+                  isToday
+                    ? "outline outline-2 outline-sky-400/60"
+                    : "outline-none"
+                }`}
+                style={{ boxSizing: "border-box" }}
+              >
+                <div className="text-[10px] sm:text-xs font-semibold text-slate-400 mb-1 select-none">
+                  {day.getDate()}
+                </div>
+                {/* Event list: always scrollable if overflow */}
+                <div className="flex flex-col w-full gap-1 overflow-y-auto max-h-[64px] sm:max-h-[80px] pr-1">
+                  {dayEvents.map((event, idx) => {
+                    const platform = event.type?.toLowerCase();
+                    const style = platformStyles[platform] || {
+                      bg: "bg-white",
+                      border: "border-gray-200",
+                      text: "text-gray-700",
+                      logo: null,
+                    };
+                    // Only fade if contest is before today
+                    const eventDate = new Date(event.date);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    const faded = eventDate < today ? "opacity-90" : "";
+                    return (
+                      <div
+                        key={event.id}
+                        className={`flex items-center ${style.bg} ${style.border} border w-full px-1.5 py-1 cursor-pointer min-h-0 rounded-lg transition-colors duration-100 hover:bg-white/90 dark:hover:bg-slate-800/80 ${faded}`}
+                        style={{
+                          fontSize: "0.82rem",
+                          minHeight: "0",
+                          lineHeight: 1.1,
+                          borderWidth: 1,
+                        }}
+                        onClick={() => onEventClick && onEventClick(event)}
+                        title={event.title}
+                      >
+                        <span className="flex items-center mr-1.5">
+                          {style.logo}
+                        </span>
+                        <div className="flex-1 min-w-0">
                           <div
-                            className="text-xs text-gray-500 truncate leading-tight whitespace-pre-line"
-                            style={{ fontSize: "0.72em" }}
+                            className={`truncate leading-tight font-medium ${style.text}`}
+                            style={{ fontSize: "0.95em" }}
                           >
-                            {event.description}
+                            {event.title}
                           </div>
-                        )}
+                          {event.description && (
+                            <div
+                              className="text-[10px] text-slate-500 truncate leading-tight whitespace-pre-line"
+                              style={{ fontSize: "0.72em" }}
+                            >
+                              {event.description}
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
     </div>
   );

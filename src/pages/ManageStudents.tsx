@@ -23,6 +23,8 @@ import { BulkActionsBar } from "@/components/manage-students/BulkActionsBar";
 import { StudentTableRow } from "@/components/manage-students/StudentTableRow";
 import { EmptyStudentsState } from "@/components/manage-students/EmptyStudentsState";
 import InactivityMonitor from "@/components/InactivityMonitor";
+import CronScheduler from "@/components/CronScheduler";
+import RealTimeSyncManager from "@/components/RealTimeSyncManager";
 
 const ManageStudents = () => {
   const { isDarkMode } = useDarkMode();
@@ -265,6 +267,12 @@ const ManageStudents = () => {
           onExportCSV={exportToCSV}
           isSyncing={syncAllMutation.isPending}
         />
+
+        {/* Sync management (moved from Dashboard) */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <CronScheduler />
+          <RealTimeSyncManager />
+        </div>
 
         <div
           className={`rounded-2xl overflow-hidden ${

@@ -2,8 +2,7 @@ import TopNavbar from "@/components/TopNavbar";
 import StudentTable from "@/components/StudentTable";
 import DashboardStats from "@/components/DashboardStats";
 import ProblemTracker from "@/components/ProblemTracker";
-import CronScheduler from "@/components/CronScheduler";
-import RealTimeSyncManager from "@/components/RealTimeSyncManager";
+// Removed sync management widgets from dashboard; now shown on Manage Students page
 import { useStudents } from "@/hooks/useStudentData";
 import { useContests } from "@/hooks/useContestData";
 import { useProblemData } from "../hooks/useProblemData";
@@ -184,11 +183,7 @@ const Index = () => {
           problems={problems}
         />
 
-        {/* Enhanced Sync Management Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <CronScheduler />
-          <RealTimeSyncManager />
-        </div>
+        {/* Sync management moved to Manage Students page */}
 
         {/* Problem Tracker Section - Show current user's progress */}
         {currentUserStudent && (

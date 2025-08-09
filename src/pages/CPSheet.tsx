@@ -8,6 +8,7 @@ import { Card } from "../components/ui/card";
 import { Skeleton } from "../components/ui/skeleton";
 import CPSheetProblemTracker from "../components/CPSheetProblemTracker";
 import CPSheetStats from "../components/CPSheetStats";
+import StreakCard from "@/components/StreakCard";
 
 // --- Static 800-rated problems ---
 const staticCPProblems = {
@@ -518,6 +519,8 @@ const CPSheet: React.FC = () => {
 
         {/* Right/Sidebar Section */}
         <div className="md:col-span-1 space-y-8">
+          {/* Streak Card */}
+          <StreakCard userKey={user?.email || "guest"} />
           {/* Quick Stats Card */}
           <Card className="p-8 bg-white/80 dark:bg-slate-900/70 border border-indigo-200/60 dark:border-slate-800/60 rounded-2xl shadow-xl backdrop-blur-md">
             <h3 className="text-lg font-bold mb-4 text-indigo-700 dark:text-indigo-300">

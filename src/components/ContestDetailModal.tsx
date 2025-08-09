@@ -140,9 +140,9 @@ export const ContestDetailModal = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[560px] p-0 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/90 shadow-2xl">
+      <DialogContent className="w-[92vw] sm:w-[460px] p-0 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/90 shadow-2xl">
         {/* Decorative header with gradient + shapes */}
-        <div className="relative px-6 pt-6 pb-5 bg-gradient-to-br from-violet-600 via-indigo-600 to-sky-500 text-white">
+        <div className="relative px-5 pt-5 pb-4 bg-gradient-to-br from-violet-600 via-indigo-600 to-sky-500 text-white">
           <div className="absolute -top-10 -right-8 h-32 w-32 rounded-full bg-white/20 blur-2xl" />
           <div className="absolute -bottom-10 -left-8 h-32 w-32 rounded-full bg-sky-300/20 blur-2xl" />
           <div className="relative z-10">
@@ -150,53 +150,53 @@ export const ContestDetailModal = ({
               href={contest.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-2xl font-extrabold tracking-tight hover:opacity-90"
+              className="inline-flex items-center gap-2 text-xl font-extrabold tracking-tight hover:opacity-90"
             >
-              <span className="truncate max-w-[380px]">{contest.title}</span>
+              <span className="truncate max-w-[300px]">{contest.title}</span>
               <ExternalLink className="h-5 w-5" />
             </a>
-            <div className="mt-1 text-sm/6 text-white/80">
+            <div className="mt-1 text-[13px] leading-5 text-white/80">
               {contest.site} Contest
             </div>
           </div>
         </div>
 
         {/* Info grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 px-6 py-5 bg-slate-950/10 dark:bg-transparent">
-          <div className="flex items-start gap-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/40 p-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 px-5 py-4 bg-slate-950/10 dark:bg-transparent">
+          <div className="flex items-start gap-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/40 p-2.5">
             <CalendarDays className="shrink-0 text-sky-500" />
             <div>
-              <div className="text-[11px] uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold">
+              <div className="text-[10px] uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold">
                 Start
               </div>
-              <div className="text-sm font-bold text-slate-900 dark:text-white">
+              <div className="text-[13px] font-bold text-slate-900 dark:text-white">
                 {start ? formatIST(start) : "-"}
               </div>
             </div>
           </div>
-          <div className="flex items-start gap-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/40 p-3">
+          <div className="flex items-start gap-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/40 p-2.5">
             <CalendarDays className="shrink-0 text-purple-500" />
             <div>
-              <div className="text-[11px] uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold">
+              <div className="text-[10px] uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold">
                 End
               </div>
-              <div className="text-sm font-bold text-slate-900 dark:text-white">
+              <div className="text-[13px] font-bold text-slate-900 dark:text-white">
                 {end ? formatIST(end) : "-"}
               </div>
             </div>
           </div>
-          <div className="flex items-start gap-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/40 p-3">
+          <div className="flex items-start gap-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/40 p-2.5">
             <Clock3 className="shrink-0 text-emerald-500" />
             <div>
-              <div className="text-[11px] uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold">
+              <div className="text-[10px] uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold">
                 Duration
               </div>
-              <div className="text-sm font-bold text-slate-900 dark:text-white">
+              <div className="text-[13px] font-bold text-slate-900 dark:text-white">
                 {durationStr}
               </div>
             </div>
           </div>
-          <div className="flex items-start gap-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/40 p-3">
+          <div className="flex items-start gap-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/40 p-2.5">
             <Radio
               className={`shrink-0 ${
                 status === "COMPLETED"
@@ -207,11 +207,11 @@ export const ContestDetailModal = ({
               }`}
             />
             <div>
-              <div className="text-[11px] uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold">
+              <div className="text-[10px] uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold">
                 Status
               </div>
               <div
-                className={`text-sm font-bold ${
+                className={`text-[13px] font-bold ${
                   status === "COMPLETED"
                     ? "text-rose-600 dark:text-rose-400"
                     : status === "UPCOMING"
@@ -226,12 +226,12 @@ export const ContestDetailModal = ({
         </div>
 
         {/* Actions */}
-        <div className="px-6 pb-6">
+        <div className="px-5 pb-5 flex justify-center">
           <a
             href={youtubeSearch}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 w-full py-3 rounded-xl border border-rose-200/60 dark:border-rose-900/50 bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-300 font-semibold hover:bg-rose-100 dark:hover:bg-rose-900/50 transition"
+            className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-rose-200/60 dark:border-rose-900/50 bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-300 font-semibold hover:bg-rose-100 dark:hover:bg-rose-900/50 transition"
           >
             <Youtube className="h-5 w-5" />
             Video Solution

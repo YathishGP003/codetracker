@@ -12,6 +12,8 @@ import ProblemTracker from "@/components/ProblemTracker";
 import RatingChart from "@/components/RatingChart";
 import ContestHistory from "@/components/ContestHistory";
 import { useProblemData } from "@/hooks/useProblemData";
+import { getRatingColor, formatIST } from "@/lib/utils";
+// removed duplicate import of getRatingColor
 
 interface StudentProfileModalProps {
   student: Student | null;
@@ -92,55 +94,59 @@ const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
     student && student.codeforcesHandle
       ? `https://userpic.codeforces.org/${student.codeforcesHandle}/avatar`
       : undefined;
+  const lastUpdatedDisplay = student?.lastUpdated
+    ? formatIST(new Date(student.lastUpdated))
+    : "-";
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent
-        className={`max-w-6xl max-h-[90vh] overflow-y-auto ${
+        className={`max-w-6xl max-h-[90vh] overflow-y-auto rounded-3xl ${
           isDarkMode
-            ? "bg-slate-900 border-slate-800"
-            : "bg-white border-gray-200"
+            ? "bg-slate-950/90 border-slate-800 shadow-[0_25px_80px_-30px_rgba(0,0,0,0.8)]"
+            : "bg-white border-gray-200 shadow-2xl"
         }`}
       >
         {student && student.id ? (
           <>
-        <DialogHeader className="pb-4">
+            <DialogHeader className="pb-4">
               <DialogTitle
                 className={`text-2xl font-bold ${
                   isDarkMode ? "text-white" : "text-gray-900"
                 }`}
               >
-            {student.name}'s Profile
-          </DialogTitle>
-        </DialogHeader>
+                {student.name}'s Profile
+              </DialogTitle>
+            </DialogHeader>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Student Info Card */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Student Info Card */}
               <div
-                className={`rounded-2xl p-6 ${
-                  isDarkMode ? "bg-slate-800/50" : "bg-gray-50/50"
+                className={`rounded-3xl p-6 border ${
+                  isDarkMode
+                    ? "bg-slate-900/60 border-slate-800 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.04)]"
+                    : "bg-white border-gray-200 shadow-xl"
                 }`}
               >
-            <div className="text-center mb-4">
-                  {/* Profile Image or Initials */}
+                <div className="text-center mb-4">
                   {imgError || !cfImgUrl ? (
                     <div
-                      className={`w-20 h-20 mx-auto rounded-full flex items-center justify-center font-bold text-xl text-white mb-3 ${
-                student.isActive 
-                          ? "bg-gradient-to-br from-green-500 to-teal-500"
-                          : "bg-gradient-to-br from-gray-500 to-slate-500"
-                      }`}
+                      className={`w-24 h-24 mx-auto rounded-2xl flex items-center justify-center font-bold text-2xl text-white mb-3 ${
+                        student.isActive
+                          ? "bg-gradient-to-br from-green-500 to-teal-600"
+                          : "bg-gradient-to-br from-slate-600 to-slate-700"
+                      } ring-4 ring-slate-700/30`}
                     >
                       {student.name
                         .split(" ")
                         .map((n) => n[0])
                         .join("")}
-              </div>
+                    </div>
                   ) : (
                     <img
                       src={cfImgUrl}
                       alt={`${student.codeforcesHandle} profile`}
-                      className="w-20 h-20 mx-auto rounded-full object-cover mb-3 border border-gray-300 dark:border-slate-700 bg-white"
+                      className="w-24 h-24 mx-auto rounded-2xl object-cover mb-3 ring-4 ring-slate-700/30 border border-slate-700/40"
                       onError={() => setImgError(true)}
                     />
                   )}
@@ -149,94 +155,128 @@ const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
                       isDarkMode ? "text-white" : "text-gray-900"
                     }`}
                   >
-                {student.name}
-              </h3>
+                    {student.name}
+                  </h3>
                   {student.codeforcesHandle && (
-              <a
-                href={`https://codeforces.com/profile/${student.codeforcesHandle}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center space-x-1 text-blue-500 hover:text-blue-600 transition-colors"
-              >
-                <span>{student.codeforcesHandle}</span>
-                <ExternalLink size={14} />
-              </a>
+                    <a
+                      href={`https://codeforces.com/profile/${student.codeforcesHandle}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs bg-blue-500/15 text-blue-300 hover:bg-blue-500/20"
+                    >
+                      <span>{student.codeforcesHandle}</span>
+                      <ExternalLink size={14} />
+                    </a>
                   )}
-            </div>
+                </div>
 
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
+                <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
+                  <div
+                    className={`rounded-xl p-3 flex items-center justify-between ${
+                      isDarkMode ? "bg-slate-800/60" : "bg-gray-50"
+                    }`}
+                  >
                     <span
                       className={
                         isDarkMode ? "text-slate-400" : "text-gray-600"
                       }
                     >
-                  Current Rating
-                </span>
-                <span className="font-semibold text-blue-500">
-                  {student.currentRating}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
+                      Current Rating
+                    </span>
+                    <span
+                      className={`font-semibold ${getRatingColor(
+                        student.currentRating
+                      )}`}
+                    >
+                      {student.currentRating}
+                    </span>
+                  </div>
+                  <div
+                    className={`rounded-xl p-3 flex items-center justify-between ${
+                      isDarkMode ? "bg-slate-800/60" : "bg-gray-50"
+                    }`}
+                  >
                     <span
                       className={
                         isDarkMode ? "text-slate-400" : "text-gray-600"
                       }
                     >
-                  Max Rating
-                </span>
-                <span className="font-semibold text-purple-500">
-                  {student.maxRating}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
+                      Max Rating
+                    </span>
+                    <span
+                      className={`font-semibold ${getRatingColor(
+                        student.maxRating
+                      )}`}
+                    >
+                      {student.maxRating}
+                    </span>
+                  </div>
+                  <div
+                    className={`rounded-xl p-3 flex items-center justify-between ${
+                      isDarkMode ? "bg-slate-800/60" : "bg-gray-50"
+                    }`}
+                  >
                     <span
                       className={
                         isDarkMode ? "text-slate-400" : "text-gray-600"
                       }
                     >
-                  Status
-                </span>
+                      Status
+                    </span>
                     <span
-                      className={`px-2 py-1 rounded text-xs font-medium ${
-                  student.isActive
-                          ? "bg-green-500/20 text-green-400"
-                          : "bg-red-500/20 text-red-400"
+                      className={`px-2.5 py-0.5 rounded-full text-[11px] font-medium ${
+                        student.isActive
+                          ? "bg-emerald-500/15 text-emerald-400"
+                          : "bg-rose-500/15 text-rose-400"
                       }`}
                     >
                       {student.isActive ? "Active" : "Inactive"}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                    <span
-                      className={
-                        isDarkMode ? "text-slate-400" : "text-gray-600"
-                      }
-                    >
-                  Last Updated
-                </span>
-                    <span
-                      className={`text-sm ${
-                        isDarkMode ? "text-slate-300" : "text-gray-700"
-                      }`}
-                    >
-                  {student.lastUpdated}
-                </span>
-              </div>
-              {student.reminderCount > 0 && (
-                <div className="flex items-center justify-between">
+                    </span>
+                  </div>
+                  <div
+                    className={`rounded-xl p-3 flex items-center justify-between ${
+                      isDarkMode ? "bg-slate-800/60" : "bg-gray-50"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-slate-400" />
                       <span
                         className={
                           isDarkMode ? "text-slate-400" : "text-gray-600"
                         }
                       >
-                    Reminders Sent
-                  </span>
-                  <span className="text-orange-500 font-medium">
-                    {student.reminderCount}
-                  </span>
-                </div>
-              )}
+                        Last Updated
+                      </span>
+                    </div>
+                    <div className="max-w-[140px] md:max-w-[220px] text-right">
+                      <span
+                        className={`text-xs ${
+                          isDarkMode ? "text-slate-300" : "text-gray-700"
+                        } truncate`}
+                        title={student?.lastUpdated || ""}
+                      >
+                        {lastUpdatedDisplay}
+                      </span>
+                    </div>
+                  </div>
+                  {student.reminderCount > 0 && (
+                    <div
+                      className={`rounded-xl p-3 flex items-center justify-between col-span-2 ${
+                        isDarkMode ? "bg-slate-800/60" : "bg-gray-50"
+                      }`}
+                    >
+                      <span
+                        className={
+                          isDarkMode ? "text-slate-400" : "text-gray-600"
+                        }
+                      >
+                        Reminders Sent
+                      </span>
+                      <span className="text-orange-400 font-semibold">
+                        {student.reminderCount}
+                      </span>
+                    </div>
+                  )}
                   {/* Languages Section */}
                   <div className="mt-6 border-t pt-4">
                     <h4
@@ -334,16 +374,16 @@ const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
                       );
                     })}
                   </div>
+                </div>
+              </div>
+
+              {/* Problem Tracker - Full Width */}
+              <div className="lg:col-span-2">
+                <ProblemTracker studentId={student.id} />
+              </div>
             </div>
-          </div>
 
-          {/* Problem Tracker - Full Width */}
-          <div className="lg:col-span-2">
-            <ProblemTracker studentId={student.id} />
-          </div>
-        </div>
-
-        {/* Rating Chart and Contest History */}
+            {/* Rating Chart and Contest History */}
             <div className="grid grid-cols-1 gap-6 mt-6">
               {/* Rating Chart */}
               <div className="rounded-2xl p-6 bg-slate-800/50">
@@ -360,7 +400,7 @@ const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
         ) : (
           <div className="flex items-center justify-center h-full">
             <p className="text-gray-500">No student data available</p>
-        </div>
+          </div>
         )}
       </DialogContent>
     </Dialog>

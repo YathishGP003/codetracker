@@ -253,104 +253,103 @@ const StudentTable: React.FC<StudentTableProps> = ({
   return (
     <>
       <div
-        className={`rounded-3xl p-8 transition-all duration-500 ${
+        className={`rounded-3xl p-6 md:p-8 transition-all duration-500 ${
           isDarkMode
-            ? "bg-slate-900/50 backdrop-blur-xl border border-slate-800/50"
-            : "bg-white/80 backdrop-blur-xl border border-gray-200/50"
+            ? "bg-slate-900/70 border border-slate-800 shadow-[0_10px_40px_-12px_rgba(0,0,0,0.6)]"
+            : "bg-white border border-gray-200 shadow-xl"
         }`}
       >
         {/* Header */}
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8 space-y-4 lg:space-y-0">
-          <div>
-            <h2
-              className={`text-2xl font-bold mb-2 ${
-                isDarkMode ? "text-white" : "text-gray-900"
-              }`}
-            >
-              Student Management
-            </h2>
-            <p className={isDarkMode ? "text-slate-400" : "text-gray-600"}>
-              Monitor and track student progress across Codeforces platform
-            </p>
-          </div>
-
-          <div className="flex items-center space-x-3 flex-wrap">
-            {students.length === 0 && (
-              <button
-                onClick={addTopCodeforcesUsers}
-                className={`px-4 py-3 rounded-2xl flex items-center space-x-2 transition-all duration-300 hover:scale-105 ${
-                  isDarkMode
-                    ? "bg-blue-900/50 hover:bg-blue-800/50 text-blue-400"
-                    : "bg-blue-100 hover:bg-blue-200 text-blue-700"
-                }`}
-                title="Add Top CF Users"
-              >
-                <Users size={18} />
-                <span>Add Top CF Users</span>
-              </button>
-            )}
-
-            <button
-              onClick={downloadCSV}
-              className={`px-4 py-3 rounded-2xl flex items-center space-x-2 transition-all duration-300 hover:scale-105 ${
-                isDarkMode
-                  ? "bg-green-900/50 hover:bg-green-800/50 text-green-400"
-                  : "bg-green-100 hover:bg-green-200 text-green-700"
-              }`}
-              title="Download CSV"
-            >
-              <Download size={18} />
-              <span>CSV</span>
-            </button>
-
-            <div className="relative">
-              <button
-                onClick={() => setShowFilterDropdown(!showFilterDropdown)}
-                className={`px-4 py-3 rounded-2xl flex items-center space-x-2 transition-all duration-300 hover:scale-105 ${
-                  isDarkMode
-                    ? "bg-slate-800/50 hover:bg-slate-700/50 text-slate-300"
-                    : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+        <div className="mb-5">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+              <h2
+                className={`text-2xl md:text-3xl font-extrabold tracking-tight ${
+                  isDarkMode ? "text-white" : "text-gray-900"
                 }`}
               >
-                <Filter size={18} />
-                <span>Filter</span>
-              </button>
-
-              {showFilterDropdown && (
-                <div
-                  className={`absolute right-0 mt-2 w-48 rounded-2xl shadow-lg border z-50 ${
-                    isDarkMode
-                      ? "bg-slate-900/95 border-slate-700/50 backdrop-blur-xl"
-                      : "bg-white/95 border-gray-200/50 backdrop-blur-xl"
-                  }`}
-                >
-                  <div className="py-2">
-                    {filterOptions.map((option) => (
-                      <button
-                        key={option.value}
-                        onClick={() => {
-                          setActiveFilter(option.value);
-                          setShowFilterDropdown(false);
-                        }}
-                        className={`w-full text-left px-4 py-3 text-sm transition-colors ${
-                          activeFilter === option.value
-                            ? isDarkMode
-                              ? "bg-slate-800/50 text-teal-400"
-                              : "bg-gray-100 text-teal-600"
-                            : isDarkMode
-                            ? "text-slate-300 hover:bg-slate-800/50"
-                            : "text-gray-700 hover:bg-gray-100"
-                        }`}
-                      >
-                        {option.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
+                Student Management
+              </h2>
+              <p
+                className={`mt-1 text-sm ${
+                  isDarkMode ? "text-slate-400" : "text-gray-600"
+                }`}
+              >
+                Monitor and track student progress across Codeforces platform
+              </p>
             </div>
 
-            <AddStudentDialog />
+            <div className="flex items-center gap-3 flex-wrap">
+              {students.length === 0 && (
+                <button
+                  onClick={addTopCodeforcesUsers}
+                  className={`h-10 px-4 rounded-full inline-flex items-center gap-2 ${
+                    isDarkMode
+                      ? "bg-blue-600 text-white hover:bg-blue-700"
+                      : "bg-blue-600 text-white hover:bg-blue-700"
+                  }`}
+                  title="Add Top CF Users"
+                >
+                  <Users size={16} /> Top CF
+                </button>
+              )}
+
+              <button
+                onClick={downloadCSV}
+                className="h-10 px-4 rounded-full bg-emerald-600 text-white text-sm font-semibold inline-flex items-center gap-2 hover:bg-emerald-700"
+                title="Download CSV"
+              >
+                <Download size={16} /> CSV
+              </button>
+
+              <div className="relative">
+                <button
+                  onClick={() => setShowFilterDropdown(!showFilterDropdown)}
+                  className={`h-10 px-4 rounded-full inline-flex items-center gap-2 text-sm ${
+                    isDarkMode
+                      ? "bg-slate-800 text-slate-200 hover:bg-slate-700"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  }`}
+                >
+                  <Filter size={16} /> Filter
+                </button>
+
+                {showFilterDropdown && (
+                  <div
+                    className={`absolute right-0 mt-2 w-48 rounded-2xl shadow-lg border z-50 ${
+                      isDarkMode
+                        ? "bg-slate-900/95 border-slate-700/50 backdrop-blur-xl"
+                        : "bg-white/95 border-gray-200/50 backdrop-blur-xl"
+                    }`}
+                  >
+                    <div className="py-2">
+                      {filterOptions.map((option) => (
+                        <button
+                          key={option.value}
+                          onClick={() => {
+                            setActiveFilter(option.value);
+                            setShowFilterDropdown(false);
+                          }}
+                          className={`w-full text-left px-4 py-3 text-sm transition-colors ${
+                            activeFilter === option.value
+                              ? isDarkMode
+                                ? "bg-slate-800/50 text-teal-400"
+                                : "bg-gray-100 text-teal-600"
+                              : isDarkMode
+                              ? "text-slate-300 hover:bg-slate-800/50"
+                              : "text-gray-700 hover:bg-gray-100"
+                          }`}
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <AddStudentDialog />
+            </div>
           </div>
         </div>
 
@@ -366,10 +365,10 @@ const StudentTable: React.FC<StudentTableProps> = ({
             placeholder="Search students by name or Codeforces handle..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className={`w-full pl-12 pr-4 py-4 rounded-2xl border transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-teal-500/50 ${
+            className={`w-full pl-12 pr-4 h-12 rounded-full border transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-sky-500/40 ${
               isDarkMode
-                ? "bg-slate-800/50 border-slate-700/50 text-white placeholder-slate-400"
-                : "bg-white/50 border-gray-300/50 text-gray-900 placeholder-gray-500"
+                ? "bg-slate-800 border-slate-700 text-white placeholder-slate-400"
+                : "bg-white border-gray-300 text-gray-900 placeholder-gray-500"
             }`}
           />
         </div>

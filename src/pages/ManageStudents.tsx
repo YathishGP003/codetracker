@@ -244,20 +244,28 @@ const ManageStudents = () => {
 
       <div className="container mx-auto px-6 py-8">
         <div className="mb-8">
-          <h1
-            className={`text-3xl font-bold ${
-              isDarkMode ? "text-white" : "text-gray-900"
-            } mb-2`}
+          <div
+            className={`rounded-3xl px-6 py-6 ${
+              isDarkMode
+                ? "bg-slate-900/60 border border-slate-800"
+                : "bg-white border border-gray-200"
+            } shadow-xl`}
           >
-            Manage Students
-          </h1>
-          <p
-            className={`text-lg ${
-              isDarkMode ? "text-slate-400" : "text-gray-600"
-            }`}
-          >
-            Comprehensive student management and data synchronization
-          </p>
+            <h1
+              className={`text-2xl md:text-3xl font-extrabold tracking-tight ${
+                isDarkMode ? "text-white" : "text-gray-900"
+              }`}
+            >
+              Student Management
+            </h1>
+            <p
+              className={`mt-1 text-sm md:text-base ${
+                isDarkMode ? "text-slate-400" : "text-gray-600"
+              }`}
+            >
+              Monitor and track student progress across Codeforces platform
+            </p>
+          </div>
         </div>
 
         <StudentActionBar
@@ -276,7 +284,7 @@ const ManageStudents = () => {
 
         <div
           className={`rounded-2xl overflow-hidden ${
-            isDarkMode ? "bg-slate-900/50" : "bg-white"
+            isDarkMode ? "bg-slate-950/40" : "bg-white"
           } border ${isDarkMode ? "border-slate-800" : "border-gray-200"}`}
         >
           <div className="p-6 border-b border-slate-800">
@@ -302,9 +310,11 @@ const ManageStudents = () => {
           </div>
 
           {filteredStudents.length > 0 ? (
-            <Table>
+            <Table className="text-[15px]">
               <TableHeader>
-                <TableRow>
+                <TableRow
+                  className={`${isDarkMode ? "bg-slate-900/60" : "bg-gray-50"}`}
+                >
                   <TableHead className="w-12">
                     <input
                       type="checkbox"

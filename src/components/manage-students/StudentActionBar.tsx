@@ -1,10 +1,9 @@
-
-import React from 'react';
-import { Search, Download, Upload, Users } from 'lucide-react';
-import { AddStudentDialog } from '@/components/AddStudentDialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { useDarkMode } from '@/contexts/DarkModeContext';
+import React from "react";
+import { Search, Download, Upload, Users } from "lucide-react";
+import { AddStudentDialog } from "@/components/AddStudentDialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useDarkMode } from "@/contexts/DarkModeContext";
 
 interface StudentActionBarProps {
   searchTerm: string;
@@ -19,46 +18,55 @@ export const StudentActionBar = ({
   setSearchTerm,
   onSyncAll,
   onExportCSV,
-  isSyncing
+  isSyncing,
 }: StudentActionBarProps) => {
   const { isDarkMode } = useDarkMode();
 
   return (
-    <div className={`rounded-2xl p-6 mb-8 ${isDarkMode ? 'bg-slate-900/50' : 'bg-white'} border ${isDarkMode ? 'border-slate-800' : 'border-gray-200'}`}>
+    <div
+      className={`rounded-2xl p-6 mb-8 ${
+        isDarkMode ? "bg-slate-900/60" : "bg-white"
+      } border ${
+        isDarkMode ? "border-slate-800" : "border-gray-200"
+      } shadow-xl`}
+    >
       <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
-        <div className="flex-1 max-w-md">
+        <div className="flex-1 max-w-2xl w-full">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+            <Search
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+              size={18}
+            />
             <Input
-              placeholder="Search students..."
+              placeholder="Search students by name or Codeforces handle..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
+              className={`${
+                isDarkMode
+                  ? "bg-slate-800 border-slate-700 text-slate-100 placeholder:text-slate-400"
+                  : "bg-white"
+              } pl-11 pr-4 h-12 rounded-full`}
             />
           </div>
         </div>
-        
+
         <div className="flex flex-wrap gap-3">
-          <AddStudentDialog />
-          
-          <Button
+          <button
+            onClick={onExportCSV}
+            className="h-10 px-4 rounded-full bg-emerald-600 text-white text-sm font-semibold inline-flex items-center gap-2 hover:bg-emerald-700"
+          >
+            <Download size={16} /> CSV
+          </button>
+
+          <button
             onClick={onSyncAll}
             disabled={isSyncing}
-            className="bg-gradient-to-r from-teal-500 to-blue-600 hover:from-teal-600 hover:to-blue-700"
+            className="h-10 px-4 rounded-full bg-sky-600 text-white text-sm font-semibold inline-flex items-center gap-2 hover:bg-sky-700 disabled:opacity-60"
           >
-            <Users size={16} className="mr-2" />
-            {isSyncing ? 'Syncing All...' : 'Sync All'}
-          </Button>
-          
-          <Button variant="outline" onClick={onExportCSV}>
-            <Download size={16} className="mr-2" />
-            Export
-          </Button>
-          
-          <Button variant="outline">
-            <Upload size={16} className="mr-2" />
-            Import
-          </Button>
+            <Users size={16} /> {isSyncing ? "Syncing…" : "Sync All"}
+          </button>
+
+          <AddStudentDialog />
         </div>
       </div>
     </div>

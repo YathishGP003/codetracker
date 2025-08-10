@@ -20,10 +20,15 @@ const ProblemTableHeader: React.FC<ProblemTableHeaderProps> = ({
     label: string,
     key: "name" | "rating" | "solvedAt" | undefined
   ) => {
-    if (!key) return <th className="px-4 py-2 text-left border">{label}</th>;
+    if (!key)
+      return (
+        <th className="px-4 py-3 text-left border-b border-slate-200 dark:border-slate-700">
+          {label}
+        </th>
+      );
     return (
       <th
-        className="px-4 py-2 text-left border cursor-pointer select-none hover:bg-blue-50 dark:hover:bg-slate-800"
+        className="px-4 py-3 text-left border-b border-slate-200 dark:border-slate-700 cursor-pointer select-none hover:bg-violet-50 dark:hover:bg-slate-800/80"
         onClick={() => {
           if (sortBy === key) {
             setSortDir(sortDir === "asc" ? "desc" : "asc");
@@ -33,7 +38,7 @@ const ProblemTableHeader: React.FC<ProblemTableHeaderProps> = ({
           }
         }}
       >
-        <span className="inline-flex items-center text-blue-700 dark:text-blue-400 font-semibold">
+        <span className="inline-flex items-center text-violet-700 dark:text-violet-400 font-semibold">
           {label}
           {sortBy === key &&
             (sortDir === "asc" ? (
@@ -47,13 +52,19 @@ const ProblemTableHeader: React.FC<ProblemTableHeaderProps> = ({
   };
 
   return (
-    <tr className={isDarkMode ? "bg-slate-800" : "bg-gray-100"}>
-      <th className="px-4 py-2 text-left border">#</th>
+    <tr className={isDarkMode ? "bg-slate-900/60" : "bg-gray-100"}>
+      <th className="px-4 py-3 text-left border-b border-slate-200 dark:border-slate-700">
+        #
+      </th>
       {renderHeader("Name", "name")}
-      <th className="px-4 py-2 text-left border">Tags</th>
+      <th className="px-4 py-3 text-left border-b border-slate-200 dark:border-slate-700">
+        Tags
+      </th>
       {renderHeader("Rating", "rating")}
       {renderHeader("Solved At", "solvedAt")}
-      <th className="px-4 py-2 text-left border">Status</th>
+      <th className="px-4 py-3 text-left border-b border-slate-200 dark:border-slate-700">
+        Status
+      </th>
     </tr>
   );
 };

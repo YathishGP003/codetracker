@@ -7,6 +7,9 @@ import {
   Target,
   ChevronDown,
   ChevronUp,
+  Tag as TagIcon,
+  SlidersHorizontal,
+  ArrowUpDown,
 } from "lucide-react";
 import { useDarkMode } from "@/contexts/DarkModeContext";
 import { useProblemData } from "../hooks/useProblemData";
@@ -109,6 +112,8 @@ const ProblemTracker: React.FC<ProblemTrackerProps> = ({
       : selectedTags.length === 1
       ? selectedTags[0]
       : `${selectedTags[0]} +${selectedTags.length - 1}`;
+
+  const VISIBLE_TAGS = 8;
 
   // Render rating-based groups
   const renderRatingGroups = () => {
@@ -229,29 +234,112 @@ const ProblemTracker: React.FC<ProblemTrackerProps> = ({
     <div>
       {/* Filter Box */}
       <div
-        className={`mb-6 rounded-2xl border shadow-sm ${
+        className={`mb-6 rounded-3xl overflow-hidden ${
           isDarkMode
-            ? "bg-slate-900 border-slate-700"
-            : "bg-white border-gray-200"
+            ? "bg-slate-900/70 border border-slate-800/60 shadow-[0_20px_60px_-20px_rgba(0,0,0,0.65)]"
+            : "bg-white shadow-2xl border border-gray-100"
         }`}
       >
-        <div className="px-6 pt-4 pb-2">
-          <div className="flex items-center mb-3">
-            <span className="text-blue-700 dark:text-blue-400 font-bold text-base mr-2">
-              →
-            </span>
-            <span className="text-blue-700 dark:text-blue-400 font-bold text-base tracking-wide">
-              Filter Problems
-            </span>
+        {/* Filter header with gradient artwork */}
+        <div className="relative px-6 pt-5 pb-4 bg-gradient-to-br from-fuchsia-700 via-indigo-700 to-sky-700 text-white">
+          <div className="absolute -top-10 -right-8 h-24 w-24 rounded-full bg-fuchsia-300/40 blur-2xl" />
+          <div className="absolute -bottom-10 -left-8 h-24 w-24 rounded-full bg-sky-300/40 blur-2xl" />
+          <div className="relative z-10 font-extrabold text-lg tracking-tight">
+            Filter Problems
           </div>
+          <div className="relative z-10 text-xs/5 opacity-90">
+            Quickly narrow down by tags, rating, and pages
+          </div>
+          {/* Chip bar */}
+          <div className="relative z-10 mt-3 flex items-center justify-between gap-2">
+            <div className="flex gap-2 overflow-x-auto pr-2">
+              <button
+                onClick={() => setSelectedTags([])}
+                className={`whitespace-nowrap rounded-full px-5 py-2 text-sm ring-1 transition ${
+                  selectedTags.length === 0
+                    ? "bg-white text-slate-900 ring-transparent shadow"
+                    : "bg-transparent text-white/90 ring-white/30 hover:bg-white/10"
+                }`}
+              >
+                All Tags
+              </button>
+              {allTags.slice(0, VISIBLE_TAGS).map((tag) => {
+                const active = selectedTags.includes(tag);
+                return (
+                  <button
+                    key={tag}
+                    onClick={() =>
+                      setSelectedTags(
+                        active
+                          ? selectedTags.filter((t) => t !== tag)
+                          : [...selectedTags, tag]
+                      )
+                    }
+                    className={`whitespace-nowrap rounded-full px-5 py-2 text-sm ring-1 transition ${
+                      active
+                        ? "bg-white text-slate-900 ring-transparent shadow"
+                        : "bg-transparent text-white/90 ring-white/30 hover:bg-white/10"
+                    }`}
+                  >
+                    {tag}
+                  </button>
+                );
+              })}
+              {allTags.length > VISIBLE_TAGS && (
+                <button
+                  onClick={() => setTagDropdownOpen(true)}
+                  className="whitespace-nowrap rounded-full px-4 py-2 text-sm ring-1 ring-white/30 text-white/90 hover:bg-white/10"
+                >
+                  +{allTags.length - VISIBLE_TAGS} more
+                </button>
+              )}
+            </div>
+            <div className="hidden md:flex items-center gap-2 opacity-90">
+              <button
+                onClick={() =>
+                  sortBy === "name"
+                    ? setSortDir(sortDir === "asc" ? "desc" : "asc")
+                    : setSortBy("name")
+                }
+                className="inline-flex items-center gap-1 rounded-full bg-transparent px-3 py-1.5 text-xs ring-1 ring-white/30 hover:bg-white/10"
+                title="Sort by name"
+              >
+                <ArrowUpDown size={14} /> Name
+              </button>
+              <button
+                onClick={() =>
+                  sortBy === "rating"
+                    ? setSortDir(sortDir === "asc" ? "desc" : "asc")
+                    : setSortBy("rating")
+                }
+                className="inline-flex items-center gap-1 rounded-full bg-transparent px-3 py-1.5 text-xs ring-1 ring-white/30 hover:bg-white/10"
+                title="Sort by rating"
+              >
+                <ArrowUpDown size={14} /> Rating
+              </button>
+              <button
+                onClick={() =>
+                  sortBy === "solvedAt"
+                    ? setSortDir(sortDir === "asc" ? "desc" : "asc")
+                    : setSortBy("solvedAt")
+                }
+                className="inline-flex items-center gap-1 rounded-full bg-transparent px-3 py-1.5 text-xs ring-1 ring-white/30 hover:bg-white/10"
+                title="Sort by solved date"
+              >
+                <ArrowUpDown size={14} /> Date
+              </button>
+            </div>
+          </div>
+        </div>
+        <div className="px-6 pt-4 pb-4">
           <div className="flex flex-wrap gap-4 items-end">
             {/* Page size */}
             <div>
-              <label className="block text-xs font-semibold mb-1">
+              <label className="block text-[11px] font-semibold mb-1 uppercase tracking-wide opacity-80">
                 Problems per page
               </label>
               <select
-                className={`rounded border px-2 py-1 text-sm w-24 focus:ring-2 focus:ring-blue-400 ${
+                className={`rounded-full border px-3 py-1.5 text-sm w-28 focus:ring-2 focus:ring-violet-500 ${
                   isDarkMode
                     ? "bg-slate-800 border-slate-700 text-slate-100"
                     : "bg-white border-gray-300 text-gray-900"
@@ -268,11 +356,11 @@ const ProblemTracker: React.FC<ProblemTrackerProps> = ({
             </div>
             {/* Jump to page */}
             <div>
-              <label className="block text-xs font-semibold mb-1">
+              <label className="block text-[11px] font-semibold mb-1 uppercase tracking-wide opacity-80">
                 Jump to page
               </label>
               <select
-                className={`rounded border px-2 py-1 text-sm w-20 focus:ring-2 focus:ring-blue-400 ${
+                className={`rounded-full border px-3 py-1.5 text-sm w-24 focus:ring-2 focus:ring-violet-500 ${
                   isDarkMode
                     ? "bg-slate-800 border-slate-700 text-slate-100"
                     : "bg-white border-gray-300 text-gray-900"
@@ -289,16 +377,16 @@ const ProblemTracker: React.FC<ProblemTrackerProps> = ({
             </div>
             {/* Tag filter dropdown */}
             <div className="relative">
-              <label className="block text-xs font-semibold mb-1">
+              <label className="block text-[11px] font-semibold mb-1 uppercase tracking-wide opacity-80">
                 Filter by tag
               </label>
               <button
                 type="button"
-                className={`flex items-center justify-between rounded border px-2 py-1 text-sm min-w-[120px] w-full focus:ring-2 focus:ring-blue-400 ${
+                className={`flex items-center justify-between rounded-full border px-3 py-1.5 text-sm min-w-[140px] w-full focus:ring-2 focus:ring-violet-500 ${
                   isDarkMode
                     ? "bg-slate-800 border-slate-700 text-slate-100"
                     : "bg-white border-gray-300 text-gray-900"
-                } ${tagDropdownOpen ? "ring-2 ring-blue-400" : ""}`}
+                } ${tagDropdownOpen ? "ring-2 ring-violet-500" : ""}`}
                 onClick={() => setTagDropdownOpen((open) => !open)}
               >
                 <span className="truncate text-left">{tagButtonLabel}</span>
@@ -315,12 +403,12 @@ const ProblemTracker: React.FC<ProblemTrackerProps> = ({
             </div>
             {/* Rating filter */}
             <div>
-              <label className="block text-xs font-semibold mb-1">
+              <label className="block text-[11px] font-semibold mb-1 uppercase tracking-wide opacity-80">
                 Rating min
               </label>
               <input
                 type="number"
-                className={`rounded border px-2 py-1 text-sm w-20 focus:ring-2 focus:ring-blue-400 ${
+                className={`rounded-full border px-3 py-1.5 text-sm w-24 focus:ring-2 focus:ring-violet-500 ${
                   isDarkMode
                     ? "bg-slate-800 border-slate-700 text-slate-100 placeholder-slate-400"
                     : "bg-white border-gray-300 text-gray-900 placeholder-gray-400"
@@ -336,12 +424,12 @@ const ProblemTracker: React.FC<ProblemTrackerProps> = ({
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold mb-1">
+              <label className="block text-[11px] font-semibold mb-1 uppercase tracking-wide opacity-80">
                 Rating max
               </label>
               <input
                 type="number"
-                className={`rounded border px-2 py-1 text-sm w-20 focus:ring-2 focus:ring-blue-400 ${
+                className={`rounded-full border px-3 py-1.5 text-sm w-24 focus:ring-2 focus:ring-violet-500 ${
                   isDarkMode
                     ? "bg-slate-800 border-slate-700 text-slate-100 placeholder-slate-400"
                     : "bg-white border-gray-300 text-gray-900 placeholder-gray-400"
@@ -365,7 +453,7 @@ const ProblemTracker: React.FC<ProblemTrackerProps> = ({
         renderRatingGroups()
       ) : (
         <div
-          className={`rounded-3xl p-6 mb-4 transition-all duration-500 ${
+          className={`rounded-3xl p-0 mb-4 transition-all duration-500 ${
             isDarkMode
               ? "bg-slate-900/50 backdrop-blur-xl border border-slate-800/50"
               : "bg-white/80 backdrop-blur-xl border border-gray-200/50"
@@ -375,16 +463,30 @@ const ProblemTracker: React.FC<ProblemTrackerProps> = ({
             fontSize: "15px",
           }}
         >
-          <h3
-            className={`text-xl font-bold mb-4 ${
-              isDarkMode ? "text-white" : "text-gray-900"
+          {/* Table header bar */}
+          <div
+            className={`flex items-center justify-between px-6 py-4 rounded-t-3xl ${
+              isDarkMode ? "bg-slate-800/70" : "bg-gray-50"
             }`}
           >
-            {title}
-          </h3>
+            <h3
+              className={`text-lg md:text-xl font-bold ${
+                isDarkMode ? "text-white" : "text-gray-900"
+              }`}
+            >
+              {title}
+            </h3>
+            <div
+              className={`text-xs ${
+                isDarkMode ? "text-slate-400" : "text-gray-500"
+              }`}
+            >
+              {paginatedProblems.length} items on this page
+            </div>
+          </div>
           <div className="overflow-x-auto">
             <table
-              className="min-w-full border border-gray-300 dark:border-slate-700 text-sm"
+              className="min-w-full text-sm"
               style={{ borderCollapse: "collapse" }}
             >
               <thead>

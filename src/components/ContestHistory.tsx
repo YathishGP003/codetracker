@@ -49,9 +49,15 @@ const ContestHistory: React.FC<ContestHistoryProps> = ({ student }) => {
   }
 
   return (
-    <div className={`p-4 rounded-xl ${isDarkMode ? "bg-slate-900/50" : ""}`}>
+    <div
+      className={`p-4 md:p-6 rounded-3xl border ${
+        isDarkMode
+          ? "bg-slate-900/60 border-slate-800"
+          : "bg-white border-gray-200"
+      }`}
+    >
       <h2
-        className={`text-2xl font-bold mb-4 ${
+        className={`text-2xl font-extrabold tracking-tight mb-4 ${
           isDarkMode ? "text-white" : "text-gray-900"
         }`}
       >

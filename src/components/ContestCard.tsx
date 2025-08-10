@@ -30,10 +30,10 @@ const ContestCard: React.FC<ContestCardProps> = ({ contest }) => {
 
   return (
     <div
-      className={`rounded-xl p-4 transition-all duration-200 ${
+      className={`rounded-2xl p-4 transition-all duration-200 border ${
         isDarkMode
-          ? "bg-slate-800/50 border border-slate-700/50 hover:bg-slate-800"
-          : "bg-white/80 border border-gray-200/80 hover:bg-white"
+          ? "bg-slate-900/60 border-slate-800 hover:bg-slate-800/80"
+          : "bg-white border-gray-200 hover:shadow-md"
       }`}
     >
       <h3

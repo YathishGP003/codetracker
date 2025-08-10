@@ -16,21 +16,23 @@ const ContestHistoryFilter: React.FC<ContestHistoryFilterProps> = ({
 
   const getButtonClass = (period: FilterPeriod) => {
     const baseClass =
-      "px-4 py-2 rounded-lg font-semibold transition-all duration-200";
+      "px-4 py-2 rounded-xl font-semibold transition-all duration-200";
     if (period === selectedPeriod) {
-      return `${baseClass} bg-gradient-to-r from-teal-400 to-blue-500 text-white shadow-lg`;
+      return `${baseClass} bg-sky-600 text-white shadow`;
     }
     return `${baseClass} ${
       isDarkMode
-        ? "bg-slate-700/50 hover:bg-slate-700 text-slate-300"
-        : "bg-gray-200 hover:bg-gray-300 text-gray-700"
+        ? "bg-slate-800/60 hover:bg-slate-800 text-slate-300"
+        : "bg-gray-100 hover:bg-gray-200 text-gray-700"
     }`;
   };
 
   return (
     <div
-      className={`p-4 rounded-xl mb-6 ${
-        isDarkMode ? "bg-slate-800/50" : "bg-white/80"
+      className={`p-4 rounded-2xl mb-6 border ${
+        isDarkMode
+          ? "bg-slate-900/60 border-slate-800"
+          : "bg-white border-gray-200"
       }`}
     >
       <h3
@@ -53,12 +55,12 @@ const ContestHistoryFilter: React.FC<ContestHistoryFilterProps> = ({
         >
           Last 90 days
         </button>
-          <button
+        <button
           onClick={() => onPeriodChange(365)}
           className={getButtonClass(365)}
-          >
+        >
           Last 365 days
-          </button>
+        </button>
       </div>
     </div>
   );

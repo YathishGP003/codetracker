@@ -1,15 +1,6 @@
 import React from "react";
-import {
-  Edit,
-  Trash2,
-  Clock,
-  Eye,
-  Mail,
-  Play,
-  ShieldCheck,
-} from "lucide-react";
+import { Edit, Trash2, Clock, Play, ShieldCheck } from "lucide-react";
 import { TableCell, TableRow } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,21 +13,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useDarkMode } from "@/contexts/DarkModeContext";
-
-interface Student {
-  id: string;
-  name: string;
-  email: string;
-  phoneNumber: string;
-  codeforcesHandle: string;
-  currentRating: number;
-  maxRating: number;
-  lastUpdated: string;
-  isActive: boolean;
-  reminderCount: number;
-  emailEnabled: boolean;
-  lastSubmissionDate: string | null;
-}
+import { Student } from "@/types/Student";
+import { getRatingBadge, getRatingColor, formatIST } from "@/lib/utils";
 
 interface StudentTableRowProps {
   student: Student;
@@ -58,28 +36,6 @@ export const StudentTableRow = ({
   isSyncing,
 }: StudentTableRowProps) => {
   const { isDarkMode } = useDarkMode();
-
-  const getRatingColor = (rating: number) => {
-    if (rating >= 2400) return "text-red-500";
-    if (rating >= 2100) return "text-orange-500";
-    if (rating >= 1900) return "text-violet-500";
-    if (rating >= 1600) return "text-blue-500";
-    if (rating >= 1400) return "text-cyan-500";
-    if (rating >= 1200) return "text-green-500";
-    return "text-gray-500";
-  };
-
-  const getRatingBadge = (rating: number) => {
-    if (rating >= 2400) return "International Grandmaster";
-    if (rating >= 2300) return "Grandmaster";
-    if (rating >= 2100) return "International Master";
-    if (rating >= 1900) return "Master";
-    if (rating >= 1600) return "Candidate Master";
-    if (rating >= 1400) return "Expert";
-    if (rating >= 1200) return "Specialist";
-    if (rating >= 800) return "Pupil";
-    return "Newbie";
-  };
 
   const avatarBg = isDarkMode ? "bg-emerald-500" : "bg-emerald-600";
 
@@ -174,7 +130,7 @@ export const StudentTableRow = ({
         >
           <Clock size={14} />{" "}
           {student.lastUpdated
-            ? new Date(student.lastUpdated).toLocaleDateString()
+            ? formatIST(new Date(student.lastUpdated))
             : "Never"}
         </span>
       </TableCell>

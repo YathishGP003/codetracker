@@ -419,7 +419,7 @@ const StudentTable: React.FC<StudentTableProps> = ({
           </div>
         ) : (
           /* Grid of cards */
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid gap-5 grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5">
             {filteredStudents.map((student) => (
               <StudentCard
                 key={student.id}

@@ -35,9 +35,6 @@ const StudentCard: React.FC<StudentCardProps> = ({
     <div
       className={`group relative rounded-3xl border ${cardBg} ${subtleRing} transition-all duration-300 shadow-[0_10px_30px_-12px_rgba(0,0,0,0.45)] hover:-translate-y-0.5`}
     >
-      {/* Accent gradient bar */}
-      <div className="absolute inset-x-0 top-0 h-1 rounded-t-3xl bg-gradient-to-r from-sky-500 via-teal-500 to-purple-500 opacity-70" />
-
       <div className="p-5">
         {/* Header */}
         <div className="flex items-start justify-between">

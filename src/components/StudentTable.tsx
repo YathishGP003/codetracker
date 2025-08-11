@@ -1,18 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Search,
-  Eye,
-  Trash2,
-  Plus,
-  Filter,
-  Mail,
-  AlertCircle,
-  Users,
-  ExternalLink,
-  Download,
-  Edit,
-  History,
-} from "lucide-react";
+import { Search, Filter, Users, Download } from "lucide-react";
 import { Student } from "../types/Student";
 import { useToast } from "@/hooks/use-toast";
 import { useDarkMode } from "@/contexts/DarkModeContext";
@@ -22,7 +9,7 @@ import StudentProfileModal from "@/components/StudentProfileModal";
 import EditStudentDialog from "@/components/EditStudentDialog";
 import { useCreateStudent, useDeleteStudent } from "@/hooks/useStudentData";
 import ContestHistoryModal from "@/components/ContestHistoryModal";
-import StudentTableRowV2 from "@/components/manage-students/StudentTableRowV2";
+import StudentCard from "@/components/manage-students/StudentCard";
 import { getRatingColor, getRatingBadge } from "@/lib/utils";
 
 interface StudentTableProps {
@@ -431,50 +418,21 @@ const StudentTable: React.FC<StudentTableProps> = ({
             </div>
           </div>
         ) : (
-          /* Table */
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr
-                  className={`border-b ${
-                    isDarkMode ? "border-slate-700/50" : "border-gray-200/50"
-                  }`}
-                >
-                  {[
-                    "Name",
-                    "CF Handle",
-                    "Current Rating",
-                    "Max Rating",
-                    "Status",
-                    "Contest",
-                    "Actions",
-                  ].map((header) => (
-                    <th
-                      key={header}
-                      className={`text-left py-4 px-4 font-semibold text-sm ${
-                        isDarkMode ? "text-slate-300" : "text-gray-700"
-                      }`}
-                    >
-                      {header}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {filteredStudents.map((student) => (
-                  <StudentTableRowV2
-                    key={student.id}
-                    student={student}
-                    isDarkMode={isDarkMode}
-                    onView={handleViewStudent}
-                    onEdit={handleEditStudent}
-                    onDelete={handleDeleteStudent}
-                    onSendReminder={handleSendReminder}
-                    onViewContestHistory={handleViewContestHistory}
-                  />
-                ))}
-              </tbody>
-            </table>
+          /* Grid of cards */
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {filteredStudents.map((student) => (
+              <StudentCard
+                key={student.id}
+                student={student}
+                isDarkMode={isDarkMode}
+                onView={handleViewStudent}
+                onEdit={handleEditStudent}
+                onDelete={handleDeleteStudent}
+                onSendReminder={handleSendReminder}
+                onViewContestHistory={handleViewContestHistory}
+                onToggleEmail={handleToggleEmail}
+              />
+            ))}
           </div>
         )}
 

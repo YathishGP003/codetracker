@@ -118,24 +118,23 @@ const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
                 {student.name}'s Profile
               </DialogTitle>
             </DialogHeader>
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Student Info Card */}
-              <div
-                className={`rounded-3xl p-6 border ${
-                  isDarkMode
-                    ? "bg-slate-900/60 border-slate-800 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.04)]"
-                    : "bg-white border-gray-200 shadow-xl"
-                }`}
-              >
-                <div className="text-center mb-4">
+            {/* Profile Header */}
+            <div
+              className={`rounded-3xl p-6 border mb-6 ${
+                isDarkMode
+                  ? "bg-slate-900/60 border-slate-800"
+                  : "bg-white border-gray-200"
+              }`}
+            >
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+                <div className="flex items-start gap-4">
                   {imgError || !cfImgUrl ? (
                     <div
-                      className={`w-24 h-24 mx-auto rounded-2xl flex items-center justify-center font-bold text-2xl text-white mb-3 ${
+                      className={`w-16 h-16 rounded-2xl flex items-center justify-center font-bold text-xl text-white ${
                         student.isActive
-                          ? "bg-gradient-to-br from-green-500 to-teal-600"
+                          ? "bg-gradient-to-br from-sky-500 to-teal-500"
                           : "bg-gradient-to-br from-slate-600 to-slate-700"
-                      } ring-4 ring-slate-700/30`}
+                      }`}
                     >
                       {student.name
                         .split(" ")
@@ -146,255 +145,257 @@ const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
                     <img
                       src={cfImgUrl}
                       alt={`${student.codeforcesHandle} profile`}
-                      className="w-24 h-24 mx-auto rounded-2xl object-cover mb-3 ring-4 ring-slate-700/30 border border-slate-700/40"
+                      className="w-16 h-16 rounded-2xl object-cover border border-slate-700/40"
                       onError={() => setImgError(true)}
                     />
                   )}
-                  <h3
-                    className={`text-lg font-semibold ${
-                      isDarkMode ? "text-white" : "text-gray-900"
-                    }`}
-                  >
-                    {student.name}
-                  </h3>
-                  {student.codeforcesHandle && (
-                    <a
-                      href={`https://codeforces.com/profile/${student.codeforcesHandle}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs bg-blue-500/15 text-blue-300 hover:bg-blue-500/20"
+                  <div>
+                    <div
+                      className={`text-xl font-semibold ${
+                        isDarkMode ? "text-white" : "text-gray-900"
+                      }`}
                     >
-                      <span>{student.codeforcesHandle}</span>
-                      <ExternalLink size={14} />
-                    </a>
-                  )}
+                      {student.name}
+                    </div>
+                    <div className="mt-1 flex flex-wrap items-center gap-2">
+                      {student.codeforcesHandle && (
+                        <a
+                          href={`https://codeforces.com/profile/${student.codeforcesHandle}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs bg-blue-500/15 text-blue-300 hover:bg-blue-500/20"
+                        >
+                          <span>@{student.codeforcesHandle}</span>
+                          <ExternalLink size={14} />
+                        </a>
+                      )}
+                      <span
+                        className={`px-2.5 py-1 rounded-full text-xs font-medium ${
+                          student.isActive
+                            ? "bg-emerald-500/15 text-emerald-400"
+                            : "bg-rose-500/15 text-rose-400"
+                        }`}
+                      >
+                        {student.isActive ? "Active" : "Inactive"}
+                      </span>
+                      <span
+                        className={`text-xs ${
+                          isDarkMode ? "text-slate-400" : "text-gray-600"
+                        }`}
+                      >
+                        Last updated: {lastUpdatedDisplay}
+                      </span>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
+                <div className="grid grid-cols-2 gap-3 md:w-1/2">
                   <div
-                    className={`rounded-xl p-3 flex items-center justify-between ${
-                      isDarkMode ? "bg-slate-800/60" : "bg-gray-50"
+                    className={`rounded-2xl p-3 border ${
+                      isDarkMode
+                        ? "border-slate-800/60 bg-slate-900/30"
+                        : "border-gray-200/60 bg-white/60"
                     }`}
                   >
-                    <span
-                      className={
-                        isDarkMode ? "text-slate-400" : "text-gray-600"
-                      }
+                    <div
+                      className={`text-xs ${
+                        isDarkMode ? "text-slate-400" : "text-gray-500"
+                      }`}
                     >
-                      Current Rating
-                    </span>
-                    <span
-                      className={`font-semibold ${getRatingColor(
+                      Current
+                    </div>
+                    <div
+                      className={`text-2xl font-bold ${getRatingColor(
                         student.currentRating
                       )}`}
                     >
-                      {student.currentRating}
-                    </span>
+                      {student.currentRating || 0}
+                    </div>
                   </div>
                   <div
-                    className={`rounded-xl p-3 flex items-center justify-between ${
-                      isDarkMode ? "bg-slate-800/60" : "bg-gray-50"
+                    className={`rounded-2xl p-3 border ${
+                      isDarkMode
+                        ? "border-slate-800/60 bg-slate-900/30"
+                        : "border-gray-200/60 bg-white/60"
                     }`}
                   >
-                    <span
-                      className={
-                        isDarkMode ? "text-slate-400" : "text-gray-600"
-                      }
+                    <div
+                      className={`text-xs ${
+                        isDarkMode ? "text-slate-400" : "text-gray-500"
+                      }`}
                     >
-                      Max Rating
-                    </span>
-                    <span
-                      className={`font-semibold ${getRatingColor(
+                      Max
+                    </div>
+                    <div
+                      className={`text-2xl font-bold ${getRatingColor(
                         student.maxRating
                       )}`}
                     >
-                      {student.maxRating}
-                    </span>
-                  </div>
-                  <div
-                    className={`rounded-xl p-3 flex items-center justify-between ${
-                      isDarkMode ? "bg-slate-800/60" : "bg-gray-50"
-                    }`}
-                  >
-                    <span
-                      className={
-                        isDarkMode ? "text-slate-400" : "text-gray-600"
-                      }
-                    >
-                      Status
-                    </span>
-                    <span
-                      className={`px-2.5 py-0.5 rounded-full text-[11px] font-medium ${
-                        student.isActive
-                          ? "bg-emerald-500/15 text-emerald-400"
-                          : "bg-rose-500/15 text-rose-400"
-                      }`}
-                    >
-                      {student.isActive ? "Active" : "Inactive"}
-                    </span>
-                  </div>
-                  <div
-                    className={`rounded-xl p-3 flex items-center justify-between ${
-                      isDarkMode ? "bg-slate-800/60" : "bg-gray-50"
-                    }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <Clock className="w-4 h-4 text-slate-400" />
-                      <span
-                        className={
-                          isDarkMode ? "text-slate-400" : "text-gray-600"
-                        }
-                      >
-                        Last Updated
-                      </span>
+                      {student.maxRating || 0}
                     </div>
-                    <div className="max-w-[140px] md:max-w-[220px] text-right">
-                      <span
-                        className={`text-xs ${
-                          isDarkMode ? "text-slate-300" : "text-gray-700"
-                        } truncate`}
-                        title={student?.lastUpdated || ""}
-                      >
-                        {lastUpdatedDisplay}
-                      </span>
-                    </div>
-                  </div>
-                  {student.reminderCount > 0 && (
-                    <div
-                      className={`rounded-xl p-3 flex items-center justify-between col-span-2 ${
-                        isDarkMode ? "bg-slate-800/60" : "bg-gray-50"
-                      }`}
-                    >
-                      <span
-                        className={
-                          isDarkMode ? "text-slate-400" : "text-gray-600"
-                        }
-                      >
-                        Reminders Sent
-                      </span>
-                      <span className="text-orange-400 font-semibold">
-                        {student.reminderCount}
-                      </span>
-                    </div>
-                  )}
-                  {/* Languages Section */}
-                  <div className="mt-6 border-t pt-4">
-                    <h4
-                      className={`text-lg font-semibold mb-2 ${
-                        isDarkMode ? "text-white" : "text-gray-900"
-                      }`}
-                    >
-                      Languages
-                    </h4>
-                    {languageList.length === 0 ? (
-                      <div className="flex flex-wrap gap-2">
-                        {["C++", "Python", "Java"].map((lang) => (
-                          <span
-                            key={lang}
-                            className="px-3 py-1 rounded-full bg-slate-700/30 text-slate-200 text-sm font-semibold dark:bg-slate-700 dark:text-slate-200"
-                            style={{ minWidth: 70 }}
-                          >
-                            {lang}
-                          </span>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="flex flex-wrap gap-2">
-                        {languageList.map((lang) => (
-                          <span
-                            key={lang}
-                            className="px-3 py-1 rounded-full bg-slate-700/30 text-slate-200 text-sm font-semibold dark:bg-slate-700 dark:text-slate-200"
-                            style={{ minWidth: 70 }}
-                          >
-                            {lang}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                  {/* Skills Section */}
-                  <div className="mt-6 border-t pt-4">
-                    <h4
-                      className={`text-lg font-semibold mb-2 ${
-                        isDarkMode ? "text-white" : "text-gray-900"
-                      }`}
-                    >
-                      Skills
-                    </h4>
-                    {skillOrder.map((group) => {
-                      const tags = Object.entries(tagCounts[group] || {}).sort(
-                        (a, b) => b[1] - a[1]
-                      );
-                      if (tags.length === 0) return null;
-                      return (
-                        <div key={group} className="mb-4">
-                          <div className="flex items-center mb-2">
-                            <span
-                              className={`mr-2 text-base font-bold ${skillColors[group]}`}
-                            >
-                              •
-                            </span>
-                            <span
-                              className={`font-semibold text-base ${
-                                isDarkMode ? "text-white" : "text-gray-900"
-                              }`}
-                            >
-                              {group}
-                            </span>
-                          </div>
-                          <div className="flex flex-wrap gap-2 mb-2">
-                            {tags
-                              .slice(0, showMore[group] ? undefined : 3)
-                              .map(([tag, count]) => (
-                                <span
-                                  key={tag}
-                                  className="inline-flex items-center px-3 py-1 rounded-full bg-slate-700/30 text-slate-200 text-sm font-medium dark:bg-slate-700 dark:text-slate-200"
-                                >
-                                  {tag}{" "}
-                                  <span className="ml-1 font-bold">
-                                    x{count}
-                                  </span>
-                                </span>
-                              ))}
-                          </div>
-                          {tags.length > 3 && (
-                            <button
-                              className="text-sm text-gray-400 hover:underline"
-                              onClick={() =>
-                                setShowMore((s) => ({
-                                  ...s,
-                                  [group]: !s[group],
-                                }))
-                              }
-                            >
-                              {showMore[group] ? "Show less" : "Show more"}
-                            </button>
-                          )}
-                        </div>
-                      );
-                    })}
                   </div>
                 </div>
               </div>
+            </div>
 
-              {/* Problem Tracker - Full Width */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Problem Tracker */}
               <div className="lg:col-span-2">
-                <ProblemTracker studentId={student.id} />
+                <div
+                  className={`rounded-3xl p-6 border ${
+                    isDarkMode
+                      ? "bg-slate-900/60 border-slate-800"
+                      : "bg-white border-gray-200"
+                  }`}
+                >
+                  <ProblemTracker studentId={student.id} />
+                </div>
+              </div>
+
+              {/* Profile Insights: Languages & Skills */}
+              <div
+                className={`rounded-3xl p-6 border ${
+                  isDarkMode
+                    ? "bg-slate-900/60 border-slate-800"
+                    : "bg-white border-gray-200"
+                }`}
+              >
+                {/* Languages Section */}
+                <h4
+                  className={`text-lg font-semibold mb-2 ${
+                    isDarkMode ? "text-white" : "text-gray-900"
+                  }`}
+                >
+                  Languages
+                </h4>
+                {languageList.length === 0 ? (
+                  <div className="flex flex-wrap gap-2">
+                    {["C++", "Python", "Java"].map((lang) => (
+                      <span
+                        key={lang}
+                        className="px-3 py-1 rounded-full bg-slate-700/30 text-slate-200 text-sm font-semibold dark:bg-slate-700 dark:text-slate-200"
+                        style={{ minWidth: 70 }}
+                      >
+                        {lang}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex flex-wrap gap-2">
+                    {languageList.map((lang) => (
+                      <span
+                        key={lang}
+                        className="px-3 py-1 rounded-full bg-slate-700/30 text-slate-200 text-sm font-semibold dark:bg-slate-700 dark:text-slate-200"
+                        style={{ minWidth: 70 }}
+                      >
+                        {lang}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                {/* Skills Section */}
+                <div className="mt-6">
+                  <h4
+                    className={`text-lg font-semibold mb-2 ${
+                      isDarkMode ? "text-white" : "text-gray-900"
+                    }`}
+                  >
+                    Skills
+                  </h4>
+                  {skillOrder.map((group) => {
+                    const tags = Object.entries(tagCounts[group] || {}).sort(
+                      (a, b) => b[1] - a[1]
+                    );
+                    if (tags.length === 0) return null;
+                    return (
+                      <div key={group} className="mb-4">
+                        <div className="flex items-center mb-2">
+                          <span
+                            className={`mr-2 text-base font-bold ${skillColors[group]}`}
+                          >
+                            •
+                          </span>
+                          <span
+                            className={`font-semibold text-base ${
+                              isDarkMode ? "text-white" : "text-gray-900"
+                            }`}
+                          >
+                            {group}
+                          </span>
+                        </div>
+                        <div className="flex flex-wrap gap-2 mb-2">
+                          {tags
+                            .slice(0, showMore[group] ? undefined : 3)
+                            .map(([tag, count]) => (
+                              <span
+                                key={tag}
+                                className="inline-flex items-center px-3 py-1 rounded-full bg-slate-700/30 text-slate-200 text-sm font-medium dark:bg-slate-700 dark:text-slate-200"
+                              >
+                                {tag}{" "}
+                                <span className="ml-1 font-bold">x{count}</span>
+                              </span>
+                            ))}
+                        </div>
+                        {tags.length > 3 && (
+                          <button
+                            className="text-sm text-gray-400 hover:underline"
+                            onClick={() =>
+                              setShowMore((s) => ({
+                                ...s,
+                                [group]: !s[group],
+                              }))
+                            }
+                          >
+                            {showMore[group] ? "Show less" : "Show more"}
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {student.reminderCount > 0 && (
+                  <div className="mt-4 text-sm">
+                    <span className="text-slate-400">Reminders Sent: </span>
+                    <span className="text-orange-400 font-semibold">
+                      {student.reminderCount}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
 
             {/* Rating Chart and Contest History */}
             <div className="grid grid-cols-1 gap-6 mt-6">
               {/* Rating Chart */}
-              <div className="rounded-2xl p-6 bg-slate-800/50">
-                <h3 className="text-xl font-bold mb-4 text-white">
+              <div
+                className={`rounded-3xl p-6 border ${
+                  isDarkMode
+                    ? "bg-slate-900/60 border-slate-800"
+                    : "bg-white border-gray-200"
+                }`}
+              >
+                <h3
+                  className={`text-xl font-bold mb-4 ${
+                    isDarkMode ? "text-white" : "text-gray-900"
+                  }`}
+                >
                   Rating Progression
                 </h3>
                 <RatingChart handle={student.codeforcesHandle} />
               </div>
 
               {/* Contest History */}
-              <ContestHistory student={student} />
+              <div
+                className={`rounded-3xl p-6 border ${
+                  isDarkMode
+                    ? "bg-slate-900/60 border-slate-800"
+                    : "bg-white border-gray-200"
+                }`}
+              >
+                <ContestHistory student={student} />
+              </div>
             </div>
           </>
         ) : (

@@ -14,20 +14,21 @@ const UpdatePassword = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { user, session } = useAuth();
+  const { user, session, loading } = useAuth();
 
   useEffect(() => {
-    // This page should only be accessible via the magic link,
-    // which sets the session.
+    // Wait for auth to finish initializing before deciding
+    if (loading) return;
+    // This page should only be accessible via the magic link, which sets the session
     if (!session) {
-      navigate("/signin");
       toast({
         title: "Invalid Link",
         description: "Password reset link is invalid or has expired.",
         variant: "destructive",
       });
+      navigate("/signin");
     }
-  }, [session, navigate, toast]);
+  }, [session, loading, navigate, toast]);
 
   const handlePasswordUpdate = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -34,19 +34,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     console.log("AuthProvider: Setting up auth state listener...");
-    
+
     // Set up auth state listener
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("AuthProvider: Auth state changed:", event, {
-          user: session?.user?.email,
-          hasSession: !!session,
+        user: session?.user?.email,
+        hasSession: !!session,
         expiresAt: session?.expires_at,
-        });
-        setSession(session);
-        setUser(session?.user ?? null);
-        setLoading(false);
+      });
+      setSession(session);
+      setUser(session?.user ?? null);
+      setLoading(false);
     });
 
     // Check for existing session
@@ -75,7 +75,44 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       }
     };
 
-    getInitialSession();
+    // Handle OAuth/Email confirmation/password recovery code exchange if present
+    const handleUrlCodeExchange = async () => {
+      try {
+        const currentUrl = window.location.href;
+        const url = new URL(currentUrl);
+        const hasCodeParam = url.searchParams.has("code");
+        const codeType = url.searchParams.get("type");
+        if (hasCodeParam) {
+          console.log(
+            "AuthProvider: Found code in URL, attempting exchange for session",
+            { type: codeType }
+          );
+          const { data, error } = await supabase.auth.exchangeCodeForSession(
+            currentUrl
+          );
+          if (error) {
+            console.error("AuthProvider: exchangeCodeForSession error:", error);
+          } else {
+            console.log(
+              "AuthProvider: exchangeCodeForSession success",
+              data.session?.user?.email
+            );
+          }
+          // Clean up URL params after handling
+          url.searchParams.delete("code");
+          url.searchParams.delete("type");
+          url.searchParams.delete("redirect_to");
+          window.history.replaceState({}, "", url.pathname + url.search);
+        }
+      } catch (error) {
+        console.error("AuthProvider: Error during code exchange:", error);
+      }
+    };
+
+    (async () => {
+      await handleUrlCodeExchange();
+      await getInitialSession();
+    })();
 
     return () => {
       console.log("AuthProvider: Cleaning up auth subscription");
@@ -90,12 +127,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         email: email.trim(),
         password,
       });
-      
+
       if (error) {
         console.error("AuthProvider: Sign in error:", error);
         return { error };
       }
-      
+
       console.log("AuthProvider: Sign in successful:", data.user?.email);
       return { error: null };
     } catch (error) {
@@ -107,22 +144,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const signUp = async (email: string, password: string, fullName: string) => {
     console.log("AuthProvider: Attempting to sign up with email:", email);
     try {
+      const siteUrl =
+        import.meta.env.VITE_SITE_URL || window.location.origin || "";
       const { data, error } = await supabase.auth.signUp({
         email: email.trim(),
         password,
         options: {
-          emailRedirectTo: import.meta.env.VITE_SITE_URL,
+          emailRedirectTo: siteUrl,
           data: {
             full_name: fullName,
           },
         },
       });
-      
+
       if (error) {
         console.error("AuthProvider: Sign up error:", error);
         return { error };
       }
-      
+
       console.log("AuthProvider: Sign up successful:", data.user?.email);
       return { error: null };
     } catch (error) {

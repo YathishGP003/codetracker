@@ -15,18 +15,19 @@ const SignIn = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
-  const { signIn, user } = useAuth();
+  const { signIn, user, loading } = useAuth();
 
   // Get the page they were trying to visit, or default to dashboard
   const from = location.state?.from?.pathname || "/dashboard";
 
   // Redirect if already logged in
   useEffect(() => {
+    if (loading) return;
     if (user) {
       console.log("User already logged in, redirecting to:", from);
       navigate(from, { replace: true });
     }
-  }, [user, navigate, from]);
+  }, [user, loading, navigate, from]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

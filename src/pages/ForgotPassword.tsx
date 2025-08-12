@@ -25,7 +25,9 @@ const ForgotPassword = () => {
       return;
     }
 
-    const redirectTo = `${import.meta.env.VITE_SITE_URL}/update-password`;
+    const siteUrl =
+      import.meta.env.VITE_SITE_URL || window.location.origin || "";
+    const redirectTo = `${siteUrl}/update-password`;
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo,
@@ -117,4 +119,3 @@ const ForgotPassword = () => {
 };
 
 export default ForgotPassword;
- 

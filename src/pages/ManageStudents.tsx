@@ -17,7 +17,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
-import TopNavbar from "@/components/TopNavbar";
+import { TopNavbar } from "@/components/TopNavbar";
 import { StudentActionBar } from "@/components/manage-students/StudentActionBar";
 import { BulkActionsBar } from "@/components/manage-students/BulkActionsBar";
 import { StudentTableRow } from "@/components/manage-students/StudentTableRow";

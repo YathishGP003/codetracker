@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 
-export interface PastContest {
+interface PastContest {
   id: string;
   name: string;
   date: string;
@@ -8,10 +8,30 @@ export interface PastContest {
   site: string;
 }
 
+interface CodeforcesContest {
+  id: number;
+  name: string;
+  phase: string;
+  startTimeSeconds: number;
+}
+
+interface KontestsContest {
+  name: string;
+  start_time: string;
+  status: string;
+  url: string;
+}
+
 function getCurrentYearStart() {
   const now = new Date();
   return new Date(now.getFullYear(), 0, 1);
 }
+
+const errorMessages = [
+  "Codeforces API error",
+  "CodeChef fetch failed",
+  "LeetCode fetch failed",
+];
 
 export const useAllPastContests = () => {
   return useQuery<PastContest[], Error>({
@@ -21,14 +41,13 @@ export const useAllPastContests = () => {
       const yearStart = getCurrentYearStart();
       const contests: PastContest[] = [];
       let errorCount = 0;
-      let errorMessages: string[] = [];
 
       // --- Codeforces ---
       try {
         const res = await fetch("https://codeforces.com/api/contest.list");
         const data = await res.json();
         if (data.status === "OK") {
-          data.result.forEach((contest: any) => {
+          data.result.forEach((contest: CodeforcesContest) => {
             if (
               contest.phase === "FINISHED" &&
               contest.startTimeSeconds &&
@@ -46,18 +65,16 @@ export const useAllPastContests = () => {
           });
         } else {
           errorCount++;
-          errorMessages.push("Codeforces API error");
         }
-      } catch (e: any) {
+      } catch (e: unknown) {
         errorCount++;
-        errorMessages.push("Codeforces fetch failed");
       }
 
       // --- CodeChef ---
       try {
         const res = await fetch("https://kontests.net/api/v1/code_chef");
         const data = await res.json();
-        data.forEach((contest: any) => {
+        data.forEach((contest: KontestsContest) => {
           const start = new Date(contest.start_time);
           if (
             (start >= yearStart &&
@@ -79,16 +96,15 @@ export const useAllPastContests = () => {
             });
           }
         });
-      } catch (e: any) {
+      } catch (e: unknown) {
         errorCount++;
-        errorMessages.push("CodeChef fetch failed");
       }
 
       // --- LeetCode ---
       try {
         const res = await fetch("https://kontests.net/api/v1/leet_code");
         const data = await res.json();
-        data.forEach((contest: any) => {
+        data.forEach((contest: KontestsContest) => {
           const start = new Date(contest.start_time);
           if (
             (start >= yearStart &&
@@ -110,24 +126,23 @@ export const useAllPastContests = () => {
             });
           }
         });
-      } catch (e: any) {
+      } catch (e: unknown) {
         errorCount++;
-        errorMessages.push("LeetCode fetch failed");
       }
 
       contests.sort(
         (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
       );
-      if (contests.length === 0) {
-        throw new Error(
-          `Unable to fetch past contests. Errors: ${errorMessages.join(
-            ", "
-          )}. This may be due to network issues, CORS, or the APIs being down.`
+
+      if (errorCount > 0) {
+        console.warn(
+          `${errorCount} out of 3 contest sources failed to fetch. Some contests may not be displayed.`
         );
       }
-      // Optionally, you could attach a warning property to the result if errorCount > 0
+
       return contests;
     },
-    staleTime: 1000 * 60 * 60, // 1 hour
+    staleTime: 1000 * 60 * 60 * 24, // 24 hours
+    refetchInterval: 1000 * 60 * 60 * 24, // 24 hours
   });
 };

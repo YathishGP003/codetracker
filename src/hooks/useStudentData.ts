@@ -21,6 +21,29 @@ interface UpdateStudentData {
   emailEnabled: boolean;
 }
 
+interface SyncStudentDataParams {
+  studentId: string;
+  handle: string;
+}
+
+interface SyncAllStudentsParams {
+  syncAll: true;
+}
+
+interface SyncResponse {
+  success: boolean;
+  contestsFetched: number;
+  problemsFetched: number;
+  error?: string;
+}
+
+interface SyncAllResponse {
+  results: Array<{
+    contestsFetched: number;
+    problemsFetched: number;
+  }>;
+}
+
 /**
  * Fetches all students. Returns { data, isLoading, error }.
  * Surfaces errors for UI display.
@@ -39,8 +62,7 @@ export const useStudents = () => {
           schema: "public",
           table: "students",
         },
-        (payload) => {
-          console.log("Students table changed:", payload);
+        () => {
           // Invalidate and refetch students data
           queryClient.invalidateQueries({ queryKey: ["students"] });
         }
@@ -60,7 +82,9 @@ export const useStudents = () => {
         .select("*")
         .order("created_at", { ascending: false });
 
-      if (error) throw new Error(error.message || "Failed to fetch students");
+      if (error) {
+        throw new Error(error.message || "Failed to fetch students");
+      }
 
       return (data || []).map((student) => ({
         id: student.id,
@@ -77,10 +101,8 @@ export const useStudents = () => {
         lastSubmissionDate: student.last_submission_date,
       })) as Student[];
     },
-    onError: (error: any) => {
-      // Optionally surface error to UI
-      // e.g., toast.error(error.message)
-    },
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 };
 
@@ -100,14 +122,16 @@ export const useCreateStudent = () => {
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        throw new Error(error.message || "Failed to create student");
+      }
       return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["students"] });
       toast.success("Student added successfully!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(`Failed to add student: ${error.message}`);
     },
   });
@@ -132,14 +156,16 @@ export const useUpdateStudent = () => {
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        throw new Error(error.message || "Failed to update student");
+      }
       return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["students"] });
       toast.success("Student updated successfully!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(`Failed to update student: ${error.message}`);
     },
   });
@@ -155,13 +181,15 @@ export const useDeleteStudent = () => {
         .delete()
         .eq("id", studentId);
 
-      if (error) throw error;
+      if (error) {
+        throw new Error(error.message || "Failed to delete student");
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["students"] });
       toast.success("Student deleted successfully!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(`Failed to delete student: ${error.message}`);
     },
   });
@@ -177,13 +205,15 @@ export const useDeleteMultipleStudents = () => {
         .delete()
         .in("id", studentIds);
 
-      if (error) throw error;
+      if (error) {
+        throw new Error(error.message || "Failed to delete students");
+      }
     },
     onSuccess: (_, studentIds) => {
       queryClient.invalidateQueries({ queryKey: ["students"] });
       toast.success(`${studentIds.length} students deleted successfully!`);
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(`Failed to delete students: ${error.message}`);
     },
   });
@@ -205,7 +235,9 @@ export const useToggleStudentStatus = () => {
         .update({ is_active: isActive })
         .in("id", studentIds);
 
-      if (error) throw error;
+      if (error) {
+        throw new Error(error.message || "Failed to update student status");
+      }
     },
     onSuccess: (_, { studentIds, isActive }) => {
       queryClient.invalidateQueries({ queryKey: ["students"] });
@@ -215,7 +247,7 @@ export const useToggleStudentStatus = () => {
         } successfully!`
       );
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(`Failed to update student status: ${error.message}`);
     },
   });
@@ -228,10 +260,7 @@ export const useSyncStudentData = () => {
     mutationFn: async ({
       studentId,
       handle,
-    }: {
-      studentId: string;
-      handle: string;
-    }) => {
+    }: SyncStudentDataParams): Promise<SyncResponse> => {
       const { data, error } = await supabase.functions.invoke(
         "sync-codeforces-data",
         {
@@ -239,10 +268,12 @@ export const useSyncStudentData = () => {
         }
       );
 
-      if (error) throw error;
-      return data;
+      if (error) {
+        throw new Error(error.message || "Failed to sync student data");
+      }
+      return data as SyncResponse;
     },
-    onSuccess: (data) => {
+    onSuccess: (data: SyncResponse) => {
       queryClient.invalidateQueries({ queryKey: ["students"] });
       queryClient.invalidateQueries({ queryKey: ["contests"] });
       queryClient.invalidateQueries({ queryKey: ["problems"] });
@@ -255,7 +286,7 @@ export const useSyncStudentData = () => {
         toast.error(`Sync failed: ${data.error}`);
       }
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(`Sync failed: ${error.message}`);
     },
   });
@@ -265,7 +296,7 @@ export const useSyncAllStudents = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async () => {
+    mutationFn: async (): Promise<SyncAllResponse> => {
       const { data, error } = await supabase.functions.invoke(
         "sync-codeforces-data",
         {
@@ -273,29 +304,29 @@ export const useSyncAllStudents = () => {
         }
       );
 
-      if (error) throw error;
-      return data;
+      if (error) {
+        throw new Error(error.message || "Failed to sync all students");
+      }
+      return data as SyncAllResponse;
     },
-    onSuccess: (data) => {
+    onSuccess: (data: SyncAllResponse) => {
       queryClient.invalidateQueries({ queryKey: ["students"] });
       queryClient.invalidateQueries({ queryKey: ["contests"] });
       queryClient.invalidateQueries({ queryKey: ["problems"] });
 
-      if (data.success) {
-        const totalContests = data.results.reduce(
-          (sum: number, result: any) => sum + (result.contestsFetched || 0),
-          0
-        );
-        const totalProblems = data.results.reduce(
-          (sum: number, result: any) => sum + (result.problemsFetched || 0),
-          0
-        );
-        toast.success(
-          `Global sync completed! ${totalContests} contests and ${totalProblems} problems fetched across all students.`
-        );
-      }
+      const totalContests = data.results.reduce(
+        (sum, result) => sum + (result.contestsFetched || 0),
+        0
+      );
+      const totalProblems = data.results.reduce(
+        (sum, result) => sum + (result.problemsFetched || 0),
+        0
+      );
+      toast.success(
+        `Global sync completed! ${totalContests} contests and ${totalProblems} problems fetched across all students.`
+      );
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(`Global sync failed: ${error.message}`);
     },
   });

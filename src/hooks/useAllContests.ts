@@ -22,10 +22,12 @@ const fetchUpcomingContests = async (): Promise<UpcomingContest[]> => {
     const data = await response.json();
     // Show all contests on their actual date
     return data;
-  } catch (error: any) {
+  } catch (error: unknown) {
     // Network/CORS error or other
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error occurred";
     throw new Error(
-      "Unable to fetch upcoming contests. This may be due to a network error, CORS issue, or the API being down. Please try again later."
+      `Unable to fetch upcoming contests. This may be due to a network error, CORS issue, or the API being down. Please try again later. Error: ${errorMessage}`
     );
   }
 };

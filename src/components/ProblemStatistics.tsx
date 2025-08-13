@@ -58,13 +58,14 @@ const ProblemStatistics = () => {
     }
 
     const mostDifficultProblem = filteredProblems.reduce(
-      (max, p) => (p.rating || 0) > (max?.rating || 0) ? p : max),
+      (max, p) => ((p.rating || 0) > (max?.rating || 0) ? p : max),
       filteredProblems[0]
     );
 
     const totalProblems = filteredProblems.length;
     const averageRating =
-      filteredProblems.reduce((sum, p) => sum + (p.rating || 0), 0) / totalProblems;
+      filteredProblems.reduce((sum, p) => sum + (p.rating || 0), 0) /
+      totalProblems;
     const averageProblemsPerDay = totalProblems / parseInt(filterPeriod);
 
     // Create rating buckets (800-3500 in steps of 100)
@@ -145,7 +146,9 @@ const ProblemStatistics = () => {
             Most Difficult Problem
           </h3>
           <p className="mt-2 text-3xl font-bold">
-            {stats.mostDifficultProblem ? stats.mostDifficultProblem.rating : "N/A"}
+            {stats.mostDifficultProblem
+              ? stats.mostDifficultProblem.rating
+              : "N/A"}
           </p>
           {stats.mostDifficultProblem && (
             <p className="mt-1 text-sm text-gray-500">
@@ -196,7 +199,7 @@ const ProblemStatistics = () => {
                 legend: { display: false },
                 tooltip: {
                   callbacks: {
-                    label: function(context) {
+                    label: function (context) {
                       return `Solved: ${context.parsed.y}`;
                     },
                   },
@@ -209,8 +212,13 @@ const ProblemStatistics = () => {
         <div className="flex flex-wrap gap-2 mt-4">
           {ratingBands.map((band) => (
             <div key={band.label} className="flex items-center space-x-2">
-              <span className="inline-block w-4 h-4 rounded" style={{ background: band.color, border: '1px solid #888' }}></span>
-              <span className="text-xs" style={{ color: band.color }}>{band.min}-{band.max}</span>
+              <span
+                className="inline-block w-4 h-4 rounded"
+                style={{ background: band.color, border: "1px solid #888" }}
+              ></span>
+              <span className="text-xs" style={{ color: band.color }}>
+                {band.min}-{band.max}
+              </span>
             </div>
           ))}
         </div>
@@ -230,4 +238,3 @@ const ProblemStatistics = () => {
 };
 
 export default ProblemStatistics;
- 

@@ -1,17 +1,20 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { User, Session } from "@supabase/supabase-js";
+import { User, Session, AuthError } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
-  signIn: (email: string, password: string) => Promise<{ error: any }>;
+  signIn: (
+    email: string,
+    password: string
+  ) => Promise<{ error: AuthError | null }>;
   signUp: (
     email: string,
     password: string,
     fullName: string
-  ) => Promise<{ error: any }>;
+  ) => Promise<{ error: AuthError | null }>;
   signOut: () => Promise<void>;
 }
 
@@ -33,17 +36,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log("AuthProvider: Setting up auth state listener...");
-
     // Set up auth state listener
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("AuthProvider: Auth state changed:", event, {
-        user: session?.user?.email,
-        hasSession: !!session,
-        expiresAt: session?.expires_at,
-      });
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
@@ -52,24 +48,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     // Check for existing session
     const getInitialSession = async () => {
       try {
-        console.log("AuthProvider: Checking for existing session...");
         const {
           data: { session },
           error,
         } = await supabase.auth.getSession();
         if (error) {
-          console.error("AuthProvider: Error getting session:", error);
+          console.error("Error getting session:", error);
         } else {
-          console.log("AuthProvider: Initial session check:", {
-            user: session?.user?.email,
-            hasSession: !!session,
-            expiresAt: session?.expires_at,
-          });
           setSession(session);
           setUser(session?.user ?? null);
         }
       } catch (error) {
-        console.error("AuthProvider: Error in getInitialSession:", error);
+        console.error("Error in getInitialSession:", error);
       } finally {
         setLoading(false);
       }
@@ -83,20 +73,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         const hasCodeParam = url.searchParams.has("code");
         const codeType = url.searchParams.get("type");
         if (hasCodeParam) {
-          console.log(
-            "AuthProvider: Found code in URL, attempting exchange for session",
-            { type: codeType }
-          );
           const { data, error } = await supabase.auth.exchangeCodeForSession(
             currentUrl
           );
           if (error) {
-            console.error("AuthProvider: exchangeCodeForSession error:", error);
-          } else {
-            console.log(
-              "AuthProvider: exchangeCodeForSession success",
-              data.session?.user?.email
-            );
+            console.error("exchangeCodeForSession error:", error);
           }
           // Clean up URL params after handling
           url.searchParams.delete("code");
@@ -105,7 +86,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           window.history.replaceState({}, "", url.pathname + url.search);
         }
       } catch (error) {
-        console.error("AuthProvider: Error during code exchange:", error);
+        console.error("Error during code exchange:", error);
       }
     };
 
@@ -115,13 +96,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     })();
 
     return () => {
-      console.log("AuthProvider: Cleaning up auth subscription");
       subscription.unsubscribe();
     };
   }, []);
 
   const signIn = async (email: string, password: string) => {
-    console.log("AuthProvider: Attempting to sign in with email:", email);
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email: email.trim(),
@@ -129,20 +108,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       });
 
       if (error) {
-        console.error("AuthProvider: Sign in error:", error);
         return { error };
       }
 
-      console.log("AuthProvider: Sign in successful:", data.user?.email);
       return { error: null };
     } catch (error) {
-      console.error("AuthProvider: Unexpected sign in error:", error);
-      return { error };
+      return { error: error as AuthError };
     }
   };
 
   const signUp = async (email: string, password: string, fullName: string) => {
-    console.log("AuthProvider: Attempting to sign up with email:", email);
     try {
       const siteUrl =
         import.meta.env.VITE_SITE_URL || window.location.origin || "";
@@ -158,29 +133,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       });
 
       if (error) {
-        console.error("AuthProvider: Sign up error:", error);
         return { error };
       }
 
-      console.log("AuthProvider: Sign up successful:", data.user?.email);
       return { error: null };
     } catch (error) {
-      console.error("AuthProvider: Unexpected sign up error:", error);
-      return { error };
+      return { error: error as AuthError };
     }
   };
 
   const signOut = async () => {
-    console.log("AuthProvider: Signing out...");
     try {
       const { error } = await supabase.auth.signOut();
       if (error) {
-        console.error("AuthProvider: Sign out error:", error);
-      } else {
-        console.log("AuthProvider: Sign out successful");
+        console.error("Sign out error:", error);
       }
     } catch (error) {
-      console.error("AuthProvider: Unexpected sign out error:", error);
+      console.error("Unexpected sign out error:", error);
     }
   };
 
@@ -192,12 +161,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     signUp,
     signOut,
   };
-
-  console.log("AuthProvider: Current state:", {
-    user: user?.email,
-    hasSession: !!session,
-    loading,
-  });
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

@@ -2,17 +2,30 @@ import React from "react";
 import { Users, TrendingUp, Award, AlertTriangle } from "lucide-react";
 import { Student, Contest, Problem } from "@/types/Student";
 import { useDarkMode } from "@/contexts/DarkModeContext";
+import { getContainerClasses } from "@/lib/styles";
 
 interface DashboardStatsProps {
   students: Student[];
   contests: Contest[];
   problems: Problem[];
+  isLoading?: boolean;
+}
+
+interface StatItem {
+  title: string;
+  value: string;
+  change: string;
+  icon: React.ComponentType<{ className?: string }>;
+  color: string;
+  bgImage?: string;
+  trend: "up" | "down";
 }
 
 const DashboardStats: React.FC<DashboardStatsProps> = ({
   students,
   contests,
   problems,
+  isLoading = false,
 }) => {
   const { isDarkMode } = useDarkMode();
 
@@ -34,7 +47,7 @@ const DashboardStats: React.FC<DashboardStatsProps> = ({
     return new Date(student.lastSubmissionDate) < twoWeeksAgo;
   });
 
-  const stats = [
+  const stats: StatItem[] = [
     {
       title: "Total Students",
       value: students.length.toString(),
@@ -77,6 +90,25 @@ const DashboardStats: React.FC<DashboardStatsProps> = ({
     },
   ];
 
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6 mb-8">
+        {Array.from({ length: 4 }).map((_, index) => (
+          <div
+            key={index}
+            className={getContainerClasses(isDarkMode, "h-48 animate-pulse")}
+          >
+            <div className="h-32 bg-gradient-to-br from-gray-300 to-gray-400 rounded-t-3xl" />
+            <div className="p-5">
+              <div className="h-8 bg-gray-300 rounded mb-2" />
+              <div className="h-4 bg-gray-300 rounded w-16" />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6 mb-8">
       {stats.map((stat, index) => (
@@ -92,10 +124,9 @@ const DashboardStats: React.FC<DashboardStatsProps> = ({
           <div
             className={`relative h-32 sm:h-36 p-5 flex items-end rounded-t-3xl bg-gradient-to-br ${stat.color}`}
             style={
-              // Add background image if provided
-              (stat as any).bgImage
+              stat.bgImage
                 ? {
-                    backgroundImage: `url(${(stat as any).bgImage})`,
+                    backgroundImage: `url(${stat.bgImage})`,
                     backgroundSize: "cover",
                     backgroundPosition: "center",
                   }
@@ -104,7 +135,7 @@ const DashboardStats: React.FC<DashboardStatsProps> = ({
           >
             <div className="absolute -top-10 -right-8 h-28 w-28 rounded-full bg-white/25 blur-2xl" />
             <div className="absolute -bottom-10 -left-8 h-28 w-28 rounded-full bg-white/15 blur-2xl" />
-            {(stat as any).bgImage && (
+            {stat.bgImage && (
               <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent rounded-t-3xl" />
             )}
             <div className="relative z-10 flex items-center gap-3 text-white">

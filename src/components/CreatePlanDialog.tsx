@@ -1,45 +1,48 @@
+import React from "react";
+import { differenceInDays } from "date-fns";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
-  DialogFooter,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
 import { CalendarIcon } from "lucide-react";
-import { format, differenceInDays } from "date-fns";
+import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import React from "react";
-import { Check, ChevronsUpDown } from "lucide-react";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import { Badge } from "@/components/ui/badge";
 
 interface PastContest {
   id: string;
   name: string;
   date: string;
+  rating: number;
+}
+
+interface GeneratedEvent {
+  title: string;
+  start: Date;
+  end: Date;
+  backgroundColor: string;
+  borderColor: string;
+  extendedProps: {
+    type: string;
+    contestId: string;
+  };
 }
 
 interface CreatePlanDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (events: any[]) => void;
+  onSubmit: (events: GeneratedEvent[]) => void;
   pastContests: PastContest[];
   isLoading: boolean;
   error: boolean;
@@ -87,8 +90,8 @@ export const CreatePlanDialog = ({
       return;
     }
 
-    const generatedEvents: any[] = [];
-    let currentDay = new Date(startDate);
+    const generatedEvents: GeneratedEvent[] = [];
+    const currentDay = new Date(startDate);
 
     selectedModules.forEach((moduleId) => {
       const contest = pastContests?.find((c) => c.id === moduleId);

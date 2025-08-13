@@ -8,7 +8,7 @@ import {
 import { ExternalLink, Calendar, Trophy, Target, Clock } from "lucide-react";
 import { Student } from "@/types/Student";
 import { useDarkMode } from "@/contexts/DarkModeContext";
-import ProblemTracker from "@/components/ProblemTracker";
+import ProblemTracker from "@/components/ProblemTracker/ProblemTracker";
 import RatingChart from "@/components/RatingChart";
 import ContestHistory from "@/components/ContestHistory";
 import { useProblemData } from "@/hooks/useProblemData";

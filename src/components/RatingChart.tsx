@@ -39,6 +39,46 @@ const ratingBands = [
   },
 ];
 
+interface TooltipProps {
+  active?: boolean;
+  payload?: Array<{
+    payload: {
+      contestName: string;
+      newRating: number;
+      oldRating: number;
+      rank: number;
+      date: Date;
+    };
+  }>;
+}
+
+const CustomTooltip = ({ active, payload }: TooltipProps) => {
+  if (active && payload && payload.length) {
+    const data = payload[0].payload;
+    const ratingChange = data.newRating - data.oldRating;
+    return (
+      <div
+        className={`p-2 rounded border text-sm ${
+          isDarkMode
+            ? "bg-gray-800 border-gray-700 text-white"
+            : "bg-white border-gray-300"
+        }`}
+      >
+        <p className="font-bold">{data.contestName}</p>
+        <p>
+          {`Rank: ${data.rank}, Rating: ${data.newRating} (${
+            ratingChange >= 0 ? "+" : ""
+          }${ratingChange})`}
+        </p>
+        <p className="text-xs text-gray-500">
+          {format(data.date, "MMM d, yyyy")}
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
+
 const RatingChart: React.FC<RatingChartProps> = ({ handle }) => {
   const { data: contestHistory, isLoading } = useContestHistory(handle);
   const { isDarkMode } = useDarkMode();
@@ -71,33 +111,6 @@ const RatingChart: React.FC<RatingChartProps> = ({ handle }) => {
   const maxRating = Math.ceil(Math.max(...ratings) / 200) * 200 + 200;
 
   const yAxisTicks = [0, 1200, 1400, 1600, 1900, 2100, 2300, 2400, 2600, 3000];
-
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      const data = payload[0].payload;
-      const ratingChange = data.newRating - data.oldRating;
-      return (
-        <div
-          className={`p-2 rounded border text-sm ${
-            isDarkMode
-              ? "bg-gray-800 border-gray-700 text-white"
-              : "bg-white border-gray-300"
-          }`}
-        >
-          <p className="font-bold">{data.contestName}</p>
-          <p>
-            {`Rank: ${data.rank}, Rating: ${data.newRating} (${
-              ratingChange >= 0 ? "+" : ""
-            }${ratingChange})`}
-          </p>
-          <p className="text-xs text-gray-500">
-            {format(data.date, "MMM d, yyyy")}
-          </p>
-        </div>
-      );
-    }
-    return null;
-  };
 
   return (
     <ResponsiveContainer width="100%" height={400}>

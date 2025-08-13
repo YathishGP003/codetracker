@@ -25,7 +25,7 @@ interface CalendarEvent {
   description?: string;
   type: string; // platform: codeforces, leetcode, codechef, atcoder, etc.
   icon?: React.ReactNode;
-  [key: string]: any;
+  [key: string]: string | React.ReactNode | undefined;
 }
 
 interface CustomCalendarProps {

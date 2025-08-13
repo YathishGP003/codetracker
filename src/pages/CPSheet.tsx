@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import { Card } from "../components/ui/card";
 import { Skeleton } from "../components/ui/skeleton";
-import CPSheetProblemTracker from "../components/CPSheetProblemTracker";
+import ProblemTracker from "../components/ProblemTracker/ProblemTracker";
 import CPSheetStats from "../components/CPSheetStats";
 import StreakCard from "@/components/StreakCard";
 
@@ -510,7 +510,7 @@ const CPSheet: React.FC = () => {
             allSolved={allSolved}
           />
 
-          <CPSheetProblemTracker
+          <ProblemTracker
             studentId={student.id}
             title={`${selectedRating} Rated Problems`}
             problems={currentProblems}

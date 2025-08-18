@@ -6,7 +6,7 @@ interface TagDropdownProps {
   setSelectedTags: (tags: string[]) => void;
   isDarkMode: boolean;
   open: boolean;
-  setOpen: (open: boolean) => void;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const TagDropdown: React.FC<TagDropdownProps> = ({

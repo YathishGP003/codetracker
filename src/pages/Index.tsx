@@ -38,7 +38,7 @@ const Index = () => {
   if (authLoading) {
     return (
       <div
-        className={`min-h-screen ${isDarkMode ? "bg-slate-950" : "bg-gray-50"}`}
+        className={`min-h-screen ${isDarkMode ? "bg-gray-900" : "bg-gray-50"}`}
       >
         <TopNavbar />
         <div className="container mx-auto px-4 py-8 text-center">
@@ -52,7 +52,7 @@ const Index = () => {
   if (hasErrors) {
     return (
       <div
-        className={`min-h-screen ${isDarkMode ? "bg-slate-950" : "bg-gray-50"}`}
+        className={`min-h-screen ${isDarkMode ? "bg-gray-900" : "bg-gray-50"}`}
       >
         <TopNavbar />
         <div className="container mx-auto px-4 py-8">
@@ -90,7 +90,7 @@ const Index = () => {
 
   return (
     <div
-      className={`min-h-screen ${isDarkMode ? "bg-slate-950" : "bg-gray-50"}`}
+      className={`min-h-screen ${isDarkMode ? "bg-gray-900" : "bg-gray-50"}`}
     >
       <TopNavbar />
       <div className="container mx-auto px-4 py-8">

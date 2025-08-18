@@ -22,7 +22,7 @@ interface ProblemFiltersProps {
   setPageSize: (pageSize: number) => void;
   totalPages: number;
   tagDropdownOpen: boolean;
-  setTagDropdownOpen: (open: boolean) => void;
+  setTagDropdownOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const PAGE_SIZE_OPTIONS = [10, 20, 50];

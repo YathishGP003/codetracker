@@ -14,7 +14,7 @@ const Landing = () => {
   return (
     <div className={`min-h-screen transition-all duration-500 ${
       isDarkMode 
-        ? 'bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900' 
+        ? 'bg-gray-900' 
         : 'bg-gradient-to-br from-gray-50 via-blue-50 to-gray-100'
     }`}>
       {/* Animated background elements */}

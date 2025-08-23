@@ -1,6 +1,7 @@
 import React from "react";
-import { Sun, Moon } from "lucide-react";
+import { Sun, Moon, User as UserIcon } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface NavigationProps {
   isDarkMode: boolean;
@@ -8,6 +9,7 @@ interface NavigationProps {
 }
 
 const Navigation = ({ isDarkMode, setIsDarkMode }: NavigationProps) => {
+  const { user } = useAuth();
   return (
     <nav
       className={`sticky top-0 z-50 backdrop-blur-xl border-b transition-all duration-300 ${
@@ -68,12 +70,26 @@ const Navigation = ({ isDarkMode, setIsDarkMode }: NavigationProps) => {
               {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
             </button>
 
-            <Link
-              to="/dashboard"
-              className="px-6 py-3 rounded-2xl bg-gradient-to-r from-teal-500 to-blue-600 text-white font-medium flex items-center space-x-2 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-teal-500/25"
-            >
-              <span>Get Started</span>
-            </Link>
+            {user ? (
+              <Link
+                to="/dashboard"
+                className={`p-3 rounded-2xl transition-all duration-300 hover:scale-105 flex items-center justify-center ${
+                  isDarkMode
+                    ? "bg-slate-800/50 hover:bg-slate-700/50 text-slate-300"
+                    : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                }`}
+                title="Go to Dashboard"
+              >
+                <UserIcon size={20} />
+              </Link>
+            ) : (
+              <Link
+                to="/login"
+                className="px-6 py-3 rounded-2xl bg-gradient-to-r from-teal-500 to-blue-600 text-white font-medium flex items-center space-x-2 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-teal-500/25"
+              >
+                <span>Get Started</span>
+              </Link>
+            )}
           </div>
         </div>
       </div>

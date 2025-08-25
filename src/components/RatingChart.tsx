@@ -19,23 +19,23 @@ interface RatingChartProps {
 }
 
 const ratingBands = [
-  { rank: "Newbie", min: 0, max: 1199, color: "rgb(204, 204, 204)" },
-  { rank: "Pupil", min: 1200, max: 1399, color: "rgb(119, 255, 119)" },
-  { rank: "Specialist", min: 1400, max: 1599, color: "rgb(119, 221, 221)" },
-  { rank: "Expert", min: 1600, max: 1899, color: "rgb(170, 170, 255)" },
+  { rank: "Newbie", min: 0, max: 1199, color: "#94a3b8" }, // Cool gray
+  { rank: "Pupil", min: 1200, max: 1399, color: "#4ade80" }, // Green
+  { rank: "Specialist", min: 1400, max: 1599, color: "#2dd4bf" }, // Teal
+  { rank: "Expert", min: 1600, max: 1899, color: "#60a5fa" }, // Blue
   {
     rank: "Candidate Master",
     min: 1900,
     max: 2099,
-    color: "rgb(255, 119, 255)",
+    color: "#c084fc", // Purple
   },
-  { rank: "Master", min: 2100, max: 2399, color: "rgb(255, 140, 0)" },
-  { rank: "Grandmaster", min: 2400, max: 2999, color: "rgb(255, 0, 0)" },
+  { rank: "Master", min: 2100, max: 2399, color: "#f59e0b" }, // Amber
+  { rank: "Grandmaster", min: 2400, max: 2999, color: "#ef4444" }, // Red
   {
     rank: "Legendary Grandmaster",
     min: 3000,
     max: 4000,
-    color: "rgb(170, 0, 0)",
+    color: "#7f1d1d", // Dark red
   },
 ];
 
@@ -53,6 +53,7 @@ interface TooltipProps {
 }
 
 const CustomTooltip = ({ active, payload }: TooltipProps) => {
+  const { isDarkMode } = useDarkMode();
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     const ratingChange = data.newRating - data.oldRating;

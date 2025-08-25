@@ -46,13 +46,20 @@ const StudentCard: React.FC<StudentCardProps> = ({
               <div className="relative">
                 <ProfileAvatar
                   size={64}
-                  imageUrl={student.codeforcesHandle ? getCodeforcesProfilePicture(student.codeforcesHandle, 80) : undefined}
+                  imageUrl={
+                    student.codeforcesHandle
+                      ? getCodeforcesProfilePicture(
+                          student.codeforcesHandle,
+                          80
+                        )
+                      : undefined
+                  }
                   alt={student.name}
                 />
                 <div
                   className={`absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2 ${
-                    isDarkMode ? 'border-slate-900' : 'border-white'
-                  } ${student.isActive ? 'bg-green-500' : 'bg-gray-400'}`}
+                    isDarkMode ? "border-slate-900" : "border-white"
+                  } ${student.isActive ? "bg-green-500" : "bg-gray-400"}`}
                 />
               </div>
             </div>

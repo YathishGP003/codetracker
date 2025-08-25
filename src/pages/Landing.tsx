@@ -1,22 +1,23 @@
-
-import React from 'react';
-import { useDarkMode } from '../contexts/DarkModeContext';
-import Navigation from '../components/landing/Navigation';
-import HeroSection from '../components/landing/HeroSection';
-import FeaturesSection from '../components/landing/FeaturesSection';
-import TestimonialsSection from '../components/landing/TestimonialsSection';
-import CTASection from '../components/landing/CTASection';
-import Footer from '../components/landing/Footer';
+import React from "react";
+import { useDarkMode } from "../contexts/DarkModeContext";
+import Navigation from "../components/landing/Navigation";
+import HeroSection from "../components/landing/HeroSection";
+import FeaturesSection from "../components/landing/FeaturesSection";
+import TestimonialsSection from "../components/landing/TestimonialsSection";
+import CTASection from "../components/landing/CTASection";
+import Footer from "../components/landing/Footer";
 
 const Landing = () => {
   const { isDarkMode, setDarkMode } = useDarkMode();
 
   return (
-    <div className={`min-h-screen transition-all duration-500 ${
-      isDarkMode 
-        ? 'bg-gray-900' 
-        : 'bg-gradient-to-br from-gray-50 via-blue-50 to-gray-100'
-    }`}>
+    <div
+      className={`min-h-screen transition-all duration-500 ${
+        isDarkMode
+          ? "bg-gray-900"
+          : "bg-gradient-to-br from-gray-50 via-blue-50 to-gray-100"
+      }`}
+    >
       {/* Animated background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl animate-pulse"></div>

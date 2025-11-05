@@ -45,9 +45,7 @@ export const useContests = (studentId?: string) => {
         totalProblems: contest.total_problems || 0,
       })) as Contest[];
     },
-    onError: (error: any) => {
-      // Optionally surface error to UI
-      // e.g., toast.error(error.message)
-    },
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 };

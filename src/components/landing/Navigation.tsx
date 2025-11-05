@@ -1,4 +1,3 @@
-import React from "react";
 import { Sun, Moon, User as UserIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -84,7 +83,7 @@ const Navigation = ({ isDarkMode, setIsDarkMode }: NavigationProps) => {
               </Link>
             ) : (
               <Link
-                to="/login"
+                to="/signin"
                 className="px-6 py-3 rounded-2xl bg-gradient-to-r from-teal-500 to-blue-600 text-white font-medium flex items-center space-x-2 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-teal-500/25"
               >
                 <span>Get Started</span>

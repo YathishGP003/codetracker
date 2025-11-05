@@ -52,3 +52,18 @@ export const getRatingBadge = (rating: number) => {
   if (rating > 0) return "Newbie";
   return "Unrated";
 };
+
+/**
+ * Logs errors in a consistent way across the application.
+ * In production, this could be extended to send errors to a logging service.
+ */
+export const logError = (context: string, error: unknown): void => {
+  const errorMessage =
+    error instanceof Error ? error.message : String(error);
+  const errorStack = error instanceof Error ? error.stack : undefined;
+
+  if (import.meta.env.DEV) {
+    console.error(`[${context}]`, errorMessage, errorStack ? { stack: errorStack } : "");
+  }
+  // In production, you could send to a logging service like Sentry, LogRocket, etc.
+};

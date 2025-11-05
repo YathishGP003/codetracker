@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Bell, BellOff, Mail, Clock } from "lucide-react";
 import {
   Card,
@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { useDarkMode } from "@/contexts/DarkModeContext";
+import { logError } from "@/lib/utils";
 
 interface InactiveStudent {
   id: string;
@@ -38,10 +39,13 @@ const InactivityMonitor = () => {
       // TODO: Implement API call to fetch inactive students
       // This should be called after each sync
       const response = await fetch("/api/inactive-students");
+      if (!response.ok) {
+        throw new Error(`Failed to fetch inactive students: ${response.statusText}`);
+      }
       const data = await response.json();
       setInactiveStudents(data);
     } catch (error) {
-      console.error("Error fetching inactive students:", error);
+      logError("InactivityMonitor.fetchInactiveStudents", error);
     } finally {
       setIsLoading(false);
     }
@@ -67,7 +71,7 @@ const InactivityMonitor = () => {
         )
       );
     } catch (error) {
-      console.error("Error updating notification settings:", error);
+      logError("InactivityMonitor.toggleEmailNotifications", error);
     }
   };
 
@@ -86,7 +90,7 @@ const InactivityMonitor = () => {
         )
       );
     } catch (error) {
-      console.error("Error sending reminder email:", error);
+      logError("InactivityMonitor.sendReminderEmail", error);
     }
   };
 

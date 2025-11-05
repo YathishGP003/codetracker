@@ -4,6 +4,18 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { CronSettings } from '@/types/cronTypes';
 import { generateCronExpression } from '@/utils/cronUtils';
+import { logError } from '@/lib/utils';
+
+interface CronSettingsData extends CronSettings {
+  enabled: boolean;
+  frequency: string;
+  hour: number;
+  minute: number;
+}
+
+interface LastSyncData {
+  timestamp: string;
+}
 
 export const useCronSettings = () => {
   const [settings, setSettings] = useState<CronSettings>({
@@ -34,8 +46,8 @@ export const useCronSettings = () => {
         .single();
 
       if (cronData?.setting_value) {
-        const cronSettings = cronData.setting_value as Record<string, any>;
-        const lastSyncSettings = syncData?.setting_value as Record<string, any>;
+        const cronSettings = cronData.setting_value as CronSettingsData;
+        const lastSyncSettings = syncData?.setting_value as LastSyncData;
         
         setSettings({
           enabled: cronSettings.enabled || false,
@@ -47,7 +59,7 @@ export const useCronSettings = () => {
         setLastSync(lastSyncSettings?.timestamp || null);
       }
     } catch (error) {
-      console.error('Error fetching cron settings:', error);
+      logError('useCronSettings.fetchCurrentSettings', error);
     }
   };
 
@@ -55,12 +67,12 @@ export const useCronSettings = () => {
     setIsLoading(true);
     
     try {
-      // Update local settings - cast to Json type
+      // Update local settings
       await supabase
         .from('app_settings')
         .upsert({
           setting_key: 'cron_schedule',
-          setting_value: newSettings as any // Cast to satisfy Json type constraint
+          setting_value: newSettings as CronSettingsData
         });
 
       // Generate cron expression
@@ -82,9 +94,10 @@ export const useCronSettings = () => {
       } else {
         toast.error(data.error || 'Failed to update cron job');
       }
-    } catch (error: any) {
-      console.error('Error updating cron settings:', error);
-      toast.error(`Failed to update schedule: ${error.message}`);
+    } catch (error) {
+      logError('useCronSettings.updateSettings', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      toast.error(`Failed to update schedule: ${errorMessage}`);
     } finally {
       setIsLoading(false);
     }

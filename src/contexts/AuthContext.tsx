@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { User, Session, AuthError } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+import { logError } from "@/lib/utils";
 
 interface AuthContextType {
   user: User | null;
@@ -53,13 +54,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           error,
         } = await supabase.auth.getSession();
         if (error) {
-          console.error("Error getting session:", error);
+          logError("AuthContext.getInitialSession", error);
         } else {
           setSession(session);
           setUser(session?.user ?? null);
         }
       } catch (error) {
-        console.error("Error in getInitialSession:", error);
+        logError("AuthContext.getInitialSession", error);
       } finally {
         setLoading(false);
       }
@@ -71,13 +72,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         const currentUrl = window.location.href;
         const url = new URL(currentUrl);
         const hasCodeParam = url.searchParams.has("code");
-        const codeType = url.searchParams.get("type");
         if (hasCodeParam) {
-          const { data, error } = await supabase.auth.exchangeCodeForSession(
+          const { error } = await supabase.auth.exchangeCodeForSession(
             currentUrl
           );
           if (error) {
-            console.error("exchangeCodeForSession error:", error);
+            logError("AuthContext.exchangeCodeForSession", error);
           }
           // Clean up URL params after handling
           url.searchParams.delete("code");
@@ -86,7 +86,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           window.history.replaceState({}, "", url.pathname + url.search);
         }
       } catch (error) {
-        console.error("Error during code exchange:", error);
+        logError("AuthContext.handleUrlCodeExchange", error);
       }
     };
 
@@ -146,10 +146,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       const { error } = await supabase.auth.signOut();
       if (error) {
-        console.error("Sign out error:", error);
+        logError("AuthContext.signOut", error);
       }
     } catch (error) {
-      console.error("Unexpected sign out error:", error);
+      logError("AuthContext.signOut", error);
     }
   };
 

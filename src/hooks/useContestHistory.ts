@@ -8,6 +8,23 @@ interface ContestHistoryItem {
   ratingUpdateTimeSeconds: number;
   oldRating: number;
   newRating: number;
+  ratingChange?: number;
+}
+
+interface CodeforcesRatingResponse {
+  contestId: number;
+  contestName: string;
+  handle: string;
+  rank: number;
+  ratingUpdateTimeSeconds: number;
+  oldRating: number;
+  newRating: number;
+}
+
+interface CodeforcesAPIResponse {
+  status: string;
+  comment?: string;
+  result: CodeforcesRatingResponse[];
 }
 
 const fetchContestHistory = async (
@@ -19,11 +36,11 @@ const fetchContestHistory = async (
   if (!response.ok) {
     throw new Error("Failed to fetch contest history from Codeforces");
   }
-  const data = await response.json();
+  const data = (await response.json()) as CodeforcesAPIResponse;
   if (data.status !== "OK") {
     throw new Error(data.comment || "Codeforces API returned an error");
   }
-  return data.result.map((item: any) => ({
+  return data.result.map((item) => ({
     ...item,
     ratingChange: item.newRating - item.oldRating,
   }));

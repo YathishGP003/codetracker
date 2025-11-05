@@ -2,12 +2,20 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { logError } from '@/lib/utils';
 
 interface SyncStatus {
   isActive: boolean;
   lastSync: string | null;
   nextSync: string | null;
   interval: number; // in minutes
+}
+
+interface SyncSettings {
+  isActive: boolean;
+  lastSync: string | null;
+  nextSync: string | null;
+  interval: number;
 }
 
 export const useRealTimeSync = () => {
@@ -30,7 +38,7 @@ export const useRealTimeSync = () => {
         .single();
 
       if (data?.setting_value) {
-        const settings = data.setting_value as any;
+        const settings = data.setting_value as SyncSettings;
         setSyncStatus({
           isActive: settings.isActive || false,
           lastSync: settings.lastSync || null,
@@ -39,7 +47,7 @@ export const useRealTimeSync = () => {
         });
       }
     } catch (error) {
-      console.error('Error fetching sync status:', error);
+      logError('useRealTimeSync.fetchSyncStatus', error);
     }
   }, []);
 
@@ -70,9 +78,10 @@ export const useRealTimeSync = () => {
       // Trigger immediate sync
       performSync();
       
-    } catch (error: any) {
-      console.error('Error starting real-time sync:', error);
-      toast.error(`Failed to start real-time sync: ${error.message}`);
+    } catch (error) {
+      logError('useRealTimeSync.startRealTimeSync', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      toast.error(`Failed to start real-time sync: ${errorMessage}`);
     } finally {
       setIsLoading(false);
     }
@@ -99,9 +108,10 @@ export const useRealTimeSync = () => {
       setSyncStatus(newStatus);
       toast.success('Real-time sync stopped');
       
-    } catch (error: any) {
-      console.error('Error stopping real-time sync:', error);
-      toast.error(`Failed to stop real-time sync: ${error.message}`);
+    } catch (error) {
+      logError('useRealTimeSync.stopRealTimeSync', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      toast.error(`Failed to stop real-time sync: ${errorMessage}`);
     } finally {
       setIsLoading(false);
     }
@@ -110,7 +120,6 @@ export const useRealTimeSync = () => {
   // Perform sync
   const performSync = useCallback(async () => {
     try {
-      console.log('Performing real-time sync...');
       
       const { data, error } = await supabase.functions.invoke('sync-codeforces-data', {
         body: { syncAll: true, includeContests: true }
@@ -141,9 +150,10 @@ export const useRealTimeSync = () => {
         toast.success(`Sync completed: ${summary.successful}/${summary.totalStudents} students updated`);
       }
       
-    } catch (error: any) {
-      console.error('Sync error:', error);
-      toast.error(`Sync failed: ${error.message}`);
+    } catch (error) {
+      logError('useRealTimeSync.performSync', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      toast.error(`Sync failed: ${errorMessage}`);
     }
   }, [syncStatus]);
 

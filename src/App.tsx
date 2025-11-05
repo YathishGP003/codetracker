@@ -17,8 +17,18 @@ import ForgotPassword from "@/pages/ForgotPassword";
 import UpdatePassword from "@/pages/UpdatePassword";
 import CalendarPage from "./pages/CalendarPage";
 import CPSheet from "./pages/CPSheet";
+import Explore from "./pages/Explore";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 3,
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -35,6 +45,7 @@ const App = () => (
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/update-password" element={<UpdatePassword />} />
               <Route path="/schedule-demo" element={<ScheduleDemo />} />
+              <Route path="/explore" element={<Explore />} />
               <Route
                 path="/dashboard"
                 element={

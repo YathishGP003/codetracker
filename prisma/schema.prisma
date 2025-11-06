@@ -1,15 +1,131 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+// Enum for student status
+enum StudentStatus {
+  active
+  inactive
+}
+
+// Students table
+model Student {
+  id                  String    @id @default(uuid())
+  name                String
+  email               String    @unique
+  phoneNumber         String?   @map("phone_number")
+  codeforcesHandle    String    @unique @map("codeforces_handle")
+  currentRating       Int       @default(0) @map("current_rating")
+  maxRating           Int       @default(0) @map("max_rating")
+  lastUpdated         DateTime? @map("last_updated") @db.Timestamptz
+  isActive            Boolean   @default(true) @map("is_active")
+  reminderCount       Int       @default(0) @map("reminder_count")
+  emailEnabled        Boolean   @default(true) @map("email_enabled")
+  lastSubmissionDate  DateTime? @map("last_submission_date") @db.Timestamptz
+  createdAt           DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt           DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  // Relations
+  contests            Contest[]
+  problems            Problem[]
+  syncLogs           SyncLog[]
+
+  @@map("students")
+  @@index([codeforcesHandle])
+}
+
+// Contests table
+model Contest {
+  id              String    @id @default(uuid())
+  studentId       String    @map("student_id")
+  contestId       Int       @map("contest_id")
+  contestName     String    @map("contest_name")
+  contestDate     DateTime  @map("contest_date") @db.Timestamptz
+  rating          Int?
+  ratingChange    Int?      @map("rating_change")
+  rank            Int?
+  problemsSolved  Int       @default(0) @map("problems_solved")
+  totalProblems   Int       @default(0) @map("total_problems")
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz
+
+  // Relations
+  student         Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@map("contests")
+  @@index([studentId])
+  @@index([contestDate])
+}
+
+// Problems table
+model Problem {
+  id                  String    @id @default(uuid())
+  studentId           String    @map("student_id")
+  problemId           String    @map("problem_id")
+  problemName         String    @map("problem_name")
+  contestId           Int?      @map("contest_id")
+  problemIndex        String?   @map("problem_index")
+  rating              Int?
+  tags                String[]
+  solvedAt            DateTime  @map("solved_at") @db.Timestamptz
+  verdict             String?
+  programmingLanguage String?   @map("programming_language")
+  createdAt           DateTime  @default(now()) @map("created_at") @db.Timestamptz
+
+  // Relations
+  student             Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@map("problems")
+  @@index([studentId])
+  @@index([solvedAt])
+}
+
+// Sync logs table
+model SyncLog {
+  id              String    @id @default(uuid())
+  studentId       String?   @map("student_id")
+  syncType        String    @map("sync_type") // 'scheduled', 'manual', 'handle_update'
+  status          String    // 'success', 'error', 'partial'
+  message         String?
+  contestsFetched Int       @default(0) @map("contests_fetched")
+  problemsFetched Int       @default(0) @map("problems_fetched")
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz
+
+  // Relations
+  student         Student?  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@map("sync_logs")
+  @@index([studentId])
+  @@index([createdAt])
+}
+
+// App settings table
+model AppSetting {
+  id          String    @id @default(uuid())
+  settingKey  String    @unique @map("setting_key")
+  settingValue Json     @map("setting_value")
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  @@map("app_settings")
+}
+
+// Profiles table (for user authentication)
+model Profile {
+  id        String   @id
+  fullName  String?   @map("full_name")
+  email     String?
+  username  String?   @unique
+  firstName String?   @map("first_name")
+  lastName  String?  @map("last_name")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  @@map("profiles")
 }

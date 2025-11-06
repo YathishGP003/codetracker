@@ -57,40 +57,74 @@ const SignIn = () => {
     }
 
     console.log("Submitting sign in form with email:", email);
-    const { error } = await signIn(email, password);
+    
+    try {
+      const { error } = await signIn(email, password);
 
-    if (error) {
-      console.error("Sign in failed:", error);
+      if (error) {
+        console.error("Sign in failed:", error);
 
-      let errorMessage = "Failed to sign in. Please try again.";
+        let errorMessage = "Failed to sign in. Please try again.";
 
-      // Handle specific error cases
-      if (error.message?.includes("Invalid login credentials")) {
-        errorMessage =
-          "Invalid email or password. Please check your credentials and try again.";
-      } else if (error.message?.includes("Email not confirmed")) {
-        errorMessage =
-          "Please check your email and click the confirmation link before signing in.";
-      } else if (error.message?.includes("Too many requests")) {
-        errorMessage =
-          "Too many sign in attempts. Please wait a moment and try again.";
-      } else if (error.message) {
-        errorMessage = error.message;
+        // Handle specific error cases
+        if (error.message?.includes("Invalid login credentials")) {
+          errorMessage =
+            "Invalid email or password. Please check your credentials and try again.";
+        } else if (error.message?.includes("Email not confirmed")) {
+          errorMessage =
+            "Please check your email and click the confirmation link before signing in.";
+        } else if (error.message?.includes("Too many requests")) {
+          errorMessage =
+            "Too many sign in attempts. Please wait a moment and try again.";
+        } else if (
+          error.message?.includes("Failed to fetch") ||
+          error.message?.includes("ERR_NAME_NOT_RESOLVED") ||
+          error.message?.includes("NetworkError") ||
+          error.name === "AuthRetryableFetchError"
+        ) {
+          errorMessage =
+            "Unable to connect to the server. Please check your internet connection and ensure your Supabase configuration is correct.";
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
+
+        toast({
+          title: "Sign In Failed",
+          description: errorMessage,
+          variant: "destructive",
+        });
+        setIsLoading(false);
+      } else {
+        console.log("Sign in successful, redirecting...");
+        toast({
+          title: "Success",
+          description: "Welcome back to CodeTracker Pro!",
+        });
+        setIsLoading(false);
+        navigate(from, { replace: true });
       }
-
+    } catch (err: any) {
+      console.error("Unexpected error during sign in:", err);
+      
+      let errorMessage = "An unexpected error occurred. Please try again.";
+      
+      // Check for network errors
+      if (
+        err?.message?.includes("Failed to fetch") ||
+        err?.message?.includes("ERR_NAME_NOT_RESOLVED") ||
+        err?.message?.includes("NetworkError") ||
+        err?.name === "AuthRetryableFetchError"
+      ) {
+        errorMessage =
+          "Unable to connect to the server. Please check your internet connection and ensure your Supabase configuration is correct. If the problem persists, verify your Supabase project URL in the .env file.";
+      }
+      
       toast({
         title: "Sign In Failed",
         description: errorMessage,
         variant: "destructive",
       });
       setIsLoading(false);
-    } else {
-      console.log("Sign in successful, redirecting...");
-      toast({
-        title: "Success",
-        description: "Welcome back to CodeTracker Pro!",
-      });
-      navigate(from, { replace: true });
     }
   };
 

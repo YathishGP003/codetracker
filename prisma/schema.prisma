@@ -118,7 +118,7 @@ model AppSetting {
 
 // Profiles table (for user authentication)
 model Profile {
-  id        String   @id
+  id        String   @id @default(uuid())
   fullName  String?   @map("full_name")
   email     String?
   username  String?   @unique
